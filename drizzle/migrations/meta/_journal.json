@@ -113,6 +113,13 @@
       "when": 1791101981470,
       "tag": "0015_backup_health",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1791125078053,
+      "tag": "0016_platform_logo",
+      "breakpoints": true
     }
   ]
 }
