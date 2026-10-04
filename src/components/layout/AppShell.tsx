@@ -162,7 +162,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 function Shell({ children }: { children: ReactNode }) {
   const music = useMusic();
   const [langOpen, setLangOpen] = useState(false);
-  const { lang, setLang, t, enabled } = useI18n();
+  const { lang, setLang, t, tr, enabled } = useI18n();
   const menu = useMenu("three_dot_menu");
   const bottom = useMenu("bottom_bar");
   const footLinks = useMenu("footer_links");
@@ -171,6 +171,7 @@ function Shell({ children }: { children: ReactNode }) {
   const { data: settings } = useQuery(settingsQuery);
   const theme = themeConfig(settings?.theme_config);
   const home = homeConfig(settings?.home_config);
+  const fc = home.footer;
   const { dark, toggle } = useTheme(settings ? theme.default_theme : undefined);
   const { data: footerPages } = useQuery({
     queryKey: ["footer-pages"], staleTime: 60_000,
@@ -195,6 +196,11 @@ function Shell({ children }: { children: ReactNode }) {
     if (!el) { el = document.createElement("link"); el.rel = "icon"; document.head.appendChild(el); }
     el.href = favicon;
   }, [favicon]);
+  // Show the admin's website name in every browser tab title.
+  useEffect(() => {
+    if (!settings?.site_name || settings.site_name === "Premium SMM Store") return;
+    if (document.title.includes("Premium SMM Store")) document.title = document.title.replace("Premium SMM Store", settings.site_name);
+  }, [path, settings?.site_name]);
   const visible = (m: MenuItem) => !m.requires_login || !!user;
   const onAction = (a: string) => {
     setMenuOpen(false);
@@ -226,7 +232,7 @@ function Shell({ children }: { children: ReactNode }) {
   const resend = async () => {
     if (!user?.email) return;
     const { error } = await supabase.auth.resend({ type: "signup", email: user.email, options: { emailRedirectTo: window.location.origin } });
-    if (error) toast.error(error.message); else toast.success("Verification email sent");
+    if (error) toast.error(error.message); else toast.success(tr("Verification email sent"));
   };
 
   return (
@@ -287,19 +293,23 @@ function Shell({ children }: { children: ReactNode }) {
         ) : children}
       </main>
 
-      {!(path === "/" && home.sections.find((x) => x.id === "footer")?.on === false) && <footer className="mx-auto mt-16 max-w-5xl px-4 pb-6">
-        <div className="glass rounded-3xl p-6">
-          <h3 className="label-premium mb-3 text-lg">{t("footer.quick_links")}</h3>
-          <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted-foreground">
-            {footLinks.filter(visible).map((m) => <NavItem key={m.id} m={m} settings={settings} onAction={onAction} showIcon={false} className="hover:text-primary" />)}
-            {(footerPages ?? []).map((p) => <Link key={p.slug} to="/p/$slug" params={{ slug: p.slug }} className="hover:text-primary">{pickLang(p.title, lang, p.slug)}</Link>)}
-          </div>
-          <h3 className="label-premium mb-3 mt-6 text-lg">{t("footer.info")}</h3>
-          <div className="flex flex-wrap gap-4">
-            {footInfo.filter(visible).map((m) => <NavItem key={m.id} m={m} settings={settings} onAction={onAction} iconClass="h-6 w-6 text-primary" className="tilt glass flex flex-col items-center gap-1 rounded-2xl px-4 py-3 text-xs" />)}
-          </div>
-          {settings?.support_hours && <p className="mt-4 text-xs text-muted-foreground">{t("footer.hours", "Support hours")}: {settings.support_hours}</p>}
-          <p className="mt-6 text-xs text-muted-foreground">{settings?.footer_copyright || `© ${new Date().getFullYear()} ${siteName}. ${t("footer.rights")}`}</p>
+      {!(path === "/" && home.sections.find((x) => x.id === "footer")?.on === false) && <footer className="mx-auto mt-20 max-w-5xl px-4 pb-8 sm:mt-24">
+        <div className="glass space-y-6 rounded-3xl p-6">
+          {(fc.quick_links || (fc.pages && !!footerPages?.length)) && <div>
+            <h3 className="label-premium mb-3 text-lg">{t("footer.quick_links")}</h3>
+            <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted-foreground">
+              {fc.quick_links && footLinks.filter(visible).map((m) => <NavItem key={m.id} m={m} settings={settings} onAction={onAction} showIcon={false} className="hover:text-primary" />)}
+              {fc.pages && (footerPages ?? []).map((p) => <Link key={p.slug} to="/p/$slug" params={{ slug: p.slug }} className="hover:text-primary">{pickLang(p.title, lang, p.slug)}</Link>)}
+            </div>
+          </div>}
+          {fc.info && <div>
+            <h3 className="label-premium mb-3 text-lg">{t("footer.info")}</h3>
+            <div className="flex flex-wrap gap-4">
+              {footInfo.filter(visible).map((m) => <NavItem key={m.id} m={m} settings={settings} onAction={onAction} iconClass="h-6 w-6 text-primary" className="tilt glass flex flex-col items-center gap-1 rounded-2xl px-4 py-3 text-xs" />)}
+            </div>
+          </div>}
+          {fc.hours && settings?.support_hours && <p className="text-xs text-muted-foreground">{t("footer.hours", "Support hours")}: {settings.support_hours}</p>}
+          {fc.copyright && <p className="text-xs text-muted-foreground">{settings?.footer_copyright || `© ${new Date().getFullYear()} ${siteName}. ${t("footer.rights")}`}</p>}
         </div>
       </footer>}
 

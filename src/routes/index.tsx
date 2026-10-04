@@ -77,11 +77,11 @@ function Home() {
     services: (
       <section>
         <h2 className="label-premium mb-5 text-center text-2xl">{t("home.services_title")}</h2>
-        <div className="mx-auto flex max-w-3xl flex-wrap justify-center gap-2 sm:gap-4">
+        <div className="mx-auto flex max-w-3xl flex-wrap justify-center gap-1.5 sm:gap-4">
           {isLoading
-            ? Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-[76px] w-[62px] rounded-2xl sm:h-28 sm:w-[120px]" />)
+            ? Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-[76px] w-[58px] rounded-2xl sm:h-28 sm:w-[120px]" />)
             : shown.map(({ c, p }) => (
-                <Link key={p!.id} to="/service/$platform" params={{ platform: p!.slug }} className={`glass ${tilt} group flex w-[62px] flex-col items-center gap-1.5 rounded-2xl px-1 py-2.5 sm:w-[120px] sm:gap-2.5 sm:rounded-3xl sm:p-4`}>
+                <Link key={p!.id} to="/service/$platform" params={{ platform: p!.slug }} className={`glass ${tilt} group flex w-[58px] flex-col items-center gap-1.5 rounded-2xl px-1 py-2.5 sm:w-[120px] sm:gap-2.5 sm:rounded-3xl sm:p-4`}>
                   {c.logo ? <PlatformLogo path={c.logo} className={`h-10 w-10 transition ${spin} sm:h-14 sm:w-14`} />
                     : <PlatformIcon slug={p!.slug} logo={p!.logo_url} name={p!.name} className={`h-10 w-10 transition ${spin} sm:h-14 sm:w-14`} />}
                   <span className="w-full truncate text-center text-[11px] font-semibold text-muted-foreground sm:text-xs">{c.name?.trim() || p!.name}</span>
