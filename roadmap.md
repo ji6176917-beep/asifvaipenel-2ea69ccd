@@ -19,3 +19,8 @@
 - [ ] Admin: Add Funds, Services, Content, Menu, Home, Support, QnA, Pages, Languages, Notifications, Theme, Backup, Activity Log, Trash
 - [ ] Database Backup ZIP + System Health / reconcile; README restore steps
 - [ ] Notifications, popups, maintenance mode, reseller API, languages, music, Telegram alerts, captcha
+
+## Spec 9–11 (Oct 4)
+- [ ] 9 Music: URL or upload, volume/loop/autoplay/show-for, master switch, versioned refresh, admin preview
+- [ ] 10 Content & Labels: ui_labels/ui_icons registry, admin editor, branding, home texts, announcement, welcome popup; wire site texts
+- [ ] 11 Menu & Navigation editor (3-dot, bottom bar, footer, home shortcuts)
