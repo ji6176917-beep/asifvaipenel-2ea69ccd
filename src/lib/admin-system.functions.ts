@@ -41,7 +41,7 @@ async function fetchAll(db: any, table: string) {
 export const adminBackup = createServerFn({ method: "POST" }).handler(async () => {
   const { s, db } = await ctx();
   const tables: Record<string, any[]> = {};
-  for (const t of BACKUP_TABLES) tables[t] = await fetchAll(db, t);
+  await Promise.all(BACKUP_TABLES.map(async (t) => { tables[t] = await fetchAll(db, t); }));
   // Strip the plaintext API key column; hashes are enough to verify.
   tables["profiles"] = (tables["profiles"] as any[]).map(({ api_key, ...r }) => r);
   const at = new Date().toISOString();
@@ -55,11 +55,11 @@ export const adminHealth = createServerFn({ method: "POST" }).handler(async () =
   const t0 = Date.now();
   const counts: Record<string, number | null> = {};
   let ok = true;
-  for (const t of BACKUP_TABLES) {
+  await Promise.all(BACKUP_TABLES.map(async (t) => {
     const { count, error } = await db.from(t).select("*", { count: "exact", head: true });
     if (error) ok = false;
     counts[t] = count ?? null;
-  }
+  }));
   const { data: storage } = await db.rpc("admin_storage_usage");
   const { data: set } = await db.from("site_settings").select("last_backup_at").eq("id", 1).maybeSingle();
   return { ok, latencyMs: Date.now() - t0, counts, storage: storage ?? [], lastBackupAt: set?.last_backup_at ?? null };
