@@ -12,7 +12,7 @@ import { PlatformIcon } from "@/lib/brand";
 import { money } from "@/lib/format";
 
 type Level = "platforms" | "categories" | "services";
-type Nav = { platform?: { id: string; name: string }; category?: { id: string; name: string } };
+type Nav = { platform?: { id: string; name: string } | undefined; category?: { id: string; name: string } | undefined };
 
 export function AdminServices() {
   const [nav, setNav] = useState<Nav>({});

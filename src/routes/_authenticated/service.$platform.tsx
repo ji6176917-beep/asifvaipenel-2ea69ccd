@@ -106,7 +106,7 @@ function ServicePage() {
     <div className="mx-auto max-w-2xl space-y-4">
       <div className="flex items-center gap-3">
         <button aria-label="Back" onClick={() => history.back()} className="rounded-full p-2 hover:bg-accent"><ArrowLeft className="h-5 w-5" /></button>
-        <PlatformIcon slug={platform} className="h-12 w-12" />
+        <PlatformIcon slug={platform} logo={data?.platform?.logo_url} name={data?.platform?.name} className="h-12 w-12" />
         <h1 className="text-gradient text-3xl font-bold">{data?.platform.name ?? "…"} {t("service.title_suffix")}</h1>
       </div>
 
