@@ -91,15 +91,15 @@ export const adminActivityLog = createServerFn({ method: "POST" })
 export const adminTrashList = createServerFn({ method: "POST" }).handler(async () => {
   const { db } = await ctx();
   const out: { table: TrashTable; label: string; id: string; name: string; deleted_at: string }[] = [];
-  for (const [t, m] of Object.entries(TRASH_TABLES)) {
+  await Promise.all(Object.entries(TRASH_TABLES).map(async ([t, m]) => {
     const { data } = await db.from(t).select(`id, ${m.name}, deleted_at`).not("deleted_at", "is", null).order("deleted_at", { ascending: false });
     for (const r of data ?? []) {
       const n = r[m.name];
       out.push({ table: t as TrashTable, label: m.label, id: r.id, deleted_at: r.deleted_at,
         name: typeof n === "string" ? n : n?.en ?? Object.values(n ?? {})[0] ?? "(untitled)" });
     }
-  }
-  return out;
+  }));
+  return out.sort((a, b) => b.deleted_at.localeCompare(a.deleted_at));
 });
 
 export const adminTrashAction = createServerFn({ method: "POST" })
