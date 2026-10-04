@@ -864,7 +864,6 @@ export type Database = {
         | "rejected"
         | "canceled"
       pm_kind: "binance" | "usdt" | "p2p"
-      probe_type_x: "a"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1003,7 +1002,6 @@ export const Constants = {
         "canceled",
       ],
       pm_kind: ["binance", "usdt", "p2p"],
-      probe_type_x: ["a"],
     },
   },
 } as const

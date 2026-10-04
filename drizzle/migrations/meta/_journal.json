@@ -71,6 +71,13 @@
       "when": 1791082739182,
       "tag": "0009_probe_enum2",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1791082784197,
+      "tag": "0010_function_grants",
+      "breakpoints": true
     }
   ]
 }
