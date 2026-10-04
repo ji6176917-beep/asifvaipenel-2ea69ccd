@@ -1,0 +1,1 @@
+create type public.probe_type_x as enum ('a');

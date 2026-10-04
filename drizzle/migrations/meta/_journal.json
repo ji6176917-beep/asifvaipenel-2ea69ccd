@@ -64,6 +64,13 @@
       "when": 1791037312729,
       "tag": "0008_order_status_history",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1791082739182,
+      "tag": "0009_probe_enum2",
+      "breakpoints": true
     }
   ]
 }
