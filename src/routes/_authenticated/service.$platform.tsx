@@ -29,7 +29,6 @@ function ServicePage() {
   const { platform } = Route.useParams();
   const { verified, refreshProfile } = useAuth();
   const navigate = useNavigate();
-  const [q, setQ] = useState("");
   const [catId, setCatId] = useState("");
   const [svcId, setSvcId] = useState("");
   const [link, setLink] = useState("");
@@ -44,22 +43,17 @@ function ServicePage() {
       const { data: p, error } = await supabase.from("platforms").select("id,name,slug").eq("slug", platform).maybeSingle();
       if (error) throw error;
       if (!p) return null;
-      const { data: cats } = await supabase.from("categories").select("id,name").eq("platform_id", p.id).order("sort");
+      const { data: cats } = await supabase.from("categories").select("id,name").eq("platform_id", p.id).eq("active", true).is("deleted_at", null).order("sort");
       const ids = (cats ?? []).map((c) => c.id);
       const { data: svcs } = ids.length
-        ? await supabase.from("services").select("*").in("category_id", ids).order("sort")
+        ? await supabase.from("services").select("*").in("category_id", ids).eq("active", true).is("deleted_at", null).order("sort")
         : { data: [] };
       return { platform: p, cats: cats ?? [], svcs: svcs ?? [] };
     },
   });
 
-  const term = q.trim().toLowerCase();
-  const cats = useMemo(() => {
-    if (!data) return [];
-    if (!term) return data.cats;
-    return data.cats.filter((c) => c.name.toLowerCase().includes(term) || data.svcs.some((s) => s.category_id === c.id && s.name.toLowerCase().includes(term)));
-  }, [data, term]);
-  const svcs = (data?.svcs ?? []).filter((s) => s.category_id === catId && (!term || s.name.toLowerCase().includes(term) || cats.some((c) => c.id === catId && c.name.toLowerCase().includes(term))));
+  const cats = useMemo(() => (data ? data.cats.filter((c) => data.svcs.some((s) => s.category_id === c.id)) : []), [data]);
+  const svcs = (data?.svcs ?? []).filter((s) => s.category_id === catId);
   const svc = data?.svcs.find((s) => s.id === svcId);
   const qn = parseInt(qty || "0", 10);
   const charge = svc ? computeCharge(qn, Number(svc.rate), svc.rate_per) : 0;
@@ -114,42 +108,27 @@ function ServicePage() {
         <h1 className="text-gradient text-3xl font-bold">{data?.platform.name ?? "…"} Service</h1>
       </div>
 
-      <div className="relative">
-        <Search className="absolute left-4 top-3.5 h-5 w-5 text-muted-foreground" />
-        <input className={`${inputCls} pl-12`} placeholder="What do you want? (e.g. followers, reactions)" value={q} onChange={(e) => setQ(e.target.value)} />
-      </div>
-
       <Card className="space-y-5">
         <div>
-          <span className={labelCls}>Category</span>
-          {isLoading ? <Skeleton className="h-24 rounded-2xl" /> : cats.length === 0 ? <Empty text="No matching categories." /> : (
-            <div className="grid max-h-72 gap-2 overflow-y-auto pr-1">
-              {cats.map((c) => (
-                <button key={c.id} type="button" onClick={() => { setCatId(c.id); setSvcId(""); }}
-                  className={`flex items-center gap-3 rounded-2xl border px-3 py-2.5 text-left transition ${catId === c.id ? "border-primary bg-primary/10 shadow-glow" : "border-border hover:border-primary/50"}`}>
-                  <PlatformIcon slug={platform} className="h-5 w-5 shrink-0" />
-                  <span className="label-premium text-sm">{c.name}</span>
-                </button>
-              ))}
-            </div>
+          <label className={labelCls} htmlFor="cat">Category</label>
+          {isLoading ? <Skeleton className="h-12 rounded-2xl" /> : cats.length === 0 ? <Empty text="No categories available." /> : (
+            <select id="cat" className={inputCls} value={catId} onChange={(e) => { setCatId(e.target.value); setSvcId(""); }}>
+              <option value="">Select a category</option>
+              {cats.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+            </select>
           )}
         </div>
 
         {catId && (
           <div>
-            <span className={labelCls}>Service</span>
+            <label className={labelCls} htmlFor="svc">Service</label>
             {svcs.length === 0 ? <Empty text="No services in this category." /> : (
-              <div className="grid gap-2">
-                {svcs.map((s) => (
-                  <button key={s.id} type="button" onClick={() => setSvcId(s.id)}
-                    className={`rounded-2xl border px-3 py-2.5 text-left transition ${svcId === s.id ? "border-primary bg-primary/10 shadow-glow" : "border-border hover:border-primary/50"}`}>
-                    <div className="label-premium text-sm">{s.name}</div>
-                    {s.description && <div className="text-xs text-muted-foreground">{s.description}</div>}
-                    <div className="mt-1 text-xs text-primary">{money(s.rate)} per {s.rate_per} • Min {s.min_qty} – Max {s.max_qty}</div>
-                  </button>
-                ))}
-              </div>
+              <select id="svc" className={inputCls} value={svcId} onChange={(e) => setSvcId(e.target.value)}>
+                <option value="">Select a service</option>
+                {svcs.map((s) => <option key={s.id} value={s.id}>{s.name} — {money(s.rate)} per {s.rate_per}</option>)}
+              </select>
             )}
+            {svc?.description && <p className="mt-1 text-xs text-muted-foreground">{svc.description}</p>}
           </div>
         )}
 

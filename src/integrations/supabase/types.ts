@@ -641,8 +641,15 @@ export type Database = {
           allow_orders: boolean
           announcement_on: boolean
           announcement_text: string | null
+          api_allow_new_keys: boolean
+          api_docs: string
+          api_examples: string
+          api_global_enabled: boolean
+          api_instructions: string
+          api_min_balance: number
           api_policy: string
           api_rate_per_min: number
+          api_url: string
           bdt_rate: number
           deposit_max: number
           deposit_min: number
@@ -661,8 +668,15 @@ export type Database = {
           allow_orders?: boolean
           announcement_on?: boolean
           announcement_text?: string | null
+          api_allow_new_keys?: boolean
+          api_docs?: string
+          api_examples?: string
+          api_global_enabled?: boolean
+          api_instructions?: string
+          api_min_balance?: number
           api_policy?: string
           api_rate_per_min?: number
+          api_url?: string
           bdt_rate?: number
           deposit_max?: number
           deposit_min?: number
@@ -681,8 +695,15 @@ export type Database = {
           allow_orders?: boolean
           announcement_on?: boolean
           announcement_text?: string | null
+          api_allow_new_keys?: boolean
+          api_docs?: string
+          api_examples?: string
+          api_global_enabled?: boolean
+          api_instructions?: string
+          api_min_balance?: number
           api_policy?: string
           api_rate_per_min?: number
+          api_url?: string
           bdt_rate?: number
           deposit_max?: number
           deposit_min?: number

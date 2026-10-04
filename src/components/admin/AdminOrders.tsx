@@ -47,7 +47,7 @@ function PlatformGrid({ onOpen }: { onOpen: (p: { slug: string; name: string }) 
 
 type Order = Awaited<ReturnType<typeof adminListOrders>>[number];
 
-function PlatformOrders({ platform, onBack }: { platform: { slug: string; name: string }; onBack: () => void }) {
+export function PlatformOrders({ platform, source, onBack }: { platform?: { slug: string; name: string }; source?: "web" | "api"; onBack?: () => void }) {
   const list = useServerFn(adminListOrders);
   const exportCsv = useServerFn(adminExportOrdersCsv);
   const bulk = useServerFn(adminBulkUpdateOrders);
@@ -59,7 +59,7 @@ function PlatformOrders({ platform, onBack }: { platform: { slug: string; name: 
   const [sel, setSel] = useState<string[]>([]);
   const [action, setAction] = useState<{ order: Order; act: Act } | null>(null);
   const [bulkAct, setBulkAct] = useState<"processing" | "rejected" | null>(null);
-  const filters = { platform: platform.slug, tab, q, from: from || undefined, to: to || undefined };
+  const filters = { platform: platform?.slug, source, tab, q, from: from || undefined, to: to || undefined };
   const { data, isLoading, isError, isFetching, refetch } = useQuery({
     queryKey: ["admin-orders", filters], queryFn: () => list({ data: filters }), refetchInterval: 10_000,
   });
@@ -68,7 +68,7 @@ function PlatformOrders({ platform, onBack }: { platform: { slug: string; name: 
     try {
       const csv = await exportCsv({ data: filters });
       const url = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
-      const a = document.createElement("a"); a.href = url; a.download = `orders-${platform.slug}-${tab}.csv`; a.click(); URL.revokeObjectURL(url);
+      const a = document.createElement("a"); a.href = url; a.download = `orders-${platform?.slug ?? source ?? "all"}-${tab}.csv`; a.click(); URL.revokeObjectURL(url);
     } catch (e) { toast.error((e as Error).message); }
   };
   const bulkable = (data ?? []).filter((o) => o.status === "pending");
@@ -76,9 +76,9 @@ function PlatformOrders({ platform, onBack }: { platform: { slug: string; name: 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-2">
-        <button onClick={onBack} className="btn-ghost-glow !px-3 !py-2"><ArrowLeft className="h-4 w-4" /></button>
-        <PlatformIcon slug={platform.slug} className="h-7 w-7" />
-        <h1 className="text-gradient flex-1 text-2xl font-bold">{platform.name} orders</h1>
+        {onBack && <button onClick={onBack} className="btn-ghost-glow !px-3 !py-2"><ArrowLeft className="h-4 w-4" /></button>}
+        {platform && <PlatformIcon slug={platform.slug} className="h-7 w-7" />}
+        <h1 className="text-gradient flex-1 text-2xl font-bold">{platform ? `${platform.name} orders` : source === "api" ? "API orders" : "Orders"}</h1>
         <button onClick={() => refetch()} className="btn-ghost-glow !py-2 text-sm"><RefreshCw className={`h-4 w-4 ${isFetching ? "animate-spin" : ""}`} /></button>
         <button onClick={doExport} className="btn-ghost-glow !py-2 text-sm"><Download className="h-4 w-4" /> CSV</button>
       </div>
@@ -124,11 +124,12 @@ function OrderCard({ o, selected, onSelect, onAct }: { o: Order; selected: boole
         {o.status === "pending" && <input type="checkbox" aria-label="Select order" checked={selected} onChange={(e) => onSelect(e.target.checked)} />}
         <Copyable value={o.order_code} className="font-semibold" />
         <StatusBadge status={o.status} />
+        {o.source === "api" && <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-bold uppercase text-primary">API · {o.user?.username ?? "user"}</span>}
         <span className="ml-auto text-xs text-muted-foreground">{fmtDate(o.created_at)}</span>
       </div>
       <div className="grid gap-1 sm:grid-cols-2">
         <div><span className="text-muted-foreground">User: </span>{o.user?.full_name || o.user?.username || "—"} {o.user && <Copyable value={o.user.public_id} className="text-xs" />}</div>
-        <div><span className="text-muted-foreground">Category: </span>{o.category_name}</div>
+        <div><span className="text-muted-foreground">Category: </span>{o.platform_name} · {o.category_name}</div>
         <div className="sm:col-span-2"><span className="text-muted-foreground">Service: </span>{o.service_name}</div>
         <div><span className="text-muted-foreground">Quantity: </span>{o.quantity}{o.delivered_qty != null && o.status !== "completed" && ` (delivered ${o.delivered_qty})`}</div>
         <div><span className="text-muted-foreground">Charge: </span>{money(o.charge)}{Number(o.refunded) > 0 && <span className="text-success"> · refunded {money(o.refunded)}</span>}</div>

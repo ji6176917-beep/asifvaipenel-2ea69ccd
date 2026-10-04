@@ -16,6 +16,8 @@ const ERR: Record<string, [string, number]> = {
   INVALID_LINK: ["Invalid link. Use a full https:// URL.", 400],
   API_DISABLED: ["API access is disabled for this account.", 403],
   ACCOUNT_SUSPENDED: ["Account is suspended.", 403],
+  API_OFF: ["The API is currently turned off.", 503],
+  BELOW_MIN_BALANCE: ["Your balance is below the minimum required for API orders. Add funds first.", 402],
   ORDERS_PAUSED: ["New orders are temporarily paused.", 503],
 };
 
@@ -46,7 +48,8 @@ async function handle(request: Request) {
   if (!prof.api_enabled) return json({ error: "API access is disabled for this account." }, 403);
   if (prof.banned || prof.deleted_at) return json({ error: "Account is suspended." }, 403);
 
-  const { data: set } = await db.from("site_settings").select("api_rate_per_min").eq("id", 1).maybeSingle();
+  const { data: set } = await db.from("site_settings").select("api_rate_per_min, api_global_enabled").eq("id", 1).maybeSingle();
+  if (set && !set.api_global_enabled) return json({ error: "The API is currently turned off." }, 503);
   const limit = set?.api_rate_per_min ?? 60;
   const { count } = await db.from("api_requests").select("id", { count: "exact", head: true })
     .eq("user_id", prof.id).gte("created_at", new Date(Date.now() - 60_000).toISOString());
