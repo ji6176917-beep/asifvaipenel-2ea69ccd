@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { Avatar } from "@/components/Avatar";
 import { Spinner } from "@/components/ui-kit";
+import { useTr } from "@/lib/i18n";
 
 /** Square centre-crop + resize to max 512×512 WEBP. */
 async function cropSquare(file: File): Promise<Blob> {
@@ -18,6 +19,7 @@ async function cropSquare(file: File): Promise<Blob> {
 }
 
 export function AvatarEditor() {
+  const tr = useTr();
   const { user, profile, refreshProfile } = useAuth();
   const input = useRef<HTMLInputElement>(null);
   const [blob, setBlob] = useState<Blob | null>(null);
@@ -28,12 +30,12 @@ export function AvatarEditor() {
 
   const pick = async (f?: File) => {
     if (!f) return;
-    if (!/^image\/(jpeg|png|webp)$/.test(f.type)) { toast.error("Use a JPG, PNG or WEBP image"); return; }
-    if (f.size > 3 * 1024 * 1024) { toast.error("Image must be under 3 MB"); return; }
+    if (!/^image\/(jpeg|png|webp)$/.test(f.type)) { toast.error(tr("Use a JPG, PNG or WEBP image")); return; }
+    if (f.size > 3 * 1024 * 1024) { toast.error(tr("Image must be under 3 MB")); return; }
     try {
       const b = await cropSquare(f);
       setBlob(b); setPreview(URL.createObjectURL(b));
-    } catch { toast.error("Could not read that image"); }
+    } catch { toast.error(tr("Could not read that image")); }
   };
 
   const cancel = () => { setBlob(null); setPreview(null); if (input.current) input.current.value = ""; };
@@ -44,13 +46,13 @@ export function AvatarEditor() {
     const old = profile?.avatar_url;
     const path = `${user.id}/${crypto.randomUUID()}.webp`;
     const up = await supabase.storage.from("avatars").upload(path, blob, { contentType: "image/webp" });
-    if (up.error) { setBusy(false); toast.error("Upload failed — your old photo is kept"); return; }
+    if (up.error) { setBusy(false); toast.error(tr("Upload failed — your old photo is kept")); return; }
     const { error } = await supabase.rpc("set_my_avatar", { _path: path });
-    if (error) { await supabase.storage.from("avatars").remove([path]); setBusy(false); toast.error("Could not save photo"); return; }
+    if (error) { await supabase.storage.from("avatars").remove([path]); setBusy(false); toast.error(tr("Could not save photo")); return; }
     if (old) await supabase.storage.from("avatars").remove([old]);
     await refreshProfile();
     setBusy(false); cancel();
-    toast.success("Profile photo updated");
+    toast.success(tr("Profile photo updated"));
   };
 
   const remove = async () => {
@@ -58,16 +60,16 @@ export function AvatarEditor() {
     setBusy(true);
     const old = profile.avatar_url;
     const { error } = await supabase.rpc("set_my_avatar", { _path: null as unknown as string });
-    if (error) { setBusy(false); toast.error("Could not remove photo"); return; }
+    if (error) { setBusy(false); toast.error(tr("Could not remove photo")); return; }
     await supabase.storage.from("avatars").remove([old]);
     await refreshProfile();
     setBusy(false);
-    toast.success("Photo removed");
+    toast.success(tr("Photo removed"));
   };
 
   return (
     <div className="flex flex-col items-center gap-3">
-      <button type="button" onClick={() => input.current?.click()} className="relative" aria-label="Change profile photo">
+      <button type="button" onClick={() => input.current?.click()} className="relative" aria-label={tr("Change profile photo")}>
         <Avatar path={profile?.avatar_url} name={profile?.full_name} previewUrl={preview} className="h-28 w-28 text-3xl" />
         <span className="bg-brand absolute bottom-1 right-1 flex h-9 w-9 items-center justify-center rounded-full text-primary-foreground shadow-glow ring-2 ring-background">
           <Camera className="h-4 w-4" />
@@ -76,15 +78,15 @@ export function AvatarEditor() {
       <input ref={input} type="file" accept="image/*" className="hidden" onChange={(e) => pick(e.target.files?.[0])} />
       {blob ? (
         <div className="flex gap-2">
-          <button onClick={cancel} disabled={busy} className="btn-ghost-glow !px-4 !py-2 text-sm">Cancel</button>
-          <button onClick={save} disabled={busy} className="btn-glow !px-4 !py-2 text-sm">{busy && <Spinner />} Save</button>
+          <button onClick={cancel} disabled={busy} className="btn-ghost-glow !px-4 !py-2 text-sm">{tr("Cancel")}</button>
+          <button onClick={save} disabled={busy} className="btn-glow !px-4 !py-2 text-sm">{busy && <Spinner />} {tr("Save")}</button>
         </div>
       ) : profile?.avatar_url ? (
         <button onClick={remove} disabled={busy} className="flex items-center gap-1 text-sm text-destructive hover:underline">
-          {busy ? <Spinner /> : <Trash2 className="h-4 w-4" />} Remove photo
+          {busy ? <Spinner /> : <Trash2 className="h-4 w-4" />} {tr("Remove photo")}
         </button>
       ) : (
-        <p className="text-xs text-muted-foreground">Tap the photo to take or choose a picture</p>
+        <p className="text-xs text-muted-foreground">{tr("Tap the photo to take or choose a picture")}</p>
       )}
     </div>
   );

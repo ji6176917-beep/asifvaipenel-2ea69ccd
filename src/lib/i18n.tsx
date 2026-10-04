@@ -3,6 +3,12 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { settingsQuery } from "@/lib/queries";
 import { langConfig } from "@/lib/site-config";
+import { useAuth } from "@/lib/auth";
+import DICT from "@/lib/translations.json";
+
+const D = DICT as Record<string, Record<string, string>>;
+/** Built-in translation of an English phrase (central dictionary per language). */
+export function trFor(lang: string, text: string) { return (lang !== "en" && D[lang]?.[text]) || text; }
 
 export const LANGUAGES = [
   { code: "en", label: "English" },
@@ -94,33 +100,40 @@ type LabelRow = { key: string; default_text: string; translations: Record<string
 type Ctx = {
   lang: Lang; setLang: (l: Lang) => void;
   t: (key: string, fallback?: string) => string;
+  tr: (text: string) => string;
   icon: (key: string) => string | null;
   enabled: string[];
 };
 const I18nCtx = createContext<Ctx>({
   lang: "en", setLang: () => {},
-  t: (k, f) => f ?? DEFAULT_LABELS[k]?.[1] ?? k, icon: () => null, enabled: ["en"],
+  t: (k, f) => f ?? DEFAULT_LABELS[k]?.[1] ?? k, tr: (x) => x, icon: () => null, enabled: ["en"],
 });
 export const useI18n = () => useContext(I18nCtx);
 export const useT = () => useContext(I18nCtx).t;
+/** Translate a hard-coded English phrase into the current language. */
+export const useTr = () => useContext(I18nCtx).tr;
 
 export function I18nProvider({ children }: { children: ReactNode }) {
   const qc = useQueryClient();
+  const { user, profile } = useAuth();
   const [lang, setLangState] = useState<Lang>("en");
   const { data: settings } = useQuery(settingsQuery);
   const lc = langConfig(settings?.languages_config);
   useEffect(() => {
     if (!settings) return;
-    const saved = localStorage.getItem("lang");
+    const saved = localStorage.getItem("lang") ?? (profile?.language && profile.language !== "en" ? profile.language : null);
     const pick = saved && lc.enabled.includes(saved) ? saved : lc.default;
     if (LANGUAGES.some((l) => l.code === pick)) setLangState(pick as Lang);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [settings?.languages_config]);
+  }, [settings?.languages_config, profile?.language]);
   useEffect(() => {
     document.documentElement.lang = lang;
     document.documentElement.dir = lc.rtl.includes(lang) ? "rtl" : "ltr";
   }, [lang, lc.rtl.join()]);
-  const setLang = (l: Lang) => { localStorage.setItem("lang", l); setLangState(l); };
+  const setLang = (l: Lang) => {
+    localStorage.setItem("lang", l); setLangState(l);
+    if (user) void supabase.rpc("set_my_language", { _lang: l });
+  };
 
   const { data } = useQuery({
     queryKey: ["ui-content"],
@@ -158,16 +171,20 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   const t = useCallback((key: string, fallback?: string) => {
     const row = data?.labels.get(key);
     const tr = row?.translations ?? {};
-    return tr[lang] || tr["en"] || row?.default_text || fallback || DEFAULT_LABELS[key]?.[1] || key;
+    if (tr[lang]) return tr[lang];
+    if (tr["en"]) return tr["en"];
+    const base = row?.default_text || fallback || DEFAULT_LABELS[key]?.[1] || key;
+    return trFor(lang, base);
   }, [data, lang]);
+  const trx = useCallback((text: string) => trFor(lang, text), [lang]);
   const icon = useCallback((key: string) => data?.icons.get(key) ?? null, [data]);
   const enabled = lc.enabled.join();
-  const value = useMemo(() => ({ lang, setLang, t, icon, enabled: enabled.split(",") }), [lang, t, icon, enabled]);
+  const value = useMemo(() => ({ lang, setLang, t, tr: trx, icon, enabled: enabled.split(",") }), [lang, t, trx, icon, enabled, user]);
   return <I18nCtx.Provider value={value}>{children}</I18nCtx.Provider>;
 }
 
 /** Pick a per-language value from a {lang: text} object. */
 export function pickLang(obj: unknown, lang: string, fallback = "") {
   const o = (obj ?? {}) as Record<string, string>;
-  return o[lang] || o["en"] || fallback;
+  return o[lang] || (o["en"] ? trFor(lang, o["en"]) : "") || fallback;
 }

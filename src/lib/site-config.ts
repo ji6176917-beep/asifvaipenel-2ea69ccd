@@ -5,7 +5,7 @@ export const HOME_SECTIONS = [
   { id: "auth", label: "Sign In / Sign Up buttons" },
   { id: "services", label: "Services logos" },
   { id: "order", label: "Order Now button" },
-  { id: "tiles", label: "Shortcut tiles" },
+  { id: "qna", label: "QnA section" },
   { id: "footer", label: "Footer" },
 ] as const;
 export type HomeSectionId = (typeof HOME_SECTIONS)[number]["id"];
@@ -16,7 +16,13 @@ export type HomeConfig = {
   platforms: { slug: string; on: boolean; name?: string; logo?: string | null }[];
   anim: Level;
   bg: { on: boolean; slugs: string[]; opacity: number; blur: number; speed: number };
+  footer: FooterConfig;
 };
+export type FooterConfig = { quick_links: boolean; info: boolean; pages: boolean; hours: boolean; copyright: boolean };
+export const FOOTER_TOGGLES: [keyof FooterConfig, string][] = [
+  ["quick_links", "Quick Links block"], ["info", "Info block (WhatsApp, Telegram, E-mail)"],
+  ["pages", "Custom page links (Policy etc.)"], ["hours", "Support hours line"], ["copyright", "Copyright line"],
+];
 
 export const ALL_SLUGS = ["facebook", "instagram", "youtube", "tiktok", "telegram"];
 
@@ -24,13 +30,18 @@ export function homeConfig(raw: unknown, platformSlugs: string[] = ALL_SLUGS): H
   const r = (raw ?? {}) as Partial<HomeConfig>;
   const known = new Set<string>(HOME_SECTIONS.map((s) => s.id));
   const sections = (r.sections ?? []).filter((s) => known.has(s.id));
-  for (const s of HOME_SECTIONS) if (!sections.some((x) => x.id === s.id)) sections.push({ id: s.id, on: true });
+  for (const s of HOME_SECTIONS) {
+    if (sections.some((x) => x.id === s.id)) continue;
+    const at = s.id === "qna" ? sections.findIndex((x) => x.id === "footer") : -1;
+    if (at >= 0) sections.splice(at, 0, { id: s.id, on: true }); else sections.push({ id: s.id, on: true });
+  }
   const platforms = (r.platforms ?? []).filter((p) => platformSlugs.includes(p.slug));
   for (const slug of platformSlugs) if (!platforms.some((p) => p.slug === slug)) platforms.push({ slug, on: true });
   return {
     sections, platforms,
     anim: r.anim ?? "high",
     bg: { on: true, slugs: ALL_SLUGS, opacity: 12, blur: 2, speed: 5, ...(r.bg ?? {}) },
+    footer: { quick_links: true, info: true, pages: true, hours: true, copyright: true, ...(r.footer ?? {}) },
   };
 }
 

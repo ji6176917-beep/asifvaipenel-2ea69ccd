@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { money } from "@/lib/format";
 import { Card, PageTitle } from "@/components/ui-kit";
+import { useTr } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -21,6 +22,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 });
 
 function Dashboard() {
+  const tr = useTr();
   const { profile, user } = useAuth();
   const { data } = useQuery({
     queryKey: ["my-dashboard", user?.id],
@@ -37,14 +39,14 @@ function Dashboard() {
     },
   });
   const stats = [
-    { label: "Balance", value: money(profile?.balance ?? 0), icon: Wallet },
-    { label: "Total orders", value: data?.total ?? "—", icon: ShoppingCart },
-    { label: "In progress", value: data?.active ?? "—", icon: Clock },
-    { label: "Completed", value: data?.done ?? "—", icon: CheckCircle2 },
+    { label: tr("Balance"), value: money(profile?.balance ?? 0), icon: Wallet },
+    { label: tr("Total orders"), value: data?.total ?? "—", icon: ShoppingCart },
+    { label: tr("In progress"), value: data?.active ?? "—", icon: Clock },
+    { label: tr("Completed"), value: data?.done ?? "—", icon: CheckCircle2 },
   ];
   return (
     <div className="mx-auto max-w-3xl space-y-4">
-      <PageTitle sub={`Welcome back${profile?.full_name ? ", " + profile.full_name : ""}.`}>Dashboard</PageTitle>
+      <PageTitle sub={<>{tr("Welcome back")}{profile?.full_name ? ", " + profile.full_name : ""}.</>}>{tr("Dashboard")}</PageTitle>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {stats.map((s) => (
           <Card key={s.label} className="!p-4">
@@ -54,11 +56,11 @@ function Dashboard() {
           </Card>
         ))}
       </div>
-      <p className="text-sm text-muted-foreground">Total spent: <b>{money(data?.spent ?? 0)}</b></p>
+      <p className="text-sm text-muted-foreground">{tr("Total spent")}: <b>{money(data?.spent ?? 0)}</b></p>
       <div className="grid gap-3 sm:grid-cols-3">
-        <Link to="/order" className="btn-glow"><ShoppingCart className="h-4 w-4" /> New Order</Link>
-        <Link to="/add-funds" className="btn-ghost-glow"><PlusCircle className="h-4 w-4" /> Add Funds</Link>
-        <Link to="/reseller-api" className="btn-ghost-glow"><Code2 className="h-4 w-4" /> Reseller API</Link>
+        <Link to="/order" className="btn-glow"><ShoppingCart className="h-4 w-4" /> {tr("New Order")}</Link>
+        <Link to="/add-funds" className="btn-ghost-glow"><PlusCircle className="h-4 w-4" /> {tr("Add Funds")}</Link>
+        <Link to="/reseller-api" className="btn-ghost-glow"><Code2 className="h-4 w-4" /> {tr("Reseller API")}</Link>
       </div>
     </div>
   );

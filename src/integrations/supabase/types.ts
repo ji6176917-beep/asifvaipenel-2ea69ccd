@@ -730,8 +730,10 @@ export type Database = {
           answer: Json
           created_at: string
           deleted_at: string | null
+          home_sort: number
           id: string
           question: Json
+          show_on_home: boolean
           sort: number
         }
         Insert: {
@@ -739,8 +741,10 @@ export type Database = {
           answer?: Json
           created_at?: string
           deleted_at?: string | null
+          home_sort?: number
           id?: string
           question?: Json
+          show_on_home?: boolean
           sort?: number
         }
         Update: {
@@ -748,8 +752,10 @@ export type Database = {
           answer?: Json
           created_at?: string
           deleted_at?: string | null
+          home_sort?: number
           id?: string
           question?: Json
+          show_on_home?: boolean
           sort?: number
         }
         Relationships: []
@@ -1309,6 +1315,7 @@ export type Database = {
         Returns: Json
       }
       set_my_avatar: { Args: { _path: string }; Returns: undefined }
+      set_my_language: { Args: { _lang: string }; Returns: undefined }
       tg_recent_results: {
         Args: never
         Returns: {

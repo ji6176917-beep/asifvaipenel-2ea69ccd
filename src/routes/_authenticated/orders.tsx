@@ -9,6 +9,7 @@ import { PlatformIcon } from "@/lib/brand";
 import { fmtDate, friendlyError, money } from "@/lib/format";
 import { Card, Copyable, Empty, ErrorState, PageTitle, StatusBadge, inputCls } from "@/components/ui-kit";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTr } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/orders")({
   head: () => ({
@@ -30,6 +31,7 @@ const PAGE = 20;
 const FLOW = ["pending", "processing", "completed"];
 
 function Orders() {
+  const tr = useTr();
   const { user, refreshProfile } = useAuth();
   const qc = useQueryClient();
   const [tab, setTab] = useState<string>("all");
@@ -65,10 +67,10 @@ function Orders() {
   }, [user, qc]);
 
   const cancel = async (id: string) => {
-    if (!confirm("Cancel this order? The full amount will be refunded.")) return;
+    if (!confirm(tr("Cancel this order? The full amount will be refunded."))) return;
     const { error } = await supabase.rpc("cancel_my_order", { _order_id: id });
     if (error) { toast.error(friendlyError(error.message)); return; }
-    toast.success("Order canceled and refunded");
+    toast.success(tr("Order canceled and refunded"));
     refreshProfile();
     qc.invalidateQueries({ queryKey: ["orders"] });
   };
@@ -77,14 +79,14 @@ function Orders() {
 
   return (
     <div className="space-y-4">
-      <PageTitle>Order History</PageTitle>
-      <div className="relative"><Search className="absolute left-4 top-3.5 h-5 w-5 text-muted-foreground" /><input className={`${inputCls} pl-12`} placeholder="Search by Order ID, service or link" value={q} onChange={(e) => setQ(e.target.value)} /></div>
+      <PageTitle>{tr("Order History")}</PageTitle>
+      <div className="relative"><Search className="absolute left-4 top-3.5 h-5 w-5 text-muted-foreground" /><input className={`${inputCls} pl-12`} placeholder={tr("Search by Order ID, service or link")} value={q} onChange={(e) => setQ(e.target.value)} /></div>
       <div className="flex gap-2 overflow-x-auto pb-1">
-        {TABS.map((t) => <button key={t.k} onClick={() => setTab(t.k)} className={`shrink-0 rounded-full border px-4 py-1.5 text-sm font-semibold ${tab === t.k ? "border-primary bg-primary text-primary-foreground" : "border-border"}`}>{t.l}</button>)}
+        {TABS.map((t) => <button key={t.k} onClick={() => setTab(t.k)} className={`shrink-0 rounded-full border px-4 py-1.5 text-sm font-semibold ${tab === t.k ? "border-primary bg-primary text-primary-foreground" : "border-border"}`}>{tr(t.l)}</button>)}
       </div>
       {query.isError && <ErrorState />}
       {query.isLoading && <Skeleton className="h-40 rounded-3xl" />}
-      {query.isSuccess && list.length === 0 && <Empty text="No orders found." />}
+      {query.isSuccess && list.length === 0 && <Empty text={tr("No orders found.")} />}
       <div className="grid gap-3">
         {list.map((o) => {
           const step = FLOW.indexOf(o.status);
@@ -96,25 +98,25 @@ function Orders() {
                   <div className="flex items-center justify-between gap-2"><Copyable value={o.order_code} className="font-bold" /><StatusBadge status={o.status} /></div>
                   <div className="text-xs text-muted-foreground">{o.category_name}</div>
                   <div className="label-premium">{o.service_name}</div>
-                  <div className="flex flex-wrap gap-x-4 text-xs"><span>Qty: <b>{o.quantity}</b></span><span>Charge: <b>{money(o.charge)}</b></span><span>{fmtDate(o.created_at)}</span></div>
+                  <div className="flex flex-wrap gap-x-4 text-xs"><span>{tr("Qty")}: <b>{o.quantity}</b></span><span>{tr("Charge")}: <b>{money(o.charge)}</b></span><span>{fmtDate(o.created_at)}</span></div>
                   <a href={o.link} target="_blank" rel="noreferrer" className="block truncate text-xs text-primary">{o.link}</a>
-                  {o.delivered_qty != null && <div className="text-xs">Delivered: <b>{o.delivered_qty}</b></div>}
-                  {Number(o.refunded) > 0 && <div className="text-xs text-success">Refunded: {money(o.refunded)}</div>}
-                  {o.admin_note && <div className="text-xs text-muted-foreground">Note: {o.admin_note}</div>}
+                  {o.delivered_qty != null && <div className="text-xs">{tr("Delivered")}: <b>{o.delivered_qty}</b></div>}
+                  {Number(o.refunded) > 0 && <div className="text-xs text-success">{tr("Refunded")}: {money(o.refunded)}</div>}
+                  {o.admin_note && <div className="text-xs text-muted-foreground">{tr("Note")}: {o.admin_note}</div>}
                   {step >= 0 && (
                     <div className="flex items-center gap-1 pt-2">
                       {FLOW.map((f, i) => <div key={f} className={`h-1.5 flex-1 rounded-full ${i <= step ? "bg-primary" : "bg-muted"}`} title={f} />)}
                     </div>
                   )}
-                  {o.status === "pending" && <button onClick={() => cancel(o.id)} className="pt-1 text-xs font-semibold text-destructive">Cancel order</button>}
+                  {o.status === "pending" && <button onClick={() => cancel(o.id)} className="pt-1 text-xs font-semibold text-destructive">{tr("Cancel order")}</button>}
                 </div>
               </div>
             </Card>
           );
         })}
       </div>
-      {query.hasNextPage && <button onClick={() => query.fetchNextPage()} disabled={query.isFetchingNextPage} className="btn-ghost-glow w-full">Load more</button>}
-      <div className="grid grid-cols-2 gap-3"><Link to="/add-funds" className="btn-glow">Add Funds</Link><Link to="/order" className="btn-ghost-glow">Buy Service</Link></div>
+      {query.hasNextPage && <button onClick={() => query.fetchNextPage()} disabled={query.isFetchingNextPage} className="btn-ghost-glow w-full">{tr("Load more")}</button>}
+      <div className="grid grid-cols-2 gap-3"><Link to="/add-funds" className="btn-glow">{tr("Add Funds")}</Link><Link to="/order" className="btn-ghost-glow">{tr("Buy Service")}</Link></div>
     </div>
   );
 }

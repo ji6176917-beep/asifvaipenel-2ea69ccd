@@ -4,6 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
+import { useTr } from "@/lib/i18n";
 import { MethodLogo } from "@/lib/brand";
 import { fmtDate, money } from "@/lib/format";
 import { Card, Copyable, Empty, ErrorState, PageTitle, StatusBadge, inputCls } from "@/components/ui-kit";
@@ -25,6 +26,7 @@ const TABS = ["all", "pending", "approved", "rejected", "cancelled"] as const;
 
 function History() {
   const { user } = useAuth();
+  const tr = useTr();
   const qc = useQueryClient();
   const [tab, setTab] = useState<(typeof TABS)[number]>("all");
   const [q, setQ] = useState("");
@@ -49,26 +51,26 @@ function History() {
   const term = q.trim().toLowerCase();
   const list = all.filter((d) => (tab === "all" || d.status === tab) && (!term || d.code.toLowerCase().includes(term) || d.txn_id.toLowerCase().includes(term)));
   const stats = [
-    { l: "Total requests", v: all.length },
-    { l: "Approved", v: all.filter((d) => d.status === "approved").length },
-    { l: "Pending", v: all.filter((d) => d.status === "pending").length },
-    { l: "Rejected", v: all.filter((d) => d.status === "rejected" || d.status === "cancelled").length },
-    { l: "Approved amount", v: money(all.filter((d) => d.status === "approved").reduce((a, d) => a + Number(d.amount), 0)) },
+    { l: tr("Total requests"), v: all.length },
+    { l: tr("Approved"), v: all.filter((d) => d.status === "approved").length },
+    { l: tr("Pending"), v: all.filter((d) => d.status === "pending").length },
+    { l: tr("Rejected"), v: all.filter((d) => d.status === "rejected" || d.status === "cancelled").length },
+    { l: tr("Approved amount"), v: money(all.filter((d) => d.status === "approved").reduce((a, d) => a + Number(d.amount), 0)) },
   ];
 
   return (
     <div className="space-y-4">
-      <PageTitle>Add Funds History</PageTitle>
+      <PageTitle>{tr("Add Funds History")}</PageTitle>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
         {stats.map((s) => <Card key={s.l} className="!p-4 text-center"><div className="text-xs text-muted-foreground">{s.l}</div><div className="font-display text-xl font-bold">{s.v}</div></Card>)}
       </div>
-      <div className="relative"><Search className="absolute left-4 top-3.5 h-5 w-5 text-muted-foreground" /><input className={`${inputCls} pl-12`} placeholder="Search by Add Fund ID or transaction ID" value={q} onChange={(e) => setQ(e.target.value)} /></div>
+      <div className="relative"><Search className="absolute left-4 top-3.5 h-5 w-5 text-muted-foreground" /><input className={`${inputCls} pl-12`} placeholder={tr("Search by Add Fund ID or transaction ID")} value={q} onChange={(e) => setQ(e.target.value)} /></div>
       <div className="flex gap-2 overflow-x-auto pb-1">
-        {TABS.map((t) => <button key={t} onClick={() => setTab(t)} className={`shrink-0 rounded-full border px-4 py-1.5 text-sm font-semibold capitalize ${tab === t ? "border-primary bg-primary text-primary-foreground" : "border-border"}`}>{t}</button>)}
+        {TABS.map((t) => <button key={t} onClick={() => setTab(t)} className={`shrink-0 rounded-full border px-4 py-1.5 text-sm font-semibold ${tab === t ? "border-primary bg-primary text-primary-foreground" : "border-border"}`}>{tr(t === "all" ? "All" : t.charAt(0).toUpperCase() + t.slice(1))}</button>)}
       </div>
       {isError && <ErrorState />}
       {isLoading && <Skeleton className="h-32 rounded-3xl" />}
-      {data && list.length === 0 && <Empty text="No Add Funds requests yet." />}
+      {data && list.length === 0 && <Empty text={tr("No Add Funds requests yet.")} />}
       <div className="grid gap-3">
         {list.map((d) => (
           <Card key={d.id} className="!p-4">
@@ -78,14 +80,14 @@ function History() {
                 <div className="flex items-center justify-between gap-2"><Copyable value={d.code} className="font-bold" /><StatusBadge status={d.status} /></div>
                 <div className="font-display text-lg font-bold">{money(d.amount)} {d.bdt_amount && <span className="text-sm text-muted-foreground">(৳{Number(d.bdt_amount).toFixed(2)})</span>}</div>
                 <div className="text-xs text-muted-foreground">{d.method_name} • {fmtDate(d.created_at)}</div>
-                <div className="text-xs">Txn: <Copyable value={d.txn_id} /></div>
-                {d.admin_note && <div className="text-xs text-muted-foreground">Note: {d.admin_note}</div>}
+                <div className="text-xs">{tr("Txn")}: <Copyable value={d.txn_id} /></div>
+                {d.admin_note && <div className="text-xs text-muted-foreground">{tr("Note")}: {d.admin_note}</div>}
               </div>
             </div>
           </Card>
         ))}
       </div>
-      <div className="grid grid-cols-2 gap-3"><Link to="/add-funds" className="btn-glow">Add Funds</Link><Link to="/order" className="btn-ghost-glow">Buy Service</Link></div>
+      <div className="grid grid-cols-2 gap-3"><Link to="/add-funds" className="btn-glow">{tr("Add Funds")}</Link><Link to="/order" className="btn-ghost-glow">{tr("Buy Service")}</Link></div>
     </div>
   );
 }

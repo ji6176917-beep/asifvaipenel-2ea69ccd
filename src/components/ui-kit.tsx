@@ -1,10 +1,12 @@
 import type { ReactNode } from "react";
 import { Copy, Loader2, Inbox, AlertTriangle } from "lucide-react";
 import { copy } from "@/lib/format";
+import { useTr } from "@/lib/i18n";
 
 export function Copyable({ value, className = "" }: { value: string; className?: string }) {
+  const tr = useTr();
   return (
-    <button type="button" onClick={() => copy(value)} className={`inline-flex items-center gap-1.5 font-mono hover:text-primary ${className}`} aria-label={`Copy ${value}`}>
+    <button type="button" onClick={() => copy(value)} className={`inline-flex items-center gap-1.5 font-mono hover:text-primary ${className}`} aria-label={`${tr("Copy")} ${value}`}>
       <span className="break-all">{value}</span> <Copy className="h-3.5 w-3.5 shrink-0" />
     </button>
   );
@@ -34,10 +36,11 @@ export function Empty({ text }: { text: string }) {
     </div>
   );
 }
-export function ErrorState({ text = "Could not load data." }: { text?: string }) {
+export function ErrorState({ text }: { text?: string }) {
+  const tr = useTr();
   return (
     <div className="flex flex-col items-center gap-2 py-12 text-destructive">
-      <AlertTriangle className="h-10 w-10" /> <p>{text}</p>
+      <AlertTriangle className="h-10 w-10" /> <p>{text ?? tr("Could not load data.")}</p>
     </div>
   );
 }
@@ -56,6 +59,18 @@ const STATUS: Record<string, string> = {
   canceled: "bg-muted text-muted-foreground border-border",
   cancelled: "bg-muted text-muted-foreground border-border",
 };
+const STATUS_LABEL: Record<string, string> = {
+  pending: "Pending",
+  processing: "Processing",
+  completed: "Completed",
+  approved: "Approved",
+  partial: "Partial",
+  rejected: "Rejected",
+  canceled: "Canceled",
+  cancelled: "Cancelled",
+};
 export function StatusBadge({ status }: { status: string }) {
-  return <span className={`rounded-full border px-2.5 py-0.5 text-xs font-semibold capitalize ${STATUS[status] ?? ""}`}>{status}</span>;
+  const tr = useTr();
+  const label = STATUS_LABEL[status] ? tr(STATUS_LABEL[status]) : status;
+  return <span className={`rounded-full border px-2.5 py-0.5 text-xs font-semibold capitalize ${STATUS[status] ?? ""}`}>{label}</span>;
 }

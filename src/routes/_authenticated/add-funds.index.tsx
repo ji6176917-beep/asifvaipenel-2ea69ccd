@@ -13,6 +13,7 @@ import { Card, Copyable, Empty, ErrorState, PageTitle, Spinner, inputCls, labelC
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import type { Tables } from "@/integrations/supabase/types";
+import { useTr } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/add-funds/")({
   head: () => ({
@@ -38,6 +39,7 @@ async function compress(file: File): Promise<Blob> {
 }
 
 function AddFunds() {
+  const tr = useTr();
   const { user, verified } = useAuth();
   const { data: s } = useQuery(settingsQuery);
   const { data: methods, isLoading, isError } = useQuery({
@@ -74,18 +76,18 @@ function AddFunds() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!m || !user) return;
-    if (!verified) { toast.error("Please verify your email first."); return; }
-    if (!(amt >= minA && amt <= maxA)) { toast.error(`Amount must be ${money(minA)}–${money(maxA)}`); return; }
-    if (needShot && !file) { toast.error("Please upload the payment screenshot"); return; }
-    if (txn.trim().length < 4) { toast.error("Enter the Transaction ID"); return; }
+    if (!verified) { toast.error(tr("Please verify your email first.")); return; }
+    if (!(amt >= minA && amt <= maxA)) { toast.error(`${tr("Amount must be")} ${money(minA)}–${money(maxA)}`); return; }
+    if (needShot && !file) { toast.error(tr("Please upload the payment screenshot")); return; }
+    if (txn.trim().length < 4) { toast.error(tr("Enter the Transaction ID")); return; }
     setBusy(true);
     let path: string | null = null;
     if (file) {
-      if (!/^image\/(jpeg|png|webp)$/.test(file.type) || file.size > 5 * 1024 * 1024) { setBusy(false); { toast.error("Screenshot must be JPG/PNG/WEBP under 5 MB"); return; } }
+      if (!/^image\/(jpeg|png|webp)$/.test(file.type) || file.size > 5 * 1024 * 1024) { setBusy(false); { toast.error(tr("Screenshot must be JPG/PNG/WEBP under 5 MB")); return; } }
       const blob = await compress(file);
       path = `${user.id}/${crypto.randomUUID()}.webp`;
       const { error } = await supabase.storage.from("payment-proofs").upload(path, blob, { contentType: "image/webp" });
-      if (error) { setBusy(false); { toast.error("Screenshot upload failed"); return; } }
+      if (error) { setBusy(false); { toast.error(tr("Screenshot upload failed")); return; } }
     }
     const { data, error } = await supabase.rpc("create_deposit", { _method_id: m.id, _amount: amt, _txn: txn.trim(), _screenshot: path as string, _idem: idem.current });
     setBusy(false);
@@ -96,10 +98,10 @@ function AddFunds() {
 
   return (
     <div className="mx-auto max-w-xl space-y-4">
-      <PageTitle sub={group ? undefined : "Select Payment Method"}>Add Funds</PageTitle>
+      <PageTitle sub={group ? undefined : tr("Select Payment Method")}>{tr("Add Funds")}</PageTitle>
       {isError && <ErrorState />}
       {isLoading && <Skeleton className="h-40 rounded-3xl" />}
-      {methods && groups.length === 0 && <Empty text="No payment methods available right now." />}
+      {methods && groups.length === 0 && <Empty text={tr("No payment methods available right now.")} />}
 
       {!group && (
         <div className="grid gap-3">
@@ -110,7 +112,7 @@ function AddFunds() {
               ) : <MethodLogo name={g} kind={g} logo={methods?.find((x) => x.kind === g)?.logo_url} className="h-10 w-10" />}
               <div>
                 <div className="label-premium text-lg">{g === "p2p" ? "P2P" : g === "usdt" ? "USDT" : "Binance"}</div>
-                <div className="text-xs text-muted-foreground">{g === "p2p" ? p2p.map((x) => x.name).join(" • ") : g === "usdt" ? "Crypto wallet transfer" : "Binance Pay"}</div>
+                <div className="text-xs text-muted-foreground">{g === "p2p" ? p2p.map((x) => x.name).join(" • ") : g === "usdt" ? tr("Crypto wallet transfer") : tr("Binance Pay")}</div>
               </div>
             </button>
           ))}
@@ -119,7 +121,7 @@ function AddFunds() {
 
       {group && (
         <Card>
-          <button onClick={() => { setGroup(null); setM(null); }} className="mb-4 flex items-center gap-1 text-sm text-muted-foreground hover:text-primary"><ArrowLeft className="h-4 w-4" /> Change method</button>
+          <button onClick={() => { setGroup(null); setM(null); }} className="mb-4 flex items-center gap-1 text-sm text-muted-foreground hover:text-primary"><ArrowLeft className="h-4 w-4" /> {tr("Change method")}</button>
 
           {(methods?.filter((x) => x.kind === group).length ?? 0) > 1 && (
             <div className="mb-5 grid grid-cols-3 gap-2">
@@ -138,33 +140,33 @@ function AddFunds() {
                 <MethodLogo name={m.name} kind={m.kind} logo={m.logo_url} className="h-12 w-12" />
                 <div className="min-w-0">
                   <div className="label-premium">{m.name}{m.network ? ` • ${m.network}` : ""}</div>
-                  <div className="text-xs text-muted-foreground">{m.kind === "binance" ? "Binance ID" : m.kind === "usdt" ? "Wallet address" : `Number (${m.account_type ?? "Personal"})`}</div>
+                  <div className="text-xs text-muted-foreground">{m.kind === "binance" ? tr("Binance ID") : m.kind === "usdt" ? tr("Wallet address") : `${tr("Number")} (${m.account_type ?? tr("Personal")})`}</div>
                   <Copyable value={m.account} className={m.kind === "usdt" ? "text-xs" : "text-base font-bold"} />
                 </div>
               </div>
               {m.instructions && <p className="whitespace-pre-line rounded-2xl bg-muted/40 p-3 text-sm text-muted-foreground">{m.instructions}</p>}
               <div>
-                <label className={labelCls} htmlFor="amt">Amount (USD)</label>
+                <label className={labelCls} htmlFor="amt">{tr("Amount (USD)")}</label>
                 <input id="amt" inputMode="decimal" className={inputCls} value={amount} onChange={(e) => setAmount(e.target.value.replace(/[^\d.]/g, ""))} />
-                <p className="mt-1 text-xs text-muted-foreground">Min {money(minA)} — Max {money(maxA)}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{tr("Min")} {money(minA)} — {tr("Max")} {money(maxA)}</p>
               </div>
               {m.kind === "p2p" && (
                 <div className="rounded-2xl border border-primary/40 bg-primary/5 p-4 text-center">
-                  <div className="text-xs text-muted-foreground">Send exactly (rate ৳{rate}/USD)</div>
+                  <div className="text-xs text-muted-foreground">{tr("Send exactly (rate")} ৳{rate}/USD)</div>
                   <div className="text-gradient font-display text-4xl font-extrabold">৳{(Math.round(amt * rate * 100) / 100).toFixed(2)}</div>
-                  <p className="mt-1 text-xs text-muted-foreground">Send exactly this amount via Send Money, then enter the Transaction ID.</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{tr("Send exactly this amount via Send Money, then enter the Transaction ID.")}</p>
                 </div>
               )}
               <div>
-                <label className={labelCls} htmlFor="txn">Transaction ID</label>
+                <label className={labelCls} htmlFor="txn">{tr("Transaction ID")}</label>
                 <input id="txn" className={inputCls} value={txn} onChange={(e) => setTxn(e.target.value)} />
               </div>
               <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-dashed border-border p-4 text-sm text-muted-foreground hover:border-primary">
                 <ImagePlus className="h-5 w-5 text-primary" />
-                {file ? file.name : `Upload payment screenshot${needShot ? " (required)" : " (optional)"}`}
+                {file ? file.name : `${tr("Upload payment screenshot")}${needShot ? ` (${tr("required")})` : ` (${tr("optional")})`}`}
                 <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
               </label>
-              <button disabled={busy} className="btn-glow w-full !py-4">{busy && <Spinner />} {m.kind === "p2p" ? "Confirm Add Funds" : "Add Funds"}</button>
+              <button disabled={busy} className="btn-glow w-full !py-4">{busy && <Spinner />} {m.kind === "p2p" ? tr("Confirm Add Funds") : tr("Add Funds")}</button>
             </form>
           )}
         </Card>
@@ -173,13 +175,13 @@ function AddFunds() {
       <Dialog open={!!done} onOpenChange={(o) => !o && setDone(null)}>
         <DialogContent className="text-center">
           <Clock className="mx-auto h-14 w-14 text-warning" />
-          <DialogTitle className="text-gradient text-2xl">Add Funds Submitted – Pending</DialogTitle>
+          <DialogTitle className="text-gradient text-2xl">{tr("Add Funds Submitted – Pending")}</DialogTitle>
           {done && <Copyable value={done} className="mx-auto text-lg font-bold" />}
-          <p className="text-sm text-muted-foreground">Your request is pending admin approval.</p>
+          <p className="text-sm text-muted-foreground">{tr("Your request is pending admin approval.")}</p>
           <div className="mt-2 grid gap-2">
-            <Link to="/" className="btn-glow">Go to Home</Link>
-            {s?.telegram && <SupportAdminButton className="btn-ghost-glow"><TelegramIcon className="h-4 w-4" /> Support Admin</SupportAdminButton>}
-            <Link to="/order" className="btn-ghost-glow">Buy Service</Link>
+            <Link to="/" className="btn-glow">{tr("Go to Home")}</Link>
+            {s?.telegram && <SupportAdminButton className="btn-ghost-glow"><TelegramIcon className="h-4 w-4" /> {tr("Support Admin")}</SupportAdminButton>}
+            <Link to="/order" className="btn-ghost-glow">{tr("Buy Service")}</Link>
           </div>
         </DialogContent>
       </Dialog>

@@ -33,3 +33,4 @@
 - [ ] 20 Full verification pass (not run yet)
 - [x] Fix A: Admin Services 3-level manager (platforms/categories/services)
 - [ ] Fix B: Full-site translation (dictionary for every page, save language to account)
+- [x] Home layout, footer toggles, home QnA, Site Identity, full-site translations (Oct 2026)

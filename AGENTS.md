@@ -22,3 +22,4 @@
 - Welcome music cache is keyed by site_settings.music_version, bumped on every admin music change. Why: visitors refetch instantly.
 - Admin-editable layout/theme/language options live in site_settings JSON columns (home_config, theme_config, languages_config) read through src/lib/site-config.ts with defaults. Why: one typed place for defaults, no schema change per option.
 - Telegram alerts are sent from Postgres triggers via pg_net (tg_send); the bot token lives only in telegram_config (service-role only). Why: alerts fire for every order/deposit path, token never reaches the browser.
+- Hard-coded customer UI text is wrapped in tr("English") (useTr) and translated via the central src/lib/translations.json dictionary (per language, English fallback); admin labels fall back to it too. Why: one dictionary, new languages need no code changes.
