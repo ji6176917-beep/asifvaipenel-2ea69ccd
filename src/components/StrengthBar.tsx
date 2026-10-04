@@ -1,3 +1,5 @@
+import { useTr } from "@/lib/i18n";
+
 export function strength(p: string) {
   let s = 0;
   if (p.length >= 8) s++;
@@ -7,8 +9,9 @@ export function strength(p: string) {
   return s;
 }
 export function StrengthBar({ value }: { value: string }) {
+  const tr = useTr();
   const s = strength(value);
-  const labels = ["Too weak", "Weak", "Fair", "Good", "Strong"];
+  const labels = [tr("Too weak"), tr("Weak"), tr("Fair"), tr("Good"), tr("Strong")];
   return (
     <div className="mt-2">
       <div className="flex gap-1">{[0, 1, 2, 3].map((i) => <div key={i} className={`h-1.5 flex-1 rounded-full ${i < s ? "bg-primary" : "bg-muted"}`} />)}</div>
@@ -16,4 +19,3 @@ export function StrengthBar({ value }: { value: string }) {
     </div>
   );
 }
-

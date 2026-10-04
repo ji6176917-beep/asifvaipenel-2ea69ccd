@@ -7,18 +7,18 @@ import { toast } from "sonner";
 import {
   adminDeleteBroadcast, adminDeletePage, adminEditBroadcast, adminGetSite, adminGetTelegram, adminListBroadcasts, adminListPages,
   adminListQna, adminPageVersions, adminQnaAction, adminReorderQna, adminRestorePageVersion, adminSaveSite, adminSavePage,
-  adminSaveQna, adminSaveTelegram, adminSendBroadcast, adminTestTelegram, adminTranslationStats,
+  adminSaveQna, adminSaveTelegram, adminSendBroadcast, adminTestTelegram, adminTranslationStats, adminQnaHome, adminReorderQnaHome,
 } from "@/lib/admin-site.functions";
 import { adminSetIcon } from "@/lib/admin-content.functions";
 import { LANGUAGES, useI18n } from "@/lib/i18n";
-import { ALL_SLUGS, FONTS, HOME_SECTIONS, THEME_DEFAULTS, homeConfig, langConfig, themeConfig, type HomeConfig, type Level, type ThemeConfig } from "@/lib/site-config";
+import { ALL_SLUGS, FOOTER_TOGGLES, FONTS, HOME_SECTIONS, THEME_DEFAULTS, homeConfig, langConfig, themeConfig, type HomeConfig, type Level, type ThemeConfig } from "@/lib/site-config";
 import { telegramUrl, whatsappUrl, fmtDate } from "@/lib/format";
 import { PlatformIcon } from "@/lib/brand";
 import { Card, Empty, PageTitle, Spinner, inputCls, labelCls } from "@/components/ui-kit";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { ImagePick } from "./AdminContent";
+import { Branding, ImagePick, LabelEditor, useLabels } from "./AdminContent";
 
 type Site = Awaited<ReturnType<typeof adminGetSite>>;
 type Patch = Partial<{ [K in keyof Site]: unknown }> & Record<string, unknown>;
@@ -140,7 +140,57 @@ export function AdminHome() {
           </div>
         ))}
       </Card>
+      <Card>
+        <h2 className="label-premium mb-2 text-lg">Footer</h2>
+        <p className="mb-2 text-xs text-muted-foreground">Single quick links and contact icons are switched on/off in Menu & Navigation.</p>
+        {FOOTER_TOGGLES.map(([k, l]) => (
+          <Row key={k} label={l}><Switch aria-label={l} checked={c.footer[k]} onCheckedChange={(v) => setC({ ...c, footer: { ...c.footer, [k]: v } })} /></Row>
+        ))}
+      </Card>
       <button disabled={busy} onClick={() => saveSite({ home_config: c as unknown as Record<string, unknown> })} className="btn-glow w-full">{busy && <Spinner />} Save home page</button>
+      <HomeQna on={c.sections.find((x) => x.id === "qna")?.on ?? true} />
+      <HomeTexts />
+    </div>
+  );
+}
+
+function HomeQna({ on }: { on: boolean }) {
+  const list = useServerFn(adminListQna); const setHome = useServerFn(adminQnaHome); const reorder = useServerFn(adminReorderQnaHome);
+  const qc = useQueryClient();
+  const { data, isLoading } = useQuery({ queryKey: ["admin-qna"], queryFn: () => list() });
+  const rows = [...(data ?? [])].sort((a, b) => Number(b.show_on_home) - Number(a.show_on_home) || a.home_sort - b.home_sort || a.sort - b.sort);
+  const shown = rows.filter((r) => r.show_on_home);
+  const run = async (p: Promise<unknown>, m: string) => {
+    try { await p; toast.success(m); qc.invalidateQueries({ queryKey: ["admin-qna"] }); qc.invalidateQueries({ queryKey: ["qna"] }); } catch (e) { toast.error((e as Error).message); }
+  };
+  return (
+    <Card>
+      <h2 className="label-premium text-lg">QnA on home page</h2>
+      <p className="mb-2 text-xs text-muted-foreground">Master switch: "QnA section" in Sections above (currently {on ? "ON" : "OFF"}). If no question is selected, the section is hidden. Changes here apply instantly.</p>
+      {isLoading ? <Loading /> : !rows.length ? <Empty text="No questions yet. Add them in QnA, Policies & Pages." /> : rows.map((q) => {
+        const i = shown.findIndex((x) => x.id === q.id);
+        return (
+          <Row key={q.id} label={(q.question as Record<string, string>)["en"] ?? ""} sub={q.active ? undefined : "Hidden in QnA (inactive)"}>
+            <span className="flex items-center gap-2">
+              {q.show_on_home && <Arrows onUp={() => run(reorder({ data: { ids: move(shown, i, -1).map((x) => x.id) } }), "Reordered")} onDown={() => run(reorder({ data: { ids: move(shown, i, 1).map((x) => x.id) } }), "Reordered")} />}
+              <Switch aria-label="Show on home page" checked={q.show_on_home} onCheckedChange={(v) => run(setHome({ data: { id: q.id, show: v } }), v ? "Shown on home" : "Removed from home")} />
+            </span>
+          </Row>
+        );
+      })}
+    </Card>
+  );
+}
+
+const HOME_TEXT_KEYS = ["home.badge", "home.hero_title", "home.hero_text", "home.services_title", "home.order_now", "home.qna_title", "footer.quick_links", "footer.info", "footer.rights"];
+function HomeTexts() {
+  const { data, isLoading } = useLabels();
+  const rows = (data?.labels ?? []).filter((r) => HOME_TEXT_KEYS.includes(r.key)).sort((a, b) => HOME_TEXT_KEYS.indexOf(a.key) - HOME_TEXT_KEYS.indexOf(b.key));
+  return (
+    <div className="space-y-2">
+      <h2 className="label-premium text-lg">Home page texts</h2>
+      <p className="text-xs text-muted-foreground">Tap a text to edit it in every language. Empty languages use English. The full copyright line can be replaced in Theme & Branding → Site Identity.</p>
+      {isLoading ? <Loading /> : rows.map((r) => <LabelEditor key={r.key} row={r} />)}
     </div>
   );
 }
@@ -514,7 +564,9 @@ export function AdminTheme() {
         <button onClick={() => { setT(THEME_DEFAULTS); }} className="btn-ghost-glow"><RotateCcw className="h-4 w-4" /> Reset to default</button>
         <button disabled={busy} onClick={() => saveSite({ theme_config: t })} className="btn-glow">{busy && <Spinner />} Save theme</button>
       </div>
-      <p className="text-xs text-muted-foreground">Website name, logo, favicon, share image and copyright are under Website Content & Labels → Branding.</p>
+      <h2 className="label-premium pt-4 text-xl">Site Identity</h2>
+      <p className="text-xs text-muted-foreground">Website name, logo and favicon appear in the header, footer, sign-in/sign-up pages, browser tab and menu.</p>
+      <Branding />
     </div>
   );
 }

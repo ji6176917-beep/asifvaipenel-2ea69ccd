@@ -67,7 +67,7 @@ export function AdminContent() {
 
 type LabelRow = Awaited<ReturnType<typeof adminListLabels>>["labels"][number];
 
-function useLabels() {
+export function useLabels() {
   const list = useServerFn(adminListLabels);
   return useQuery({ queryKey: ["admin-labels"], queryFn: () => list() });
 }
@@ -106,7 +106,7 @@ function Labels() {
   );
 }
 
-function LabelEditor({ row }: { row: LabelRow }) {
+export function LabelEditor({ row }: { row: LabelRow }) {
   const save = useServerFn(adminSaveLabel);
   const reset = useServerFn(adminResetLabel);
   const qc = useQueryClient();
@@ -180,7 +180,7 @@ function Icons() {
   );
 }
 
-function Branding() {
+export function Branding() {
   const get = useServerFn(adminGetBranding);
   const { data, isLoading, isError } = useQuery({ queryKey: ["admin-branding"], queryFn: () => get() });
   if (isError) return <ErrorState />;
