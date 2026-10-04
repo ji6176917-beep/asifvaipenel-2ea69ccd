@@ -5,7 +5,6 @@ import { Eye, EyeOff, MailCheck } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, PageTitle, Spinner, inputCls, labelCls } from "@/components/ui-kit";
-import { SocialButtons } from "@/components/SocialButtons";
 import { StrengthBar } from "@/components/StrengthBar";
 import { useTr } from "@/lib/i18n";
 
@@ -119,7 +118,6 @@ function SignUp() {
           {errors["terms"] && <p className="text-xs text-destructive">{errors["terms"]}</p>}
           <button disabled={busy} className="btn-glow w-full">{busy && <Spinner />} {tr("Confirm Sign Up")}</button>
         </form>
-        <SocialButtons />
         <p className="mt-5 text-center text-sm text-muted-foreground">{tr("Already have an account?")} <Link to="/sign-in" className="font-semibold text-primary">{tr("Sign In")}</Link></p>
       </Card>
     </div>
