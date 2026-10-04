@@ -24,6 +24,7 @@ import { AdminFunds } from "@/components/admin/AdminFunds";
 import { AdminServices } from "@/components/admin/AdminServices";
 import { AdminContent } from "@/components/admin/AdminContent";
 import { AdminMenu } from "@/components/admin/AdminMenu";
+import { AdminBackupHealth, AdminActivityLog, AdminTrash } from "@/components/admin/AdminSystem";
 import { AdminHome, AdminSupport, AdminQnaPages, AdminLanguages, AdminNotifications, AdminTheme, GeneralSettings } from "@/components/admin/AdminSite";
 
 const search = z.object({
@@ -66,6 +67,9 @@ const NAV = [
   { id: "notifications", label: "Notifications & Popups", icon: BellRing, ready: true },
   { id: "theme", label: "Theme & Branding", icon: Palette, ready: true },
   { id: "settings", label: "Settings", icon: Settings, ready: true },
+  { id: "backup", label: "Backup & Health", icon: DatabaseBackup, ready: true },
+  { id: "activity", label: "Activity Log", icon: Activity, ready: true },
+  { id: "trash", label: "Trash", icon: Trash2, ready: true },
   { id: "backup", label: "Backup & Health", icon: DatabaseBackup },
   { id: "activity", label: "Activity Log", icon: Activity },
   { id: "trash", label: "Trash", icon: Trash2 },
@@ -161,6 +165,9 @@ function AdminLayout() {
           : section === "languages" ? <AdminLanguages />
           : section === "notifications" ? <AdminNotifications />
           : section === "theme" ? <AdminTheme />
+          : section === "backup" ? <AdminBackupHealth />
+          : section === "activity" ? <AdminActivityLog />
+          : section === "trash" ? <AdminTrash />
           : <AdminDashboard onGo={pick} />}
       </div>
     </div>
