@@ -870,6 +870,7 @@ export type Database = {
           home_config: Json
           id: number
           languages_config: Json
+          last_backup_at: string | null
           logo_url: string | null
           maintenance_on: boolean
           maintenance_text: string
@@ -925,6 +926,7 @@ export type Database = {
           home_config?: Json
           id?: number
           languages_config?: Json
+          last_backup_at?: string | null
           logo_url?: string | null
           maintenance_on?: boolean
           maintenance_text?: string
@@ -980,6 +982,7 @@ export type Database = {
           home_config?: Json
           id?: number
           languages_config?: Json
+          last_backup_at?: string | null
           logo_url?: string | null
           maintenance_on?: boolean
           maintenance_text?: string
@@ -1230,9 +1233,27 @@ export type Database = {
         Args: { _amount: number; _note: string; _user: string }
         Returns: number
       }
+      admin_reconcile_balances: {
+        Args: never
+        Returns: {
+          balance: number
+          diff: number
+          ledger_sum: number
+          user_id: string
+          username: string
+        }[]
+      }
       admin_review_deposit: {
         Args: { _action: string; _deposit_id: string; _note: string }
         Returns: Json
+      }
+      admin_storage_usage: {
+        Args: never
+        Returns: {
+          bucket: string
+          bytes: number
+          files: number
+        }[]
       }
       admin_update_order_status: {
         Args: {
