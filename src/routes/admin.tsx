@@ -70,9 +70,6 @@ const NAV = [
   { id: "backup", label: "Backup & Health", icon: DatabaseBackup, ready: true },
   { id: "activity", label: "Activity Log", icon: Activity, ready: true },
   { id: "trash", label: "Trash", icon: Trash2, ready: true },
-  { id: "backup", label: "Backup & Health", icon: DatabaseBackup },
-  { id: "activity", label: "Activity Log", icon: Activity },
-  { id: "trash", label: "Trash", icon: Trash2 },
 ] as const;
 
 function AdminPage() {

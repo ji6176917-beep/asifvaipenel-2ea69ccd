@@ -47,7 +47,7 @@ export function AdminBackupHealth() {
 
   return (
     <div className="space-y-4">
-      <PageTitle title="Backup & Health" />
+      <PageTitle>Backup & Health</PageTitle>
       <Card className="space-y-3 p-4">
         <h3 className="font-semibold">Backup</h3>
         <p className="text-sm text-muted-foreground">ZIP with a CSV and JSON file for every table. Passwords are never included (they aren't stored in readable form).</p>
@@ -87,7 +87,7 @@ export function AdminActivityLog() {
   };
   return (
     <div className="space-y-4">
-      <PageTitle title="Activity Log" />
+      <PageTitle>Activity Log</PageTitle>
       <div className="flex flex-wrap gap-2">
         <input className={`${inputCls} flex-1`} placeholder="Search action, target, value, IP" value={q} onChange={(e) => setQ(e.target.value)} />
         <select className={inputCls + " w-auto"} value={action} onChange={(e) => setAction(e.target.value)}>
@@ -127,7 +127,7 @@ export function AdminTrash() {
   };
   return (
     <div className="space-y-4">
-      <PageTitle title="Trash" />
+      <PageTitle>Trash</PageTitle>
       {r.isLoading ? <Spinner /> : r.data?.length === 0 ? <p className="text-sm text-muted-foreground">Trash is empty.</p> :
         r.data?.map((i) => (
           <Card key={i.table + i.id} className="space-y-2 p-3">
