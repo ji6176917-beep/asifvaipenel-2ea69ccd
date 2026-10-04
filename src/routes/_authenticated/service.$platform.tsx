@@ -100,7 +100,7 @@ function ServicePage() {
   }
 
   if (isError) return <ErrorState />;
-  if (!isLoading && !data) return <Empty text="This platform is not available." />;
+  if (!isLoading && !data) return <Empty text={t("service.unavailable", "This platform is not available.")} />;
 
   return (
     <div className="mx-auto max-w-2xl space-y-4">
