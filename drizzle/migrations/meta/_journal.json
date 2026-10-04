@@ -78,6 +78,13 @@
       "when": 1791082784197,
       "tag": "0010_function_grants",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1791082980450,
+      "tag": "0011_admin_add_funds",
+      "breakpoints": true
     }
   ]
 }
