@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { settingsQuery } from "@/lib/queries";
 import { TelegramIcon } from "@/lib/brand";
 import { Card, PageTitle, Spinner, inputCls, labelCls } from "@/components/ui-kit";
+import { useTr } from "@/lib/i18n";
 
 export const Route = createFileRoute("/forgot-password")({
   head: () => ({
@@ -21,6 +22,7 @@ export const Route = createFileRoute("/forgot-password")({
 });
 
 function Forgot() {
+  const tr = useTr();
   const [email, setEmail] = useState("");
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
@@ -28,7 +30,7 @@ function Forgot() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!/^\S+@\S+\.\S+$/.test(email)) { toast.error("Enter a valid email"); return; }
+    if (!/^\S+@\S+\.\S+$/.test(email)) { toast.error(tr("Enter a valid email")); return; }
     setBusy(true);
     await supabase.auth.resetPasswordForEmail(email.trim(), { redirectTo: `${window.location.origin}/reset-password` });
     setBusy(false);
@@ -37,21 +39,21 @@ function Forgot() {
 
   return (
     <div className="mx-auto max-w-md space-y-4">
-      <PageTitle>Forgot Password</PageTitle>
+      <PageTitle>{tr("Forgot Password")}</PageTitle>
       <Card>
-        <h2 className="label-premium mb-3 text-lg">Reset by Email</h2>
+        <h2 className="label-premium mb-3 text-lg">{tr("Reset by Email")}</h2>
         {done ? (
-          <p className="text-muted-foreground">If an account exists for that email, a reset link is on its way.</p>
+          <p className="text-muted-foreground">{tr("If an account exists for that email, a reset link is on its way.")}</p>
         ) : (
           <form onSubmit={submit} className="space-y-4">
-            <div><label className={labelCls} htmlFor="em">Email</label><input id="em" type="email" className={inputCls} value={email} onChange={(e) => setEmail(e.target.value)} /></div>
-            <button disabled={busy} className="btn-glow w-full">{busy && <Spinner />} Send reset link</button>
+            <div><label className={labelCls} htmlFor="em">{tr("Email")}</label><input id="em" type="email" className={inputCls} value={email} onChange={(e) => setEmail(e.target.value)} /></div>
+            <button disabled={busy} className="btn-glow w-full">{busy && <Spinner />} {tr("Send reset link")}</button>
           </form>
         )}
       </Card>
       {s?.telegram && (
         <a href={telegramUrl(s.telegram)!} target="_blank" rel="noreferrer" className="btn-ghost-glow w-full">
-          <TelegramIcon className="h-5 w-5" /> Contact Support on Telegram
+          <TelegramIcon className="h-5 w-5" /> {tr("Contact Support on Telegram")}
         </a>
       )}
     </div>

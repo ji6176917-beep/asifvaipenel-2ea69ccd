@@ -4,6 +4,7 @@ import { platformsQuery } from "@/lib/queries";
 import { PlatformIcon } from "@/lib/brand";
 import { PageTitle, Empty, ErrorState } from "@/components/ui-kit";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTr } from "@/lib/i18n";
 
 export const Route = createFileRoute("/order")({
   head: () => ({
@@ -18,18 +19,19 @@ export const Route = createFileRoute("/order")({
 });
 
 function OrderPage() {
+  const tr = useTr();
   const { data, isLoading, isError } = useQuery(platformsQuery);
   return (
     <div>
-      <PageTitle sub="Tap a platform to open its order form.">Order Now</PageTitle>
+      <PageTitle sub={tr("Tap a platform to open its order form.")}>{tr("Order Now")}</PageTitle>
       {isError && <ErrorState />}
-      {data && data.length === 0 && <Empty text="No platforms available right now." />}
+      {data && data.length === 0 && <Empty text={tr("No platforms available right now.")} />}
       <div className="grid gap-3">
         {isLoading && Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-20 rounded-3xl" />)}
         {data?.map((p) => (
           <Link key={p.id} to="/service/$platform" params={{ platform: p.slug }} className="glass tilt flex items-center gap-4 rounded-3xl p-4">
             <PlatformIcon slug={p.slug} logo={p.logo_url} name={p.name} className="h-12 w-12" />
-            <span className="label-premium text-lg">{p.name} Service</span>
+            <span className="label-premium text-lg">{p.name} {tr("Service")}</span>
           </Link>
         ))}
       </div>
