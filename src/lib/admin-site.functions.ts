@@ -105,6 +105,26 @@ export const adminReorderQna = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+/** Which questions appear on the home page, and in what order. */
+export const adminQnaHome = createServerFn({ method: "POST" })
+  .inputValidator((d) => z.object({ id: z.string().uuid(), show: z.boolean() }).parse(d))
+  .handler(async ({ data }) => {
+    const { s, db } = await ctx();
+    await db.from("qna").update({ show_on_home: data.show }).eq("id", data.id);
+    await s.logAdmin("qna_home_" + (data.show ? "on" : "off"), { id: data.id }, { show_on_home: !data.show }, { show_on_home: data.show });
+    return { ok: true };
+  });
+
+export const adminReorderQnaHome = createServerFn({ method: "POST" })
+  .inputValidator((d) => z.object({ ids: z.array(z.string().uuid()).max(500) }).parse(d))
+  .handler(async ({ data }) => {
+    const { db } = await ctx();
+    await Promise.all(data.ids.map((id, i) => db.from("qna").update({ home_sort: i + 1 }).eq("id", id)));
+    return { ok: true };
+  });
+
+
+
 /* ---------------- Pages ---------------- */
 
 export const adminListPages = createServerFn({ method: "POST" }).handler(async () => {
