@@ -5,6 +5,7 @@ import { ArrowLeft, Search, Clock, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
+import { useT } from "@/lib/i18n";
 import { PlatformIcon } from "@/lib/brand";
 import { computeCharge, friendlyError, money, newIdemKey } from "@/lib/format";
 import { Card, Copyable, Empty, ErrorState, Spinner, inputCls, labelCls } from "@/components/ui-kit";
@@ -29,6 +30,7 @@ function ServicePage() {
   const { platform } = Route.useParams();
   const { verified, refreshProfile } = useAuth();
   const navigate = useNavigate();
+  const t = useT();
   const [catId, setCatId] = useState("");
   const [svcId, setSvcId] = useState("");
   const [link, setLink] = useState("");
@@ -61,16 +63,16 @@ function ServicePage() {
   const qtyOk = svc ? qn >= svc.min_qty && qn <= svc.max_qty : false;
 
   const submit = async () => {
-    if (!svc) { toast.error("Choose a service"); return; }
-    if (!linkOk) { toast.error("Enter a valid link"); return; }
+    if (!svc) { toast.error(t("toast.choose_service")); return; }
+    if (!linkOk) { toast.error(t("toast.invalid_link")); return; }
     if (!qtyOk) { toast.error(`Quantity must be ${svc.min_qty}–${svc.max_qty}`); return; }
-    if (!verified) { toast.error("Please verify your email first."); return; }
+    if (!verified) { toast.error(t("toast.verify_first")); return; }
     setBusy(true);
     const { data: r, error } = await supabase.rpc("place_order", { _service_id: svc.id, _link: link.trim(), _quantity: qn, _idem: idem.current });
     setBusy(false);
     if (error) {
       if (error.message.includes("INSUFFICIENT_BALANCE")) {
-        toast.error("Insufficient balance");
+        toast.error(t("toast.insufficient"));
         navigate({ to: "/add-funds" });
         return;
       }
@@ -85,13 +87,13 @@ function ServicePage() {
     return (
       <Card className="mx-auto max-w-md text-center">
         <CheckCircle2 className="mx-auto h-20 w-20 animate-in zoom-in text-success" />
-        <h1 className="text-gradient mt-3 text-3xl font-bold">Order Submitted</h1>
-        <p className="mt-3 text-sm text-muted-foreground">Order ID</p>
+        <h1 className="text-gradient mt-3 text-3xl font-bold">{t("success.title")}</h1>
+        <p className="mt-3 text-sm text-muted-foreground">{t("success.order_id")}</p>
         <Copyable value={done} className="text-lg font-bold" />
         <div className="mt-6 grid gap-3">
-          <Link to="/" className="btn-ghost-glow">Back to Home</Link>
-          <Link to="/orders" className="btn-glow">Go to Order History</Link>
-          <button onClick={() => { setDone(null); setLink(""); setQty(""); }} className="text-sm font-semibold text-primary">Buy New Service</button>
+          <Link to="/" className="btn-ghost-glow">{t("success.home")}</Link>
+          <Link to="/orders" className="btn-glow">{t("success.history")}</Link>
+          <button onClick={() => { setDone(null); setLink(""); setQty(""); }} className="text-sm font-semibold text-primary">{t("success.new")}</button>
         </div>
       </Card>
     );
@@ -105,15 +107,15 @@ function ServicePage() {
       <div className="flex items-center gap-3">
         <button aria-label="Back" onClick={() => history.back()} className="rounded-full p-2 hover:bg-accent"><ArrowLeft className="h-5 w-5" /></button>
         <PlatformIcon slug={platform} className="h-12 w-12" />
-        <h1 className="text-gradient text-3xl font-bold">{data?.platform.name ?? "…"} Service</h1>
+        <h1 className="text-gradient text-3xl font-bold">{data?.platform.name ?? "…"} {t("service.title_suffix")}</h1>
       </div>
 
       <Card className="space-y-5">
         <div>
-          <label className={labelCls} htmlFor="cat">Category</label>
-          {isLoading ? <Skeleton className="h-12 rounded-2xl" /> : cats.length === 0 ? <Empty text="No categories available." /> : (
+          <label className={labelCls} htmlFor="cat">{t("order.category")}</label>
+          {isLoading ? <Skeleton className="h-12 rounded-2xl" /> : cats.length === 0 ? <Empty text={t("order.empty_categories")} /> : (
             <select id="cat" className={inputCls} value={catId} onChange={(e) => { setCatId(e.target.value); setSvcId(""); }}>
-              <option value="">Select a category</option>
+              <option value="">{t("order.category_placeholder")}</option>
               {cats.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           )}
@@ -121,10 +123,10 @@ function ServicePage() {
 
         {catId && (
           <div>
-            <label className={labelCls} htmlFor="svc">Service</label>
-            {svcs.length === 0 ? <Empty text="No services in this category." /> : (
+            <label className={labelCls} htmlFor="svc">{t("order.service")}</label>
+            {svcs.length === 0 ? <Empty text={t("order.empty_services")} /> : (
               <select id="svc" className={inputCls} value={svcId} onChange={(e) => setSvcId(e.target.value)}>
-                <option value="">Select a service</option>
+                <option value="">{t("order.service_placeholder")}</option>
                 {svcs.map((s) => <option key={s.id} value={s.id}>{s.name} — {money(s.rate)} per {s.rate_per}</option>)}
               </select>
             )}
@@ -135,24 +137,24 @@ function ServicePage() {
         {svc && (
           <>
             <div>
-              <label className={labelCls} htmlFor="link">Paste your {data?.platform.name} link</label>
+              <label className={labelCls} htmlFor="link">{t("order.link")} ({data?.platform.name})</label>
               <input id="link" className={inputCls} placeholder="https://" value={link} onChange={(e) => setLink(e.target.value)} />
               {link && !linkOk && <p className="mt-1 text-xs text-destructive">Enter a valid URL starting with https://</p>}
             </div>
             <div>
-              <label className={labelCls} htmlFor="qty">Quantity</label>
+              <label className={labelCls} htmlFor="qty">{t("order.quantity")}</label>
               <input id="qty" inputMode="numeric" className={inputCls} value={qty} onChange={(e) => setQty(e.target.value.replace(/\D/g, ""))} />
               <p className={`mt-1 text-xs ${qty && !qtyOk ? "text-destructive" : "text-muted-foreground"}`}>Min: {svc.min_qty} — Max: {svc.max_qty}</p>
             </div>
             <div className="flex items-center gap-2 rounded-2xl bg-muted/60 px-4 py-3 text-sm">
-              <Clock className="h-4 w-4 text-primary" /> Average time: <b>{svc.avg_time}</b>
-              <span className="ml-auto text-xs text-muted-foreground">Delivered manually by our team</span>
+              <Clock className="h-4 w-4 text-primary" /> {t("order.avg_time")}: <b>{svc.avg_time}</b>
+              <span className="ml-auto text-xs text-muted-foreground">{t("order.manual")}</span>
             </div>
             <div className="rounded-2xl border border-primary/40 bg-primary/5 p-4 text-center">
-              <div className="text-xs text-muted-foreground">Total charge</div>
+              <div className="text-xs text-muted-foreground">{t("order.total")}</div>
               <div className="text-gradient font-display text-4xl font-extrabold">{money(charge)}</div>
             </div>
-            <button disabled={busy} onClick={submit} className="btn-glow w-full !py-4 text-lg">{busy && <Spinner />} Submit</button>
+            <button disabled={busy} onClick={submit} className="btn-glow w-full !py-4 text-lg">{busy && <Spinner />} {t("order.submit")}</button>
           </>
         )}
       </Card>
