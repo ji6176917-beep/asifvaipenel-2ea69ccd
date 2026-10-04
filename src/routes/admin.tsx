@@ -13,6 +13,7 @@ import { adminLogout, adminStatus, changeAdminPassword } from "@/lib/admin.funct
 import { Card, PageTitle, Spinner, inputCls, labelCls } from "@/components/ui-kit";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { AdminLoginButton } from "@/components/SupportAdmin";
 import { AdminDashboard } from "@/components/admin/AdminDashboard";
 import { AdminUsers } from "@/components/admin/AdminUsers";
 import { AdminUserDetail } from "@/components/admin/AdminUserDetail";
@@ -79,6 +80,7 @@ function AdminPage() {
       <Card className="mx-auto max-w-md text-center">
         <ShieldAlert className="mx-auto h-12 w-12 text-warning" />
         <p className="mt-3 font-semibold">Admin session required or expired.</p>
+        <AdminLoginButton className="btn-glow mt-4 w-full" />
       </Card>
     );
   }
