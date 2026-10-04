@@ -4,6 +4,7 @@ import { Bell } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
+import { useStorageUrl } from "@/lib/storage-url";
 import { fmtDate } from "@/lib/format";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
@@ -34,8 +35,20 @@ export function UserInbox() {
     return () => { supabase.removeChannel(ch); };
   }, [user?.id, qc]);
 
-  const unread = data.filter((n) => !n.read_at);
-  const popup = data.find((n) => n.kind === "popup" && !n.shown_at);
+  const now = Date.now();
+  const live = data.filter((n) => !n.expires_at || Date.parse(n.expires_at) > now);
+  const unread = live.filter((n) => !n.read_at);
+  const [dismissed, setDismissed] = useState<string[]>([]);
+  // Show-once popups disappear after the first view; others show again each visit (session) until they expire.
+  const popup = live.find((n) => n.kind === "popup" && !dismissed.includes(n.id)
+    && (n.show_once ? !n.shown_at : typeof window !== "undefined" && sessionStorage.getItem(`pop_${n.id}`) !== "1"));
+  const popImg = useStorageUrl("logos", popup?.image ?? null);
+  const closePopup = () => {
+    if (!popup) return;
+    sessionStorage.setItem(`pop_${popup.id}`, "1");
+    setDismissed((d) => [...d, popup.id]);
+    mark([popup.id], true);
+  };
 
   const mark = async (ids: string[], shown: boolean) => {
     if (!ids.length) return;
@@ -63,7 +76,7 @@ export function UserInbox() {
         <SheetContent>
           <SheetHeader><SheetTitle>Notifications</SheetTitle></SheetHeader>
           <div className="mt-4 space-y-2 overflow-y-auto px-4 pb-6">
-            {data.length === 0 ? <Empty text="No notifications yet" /> : data.map((n) => (
+            {live.length === 0 ? <Empty text="No notifications yet" /> : live.map((n) => (
               <div key={n.id} className="rounded-2xl border border-border p-3">
                 <p className="font-semibold">{n.title}</p>
                 {n.body && <p className="mt-1 whitespace-pre-wrap text-sm text-muted-foreground">{n.body}</p>}
@@ -73,11 +86,14 @@ export function UserInbox() {
           </div>
         </SheetContent>
       </Sheet>
-      <Dialog open={!!popup} onOpenChange={(o) => { if (!o && popup) mark([popup.id], true); }}>
+      <Dialog open={!!popup} onOpenChange={(o) => { if (!o) closePopup(); }}>
         <DialogContent>
+          {popImg && <img src={popImg} alt="" className="mx-auto max-h-56 rounded-2xl object-contain" />}
           <DialogTitle className="text-gradient text-2xl">{popup?.title}</DialogTitle>
           {popup?.body && <p className="whitespace-pre-wrap text-muted-foreground">{popup.body}</p>}
-          <button className="btn-glow" onClick={() => popup && mark([popup.id], true)}>OK</button>
+          {popup?.link
+            ? <a href={popup.link} target={popup.link.startsWith("/") ? undefined : "_blank"} rel="noreferrer" className="btn-glow" onClick={closePopup}>{popup.button || "Open"}</a>
+            : <button className="btn-glow" onClick={closePopup}>{popup?.button || "OK"}</button>}
         </DialogContent>
       </Dialog>
     </>

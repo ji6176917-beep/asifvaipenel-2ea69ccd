@@ -23,15 +23,17 @@ import { useMenu, MenuIcon, type MenuItem } from "@/lib/menu";
 import { useStorageUrl } from "@/lib/storage-url";
 import { useSupportTap } from "@/components/SupportAdmin";
 import ReactMarkdown from "react-markdown";
+import { FONTS, homeConfig, themeConfig, themeIsCustom, type HomeConfig, type ThemeConfig } from "@/lib/site-config";
 
-function useTheme() {
+function useTheme(def: "dark" | "light" | "system" | undefined) {
   const [dark, setDark] = useState(false);
   useEffect(() => {
+    if (!def) return;
     const saved = localStorage.getItem("theme");
-    const d = saved ? saved === "dark" : true;
+    const d = saved ? saved === "dark" : def === "system" ? window.matchMedia("(prefers-color-scheme: dark)").matches : def === "dark";
     setDark(d);
     document.documentElement.classList.toggle("dark", d);
-  }, []);
+  }, [def]);
   const toggle = () => {
     const d = !dark;
     setDark(d);
@@ -41,7 +43,7 @@ function useTheme() {
   return { dark, toggle };
 }
 
-function FloatingBackground() {
+function FloatingBackground({ cfg, glowOn }: { cfg: HomeConfig["bg"]; glowOn: boolean }) {
   const [hidden, setHidden] = useState(false);
   useEffect(() => {
     const f = () => setHidden(document.hidden);
@@ -54,17 +56,45 @@ function FloatingBackground() {
     { s: "youtube", c: "left-[12%] bottom-[18%] h-28 w-28", d: "-8s" },
     { s: "tiktok", c: "right-[14%] bottom-[10%] h-20 w-20", d: "-12s" },
     { s: "telegram", c: "left-[45%] top-[45%] h-24 w-24", d: "-6s" },
-  ];
+  ].filter((i) => cfg.on && cfg.slugs.includes(i.s));
+  const dur = `${Math.round(30 / Math.max(1, cfg.speed))}s`;
+  if (!glowOn && !items.length) return null;
   return (
     <div aria-hidden className={`pointer-events-none fixed inset-0 -z-10 overflow-hidden ${hidden ? "paused-hidden" : ""}`}>
-      <div className="absolute -top-40 left-1/2 h-[480px] w-[480px] -translate-x-1/2 rounded-full bg-primary/15 blur-3xl" />
+      {glowOn && <div className="absolute -top-40 left-1/2 h-[480px] w-[480px] -translate-x-1/2 rounded-full bg-primary/15 blur-3xl" />}
       {items.map((i) => (
-        <div key={i.s} className={`absolute ${i.c} animate-floaty opacity-[0.12] blur-[2px] will-change-transform`} style={{ animationDelay: i.d }}>
+        <div key={i.s} className={`absolute ${i.c} animate-floaty will-change-transform`}
+          style={{ animationDelay: i.d, animationDuration: dur, opacity: cfg.opacity / 100, filter: `blur(${cfg.blur}px)` }}>
           <PlatformIcon slug={i.s} className="h-full w-full" />
         </div>
       ))}
     </div>
   );
+}
+
+/** Applies the admin theme (colours, glow, radius, font, motion) as CSS variables. */
+function ThemeApplier({ t }: { t: ThemeConfig }) {
+  const custom = themeIsCustom(t);
+  const font = FONTS.find((f) => f.id === t.font) ?? FONTS[0];
+  useEffect(() => {
+    const el = document.documentElement;
+    el.classList.toggle("motion-off", t.anim === "off");
+    el.classList.toggle("motion-low", t.anim === "low");
+  }, [t.anim]);
+  if (!custom) return null;
+  const g = (c: string) => `color-mix(in oklab, ${c} ${t.glow}%, transparent)`;
+  const css = `:root{--primary:${t.primary_light};--ring:${t.primary_light};--glow:${g(t.glow_light)};--radius:${t.radius}rem;--font-sans:"${font.body}",ui-sans-serif,system-ui,sans-serif;--font-display:"${font.display}",ui-sans-serif,system-ui,sans-serif}`
+    + `.dark{--primary:${t.primary_dark};--ring:${t.primary_dark};--glow:${g(t.glow_dark)}}`;
+  return (<>
+    {font.id !== "manrope" && <link rel="stylesheet" href={`https://fonts.googleapis.com/css2?${font.q}&display=swap`} />}
+    <style>{css}</style>
+  </>);
+}
+
+function ContactIcon({ k, fallback, className }: { k: string; fallback: ReactNode; className: string }) {
+  const { icon } = useI18n();
+  const url = useStorageUrl("logos", icon(k));
+  return url ? <img src={url} alt="" className={`${className} object-contain`} /> : <>{fallback}</>;
 }
 
 type Settings = Record<string, unknown> & { telegram?: string | null; whatsapp?: string | null; email?: string | null };
@@ -90,7 +120,9 @@ function NavItem({ m, className, iconClass = "h-5 w-5 text-primary", onAction, s
   if (!h) return null;
   if (h.kind === "action" && h.to === "support" && !telegramUrl(settings?.telegram)) return null;
   const label = pickLang(m.label, lang, m.system_key ?? "");
-  const inner = <>{showIcon && <MenuIcon item={m} className={iconClass} />}{children ?? label}</>;
+  const contactKey = !m.icon_url && ["whatsapp", "telegram", "email"].includes(m.target_type) && m.location === "footer_info" ? `contact.${m.target_type}` : null;
+  const ic = <MenuIcon item={m} className={iconClass} />;
+  const inner = <>{showIcon && (contactKey ? <ContactIcon k={contactKey} className={iconClass} fallback={ic} /> : ic)}{children ?? label}</>;
   if (h.kind === "route") return <Link to={h.to as never} className={className}>{inner}</Link>;
   if (h.kind === "external") return <a href={h.to} target={h.to.startsWith("mailto:") ? undefined : "_blank"} rel="noreferrer" className={className}>{inner}</a>;
   return <button type="button" onClick={() => (h.to === "support" ? tap() : onAction(h.to))} className={`${className} text-left`}>{inner}</button>;
@@ -130,14 +162,20 @@ export function AppShell({ children }: { children: ReactNode }) {
 function Shell({ children }: { children: ReactNode }) {
   const music = useMusic();
   const [langOpen, setLangOpen] = useState(false);
-  const { lang, setLang, t } = useI18n();
+  const { lang, setLang, t, enabled } = useI18n();
   const menu = useMenu("three_dot_menu");
   const bottom = useMenu("bottom_bar");
   const footLinks = useMenu("footer_links");
   const footInfo = useMenu("footer_info");
-  const { dark, toggle } = useTheme();
   const { user, profile, verified } = useAuth();
   const { data: settings } = useQuery(settingsQuery);
+  const theme = themeConfig(settings?.theme_config);
+  const home = homeConfig(settings?.home_config);
+  const { dark, toggle } = useTheme(settings ? theme.default_theme : undefined);
+  const { data: footerPages } = useQuery({
+    queryKey: ["footer-pages"], staleTime: 60_000,
+    queryFn: async () => (await supabase.from("pages").select("slug, title").eq("is_custom", true).eq("show_in_footer", true)).data ?? [],
+  });
   const [menuOpen, setMenuOpen] = useState(false);
   const [bannerClosed, setBannerClosed] = useState(false);
   const [cookieOk, setCookieOk] = useState(true);
@@ -168,6 +206,11 @@ function Shell({ children }: { children: ReactNode }) {
   const wa = whatsappUrl(settings?.whatsapp);
   const isMobile = useIsMobile();
   useEffect(() => { setMenuOpen(false); }, [path]);
+  useEffect(() => {
+    if (path !== "/" || !settings) return;
+    if (settings.seo_title) document.title = settings.seo_title;
+    if (settings.seo_description) document.querySelector('meta[name="description"]')?.setAttribute("content", settings.seo_description);
+  }, [path, settings?.seo_title, settings?.seo_description]);
 
   useEffect(() => { setCookieOk(localStorage.getItem("cookie_ok") === "1"); }, []);
 
@@ -188,7 +231,8 @@ function Shell({ children }: { children: ReactNode }) {
 
   return (
     <div className="relative min-h-screen pb-28">
-      <FloatingBackground />
+      <ThemeApplier t={theme} />
+      <FloatingBackground cfg={home.bg} glowOn={theme.bg3d} />
       <WelcomePopup s={settings as Settings | null | undefined} />
 
       {annOn && !bannerClosed && (
@@ -233,30 +277,40 @@ function Shell({ children }: { children: ReactNode }) {
         </div>
       )}
 
-      <main className={`mx-auto px-4 pt-6 ${path.startsWith("/admin") ? "max-w-7xl" : "max-w-5xl"}`}>{children}</main>
+      <main className={`mx-auto px-4 pt-6 ${path.startsWith("/admin") ? "max-w-7xl" : "max-w-5xl"}`}>
+        {settings?.maintenance_on && !path.startsWith("/admin") ? (
+          <div className="glass mx-auto mt-10 max-w-lg rounded-3xl p-8 text-center">
+            <Sparkles className="mx-auto h-10 w-10 text-primary" />
+            <h1 className="text-gradient mt-3 text-3xl font-bold">{t("maintenance.title", "Under maintenance")}</h1>
+            <p className="mt-2 whitespace-pre-wrap text-muted-foreground">{settings.maintenance_text}</p>
+          </div>
+        ) : children}
+      </main>
 
-      <footer className="mx-auto mt-16 max-w-5xl px-4 pb-6">
+      {!(path === "/" && home.sections.find((x) => x.id === "footer")?.on === false) && <footer className="mx-auto mt-16 max-w-5xl px-4 pb-6">
         <div className="glass rounded-3xl p-6">
           <h3 className="label-premium mb-3 text-lg">{t("footer.quick_links")}</h3>
           <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted-foreground">
             {footLinks.filter(visible).map((m) => <NavItem key={m.id} m={m} settings={settings} onAction={onAction} showIcon={false} className="hover:text-primary" />)}
+            {(footerPages ?? []).map((p) => <Link key={p.slug} to="/p/$slug" params={{ slug: p.slug }} className="hover:text-primary">{pickLang(p.title, lang, p.slug)}</Link>)}
           </div>
           <h3 className="label-premium mb-3 mt-6 text-lg">{t("footer.info")}</h3>
           <div className="flex flex-wrap gap-4">
             {footInfo.filter(visible).map((m) => <NavItem key={m.id} m={m} settings={settings} onAction={onAction} iconClass="h-6 w-6 text-primary" className="tilt glass flex flex-col items-center gap-1 rounded-2xl px-4 py-3 text-xs" />)}
           </div>
+          {settings?.support_hours && <p className="mt-4 text-xs text-muted-foreground">{t("footer.hours", "Support hours")}: {settings.support_hours}</p>}
           <p className="mt-6 text-xs text-muted-foreground">{settings?.footer_copyright || `© ${new Date().getFullYear()} ${siteName}. ${t("footer.rights")}`}</p>
         </div>
-      </footer>
+      </footer>}
 
-      {wa && (
+      {wa && settings?.whatsapp_float !== false && (
         <a href={wa} target="_blank" rel="noreferrer" aria-label="Chat on WhatsApp"
           className="animate-pulse-ring fixed bottom-24 right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-success text-primary-foreground shadow-glow">
-          <WhatsAppIcon className="h-7 w-7" />
+          <ContactIcon k="contact.whatsapp" className="h-7 w-7" fallback={<WhatsAppIcon className="h-7 w-7" />} />
         </a>
       )}
 
-      {!cookieOk && (
+      {!cookieOk && settings?.cookie_notice !== false && (
         <div className="glass fixed bottom-24 left-4 right-20 z-40 flex items-center gap-3 rounded-2xl p-3 text-xs sm:right-auto sm:max-w-sm">
           <span>{t("footer.cookie")}</span>
           <button className="btn-glow !px-3 !py-1.5 text-xs" onClick={() => { localStorage.setItem("cookie_ok", "1"); setCookieOk(true); }}>{t("footer.cookie_ok")}</button>
@@ -304,7 +358,7 @@ function Shell({ children }: { children: ReactNode }) {
         <DialogContent className="max-w-sm">
           <DialogTitle className="text-gradient">{t("menu.language")}</DialogTitle>
           <div className="space-y-2">
-            {LANGUAGES.map((l) => (
+            {LANGUAGES.filter((l) => enabled.includes(l.code)).map((l) => (
               <button key={l.code} onClick={() => { setLang(l.code); setLangOpen(false); toast.success(l.label); }}
                 className={`flex w-full items-center justify-between rounded-2xl border px-4 py-3 text-left ${lang === l.code ? "border-primary bg-primary/10" : "border-border"}`}>
                 <span>{l.label}</span>{lang === l.code && <Check className="h-4 w-4 text-primary" />}

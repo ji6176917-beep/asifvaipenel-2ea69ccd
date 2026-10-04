@@ -25,6 +25,7 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedOrdersRouteImport } from './routes/_authenticated/orders'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedResellerApiRouteImport } from './routes/_authenticated/reseller-api'
+import { Route as PSlugRouteImport } from './routes/p/$slug'
 import { Route as AuthenticatedAddFundsIndexRouteImport } from './routes/_authenticated/add-funds.index'
 import { Route as AuthenticatedAddFundsHistoryRouteImport } from './routes/_authenticated/add-funds.history'
 import { Route as AuthenticatedServicePlatformRouteImport } from './routes/_authenticated/service.$platform'
@@ -110,6 +111,11 @@ const AuthenticatedResellerApiRoute =
     path: '/reseller-api',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const PSlugRoute = PSlugRouteImport.update({
+  id: '/p/$slug',
+  path: '/p/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAddFundsIndexRoute =
   AuthenticatedAddFundsIndexRouteImport.update({
     id: '/add-funds/',
@@ -150,6 +156,7 @@ export interface FileRoutesByFullPath {
   '/orders': typeof AuthenticatedOrdersRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/reseller-api': typeof AuthenticatedResellerApiRoute
+  '/p/$slug': typeof PSlugRoute
   '/add-funds/history': typeof AuthenticatedAddFundsHistoryRoute
   '/service/$platform': typeof AuthenticatedServicePlatformRoute
   '/api/public/v2': typeof ApiPublicV2Route
@@ -171,6 +178,7 @@ export interface FileRoutesByTo {
   '/orders': typeof AuthenticatedOrdersRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/reseller-api': typeof AuthenticatedResellerApiRoute
+  '/p/$slug': typeof PSlugRoute
   '/add-funds/history': typeof AuthenticatedAddFundsHistoryRoute
   '/service/$platform': typeof AuthenticatedServicePlatformRoute
   '/api/public/v2': typeof ApiPublicV2Route
@@ -194,6 +202,7 @@ export interface FileRoutesById {
   '/_authenticated/orders': typeof AuthenticatedOrdersRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/reseller-api': typeof AuthenticatedResellerApiRoute
+  '/p/$slug': typeof PSlugRoute
   '/_authenticated/add-funds/history': typeof AuthenticatedAddFundsHistoryRoute
   '/_authenticated/service/$platform': typeof AuthenticatedServicePlatformRoute
   '/api/public/v2': typeof ApiPublicV2Route
@@ -217,6 +226,7 @@ export interface FileRouteTypes {
     | '/orders'
     | '/profile'
     | '/reseller-api'
+    | '/p/$slug'
     | '/add-funds/history'
     | '/service/$platform'
     | '/api/public/v2'
@@ -238,6 +248,7 @@ export interface FileRouteTypes {
     | '/orders'
     | '/profile'
     | '/reseller-api'
+    | '/p/$slug'
     | '/add-funds/history'
     | '/service/$platform'
     | '/api/public/v2'
@@ -260,6 +271,7 @@ export interface FileRouteTypes {
     | '/_authenticated/orders'
     | '/_authenticated/profile'
     | '/_authenticated/reseller-api'
+    | '/p/$slug'
     | '/_authenticated/add-funds/history'
     | '/_authenticated/service/$platform'
     | '/api/public/v2'
@@ -278,6 +290,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   SignInRoute: typeof SignInRoute
   SignUpRoute: typeof SignUpRoute
+  PSlugRoute: typeof PSlugRoute
   ApiPublicV2Route: typeof ApiPublicV2Route
 }
 
@@ -395,6 +408,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedResellerApiRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/p/$slug': {
+      id: '/p/$slug'
+      path: '/p/$slug'
+      fullPath: '/p/$slug'
+      preLoaderRoute: typeof PSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/add-funds/': {
       id: '/_authenticated/add-funds/'
       path: '/add-funds'
@@ -463,6 +483,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   SignInRoute: SignInRoute,
   SignUpRoute: SignUpRoute,
+  PSlugRoute: PSlugRoute,
   ApiPublicV2Route: ApiPublicV2Route,
 }
 export const routeTree = rootRouteImport

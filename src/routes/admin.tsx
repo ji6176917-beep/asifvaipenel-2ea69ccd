@@ -5,7 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import {
   KeyRound, LogOut, ShieldAlert, LayoutDashboard, Users, ShoppingCart, PlusCircle, Package, Code2, Music,
-  Type, Menu as MenuIcon, Home, LifeBuoy, HelpCircle, FileText, Languages, BellRing, Palette, Settings,
+  Type, Menu as MenuIcon, Home, LifeBuoy, HelpCircle, Languages, BellRing, Palette, Settings,
   DatabaseBackup, Activity, Trash2, Search, PanelLeft,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -24,6 +24,7 @@ import { AdminFunds } from "@/components/admin/AdminFunds";
 import { AdminServices } from "@/components/admin/AdminServices";
 import { AdminContent } from "@/components/admin/AdminContent";
 import { AdminMenu } from "@/components/admin/AdminMenu";
+import { AdminHome, AdminSupport, AdminQnaPages, AdminLanguages, AdminNotifications, AdminTheme, GeneralSettings } from "@/components/admin/AdminSite";
 
 const search = z.object({
   section: z.string().optional(),
@@ -58,13 +59,12 @@ const NAV = [
   { id: "music", label: "Music", icon: Music, ready: true },
   { id: "content", label: "Website Content & Labels", icon: Type, ready: true },
   { id: "menu", label: "Menu & Navigation", icon: MenuIcon, ready: true },
-  { id: "home", label: "Home Page", icon: Home },
-  { id: "support", label: "Support & Contacts", icon: LifeBuoy },
-  { id: "qna", label: "QnA", icon: HelpCircle },
-  { id: "pages", label: "Policies & Pages", icon: FileText },
-  { id: "languages", label: "Languages", icon: Languages },
-  { id: "notifications", label: "Notifications & Popups", icon: BellRing },
-  { id: "theme", label: "Theme & Branding", icon: Palette },
+  { id: "home", label: "Home Page", icon: Home, ready: true },
+  { id: "support", label: "Support & Contacts", icon: LifeBuoy, ready: true },
+  { id: "qna", label: "QnA, Policies & Pages", icon: HelpCircle, ready: true },
+  { id: "languages", label: "Languages", icon: Languages, ready: true },
+  { id: "notifications", label: "Notifications & Popups", icon: BellRing, ready: true },
+  { id: "theme", label: "Theme & Branding", icon: Palette, ready: true },
   { id: "settings", label: "Settings", icon: Settings, ready: true },
   { id: "backup", label: "Backup & Health", icon: DatabaseBackup },
   { id: "activity", label: "Activity Log", icon: Activity },
@@ -155,6 +155,12 @@ function AdminLayout() {
           : section === "services" ? <AdminServices />
           : section === "content" ? <AdminContent />
           : section === "menu" ? <AdminMenu />
+          : section === "home" ? <AdminHome />
+          : section === "support" ? <AdminSupport />
+          : section === "qna" ? <AdminQnaPages />
+          : section === "languages" ? <AdminLanguages />
+          : section === "notifications" ? <AdminNotifications />
+          : section === "theme" ? <AdminTheme />
           : <AdminDashboard onGo={pick} />}
       </div>
     </div>
@@ -165,6 +171,7 @@ function SettingsSection() {
   return (
     <div className="max-w-2xl space-y-4">
       <PageTitle>Settings</PageTitle>
+      <GeneralSettings />
       <ChangePassword />
     </div>
   );

@@ -51,6 +51,12 @@ function SignUp() {
       return;
     }
     setErrors({});
+    const { data: set } = await supabase.from("site_settings").select("allow_signups, blocked_email_domains").eq("id", 1).maybeSingle();
+    if (set && !set.allow_signups) { toast.error("New sign-ups are closed right now. Please try again later."); return; }
+    const dom = r.data.email.split("@")[1]?.toLowerCase() ?? "";
+    if (set && set.blocked_email_domains.toLowerCase().split(/[\s,;]+/).filter(Boolean).includes(dom)) {
+      setErrors({ email: "This email provider is not allowed. Please use another email." }); return;
+    }
     setBusy(true);
     const { data, error } = await supabase.auth.signUp({
       email: r.data.email,
