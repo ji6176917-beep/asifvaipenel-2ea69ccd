@@ -137,6 +137,51 @@ export type Database = {
         }
         Relationships: []
       }
+      broadcasts: {
+        Row: {
+          body: string
+          button: string | null
+          created_at: string
+          deleted_at: string | null
+          expires_at: string | null
+          id: string
+          image: string | null
+          kind: string
+          link: string | null
+          show_once: boolean
+          target: string
+          title: string
+        }
+        Insert: {
+          body?: string
+          button?: string | null
+          created_at?: string
+          deleted_at?: string | null
+          expires_at?: string | null
+          id?: string
+          image?: string | null
+          kind?: string
+          link?: string | null
+          show_once?: boolean
+          target?: string
+          title: string
+        }
+        Update: {
+          body?: string
+          button?: string | null
+          created_at?: string
+          deleted_at?: string | null
+          expires_at?: string | null
+          id?: string
+          image?: string | null
+          kind?: string
+          link?: string | null
+          show_once?: boolean
+          target?: string
+          title?: string
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           active: boolean
@@ -297,30 +342,48 @@ export type Database = {
       notifications: {
         Row: {
           body: string
+          broadcast_id: string | null
+          button: string | null
           created_at: string
+          expires_at: string | null
           id: string
+          image: string | null
           kind: string
+          link: string | null
           read_at: string | null
+          show_once: boolean
           shown_at: string | null
           title: string
           user_id: string
         }
         Insert: {
           body?: string
+          broadcast_id?: string | null
+          button?: string | null
           created_at?: string
+          expires_at?: string | null
           id?: string
+          image?: string | null
           kind?: string
+          link?: string | null
           read_at?: string | null
+          show_once?: boolean
           shown_at?: string | null
           title: string
           user_id: string
         }
         Update: {
           body?: string
+          broadcast_id?: string | null
+          button?: string | null
           created_at?: string
+          expires_at?: string | null
           id?: string
+          image?: string | null
           kind?: string
+          link?: string | null
           read_at?: string | null
+          show_once?: boolean
           shown_at?: string | null
           title?: string
           user_id?: string
@@ -447,6 +510,63 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      page_versions: {
+        Row: {
+          content: Json
+          created_at: string
+          id: number
+          slug: string
+          title: Json
+        }
+        Insert: {
+          content: Json
+          created_at?: string
+          id?: number
+          slug: string
+          title: Json
+        }
+        Update: {
+          content?: Json
+          created_at?: string
+          id?: number
+          slug?: string
+          title?: Json
+        }
+        Relationships: []
+      }
+      pages: {
+        Row: {
+          active: boolean
+          content: Json
+          deleted_at: string | null
+          is_custom: boolean
+          show_in_footer: boolean
+          slug: string
+          title: Json
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          content?: Json
+          deleted_at?: string | null
+          is_custom?: boolean
+          show_in_footer?: boolean
+          slug: string
+          title?: Json
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          content?: Json
+          deleted_at?: string | null
+          is_custom?: boolean
+          show_in_footer?: boolean
+          slug?: string
+          title?: Json
+          updated_at?: string
+        }
+        Relationships: []
       }
       payment_methods: {
         Row: {
@@ -601,6 +721,36 @@ export type Database = {
         }
         Relationships: []
       }
+      qna: {
+        Row: {
+          active: boolean
+          answer: Json
+          created_at: string
+          deleted_at: string | null
+          id: string
+          question: Json
+          sort: number
+        }
+        Insert: {
+          active?: boolean
+          answer?: Json
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          question?: Json
+          sort?: number
+        }
+        Update: {
+          active?: boolean
+          answer?: Json
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          question?: Json
+          sort?: number
+        }
+        Relationships: []
+      }
       services: {
         Row: {
           active: boolean
@@ -690,6 +840,7 @@ export type Database = {
       site_settings: {
         Row: {
           allow_orders: boolean
+          allow_signups: boolean
           announcement_color: string
           announcement_end: string | null
           announcement_link: string
@@ -706,7 +857,9 @@ export type Database = {
           api_rate_per_min: number
           api_url: string
           bdt_rate: number
+          blocked_email_domains: string
           content_version: number
+          cookie_notice: boolean
           deposit_max: number
           deposit_min: number
           email: string | null
@@ -714,8 +867,12 @@ export type Database = {
           footer_copyright: string
           hero_text: string
           hero_title: string
+          home_config: Json
           id: number
+          languages_config: Json
           logo_url: string | null
+          maintenance_on: boolean
+          maintenance_text: string
           music_enabled: boolean
           music_version: number
           popup_image: string | null
@@ -724,14 +881,21 @@ export type Database = {
           popup_on: boolean
           require_screenshot: boolean
           require_verified_email: boolean
+          seo_description: string
+          seo_title: string
+          session_timeout_min: number
           share_image_url: string | null
           site_name: string
+          support_hours: string
           tagline: string
           telegram: string | null
+          theme_config: Json
           whatsapp: string | null
+          whatsapp_float: boolean
         }
         Insert: {
           allow_orders?: boolean
+          allow_signups?: boolean
           announcement_color?: string
           announcement_end?: string | null
           announcement_link?: string
@@ -748,7 +912,9 @@ export type Database = {
           api_rate_per_min?: number
           api_url?: string
           bdt_rate?: number
+          blocked_email_domains?: string
           content_version?: number
+          cookie_notice?: boolean
           deposit_max?: number
           deposit_min?: number
           email?: string | null
@@ -756,8 +922,12 @@ export type Database = {
           footer_copyright?: string
           hero_text?: string
           hero_title?: string
+          home_config?: Json
           id?: number
+          languages_config?: Json
           logo_url?: string | null
+          maintenance_on?: boolean
+          maintenance_text?: string
           music_enabled?: boolean
           music_version?: number
           popup_image?: string | null
@@ -766,14 +936,21 @@ export type Database = {
           popup_on?: boolean
           require_screenshot?: boolean
           require_verified_email?: boolean
+          seo_description?: string
+          seo_title?: string
+          session_timeout_min?: number
           share_image_url?: string | null
           site_name?: string
+          support_hours?: string
           tagline?: string
           telegram?: string | null
+          theme_config?: Json
           whatsapp?: string | null
+          whatsapp_float?: boolean
         }
         Update: {
           allow_orders?: boolean
+          allow_signups?: boolean
           announcement_color?: string
           announcement_end?: string | null
           announcement_link?: string
@@ -790,7 +967,9 @@ export type Database = {
           api_rate_per_min?: number
           api_url?: string
           bdt_rate?: number
+          blocked_email_domains?: string
           content_version?: number
+          cookie_notice?: boolean
           deposit_max?: number
           deposit_min?: number
           email?: string | null
@@ -798,8 +977,12 @@ export type Database = {
           footer_copyright?: string
           hero_text?: string
           hero_title?: string
+          home_config?: Json
           id?: number
+          languages_config?: Json
           logo_url?: string | null
+          maintenance_on?: boolean
+          maintenance_text?: string
           music_enabled?: boolean
           music_version?: number
           popup_image?: string | null
@@ -808,11 +991,17 @@ export type Database = {
           popup_on?: boolean
           require_screenshot?: boolean
           require_verified_email?: boolean
+          seo_description?: string
+          seo_title?: string
+          session_timeout_min?: number
           share_image_url?: string | null
           site_name?: string
+          support_hours?: string
           tagline?: string
           telegram?: string | null
+          theme_config?: Json
           whatsapp?: string | null
+          whatsapp_float?: boolean
         }
         Relationships: []
       }
@@ -885,6 +1074,54 @@ export type Database = {
           source_url?: string | null
           title?: string
           volume?: number
+        }
+        Relationships: []
+      }
+      telegram_config: {
+        Row: {
+          bot_token: string | null
+          chat_id: string | null
+          id: number
+          on_deposit: boolean
+          on_order: boolean
+          on_user: boolean
+        }
+        Insert: {
+          bot_token?: string | null
+          chat_id?: string | null
+          id?: number
+          on_deposit?: boolean
+          on_order?: boolean
+          on_user?: boolean
+        }
+        Update: {
+          bot_token?: string | null
+          chat_id?: string | null
+          id?: number
+          on_deposit?: boolean
+          on_order?: boolean
+          on_user?: boolean
+        }
+        Relationships: []
+      }
+      telegram_log: {
+        Row: {
+          created_at: string
+          event: string
+          id: number
+          request_id: number | null
+        }
+        Insert: {
+          created_at?: string
+          event: string
+          id?: number
+          request_id?: number | null
+        }
+        Update: {
+          created_at?: string
+          event?: string
+          id?: number
+          request_id?: number | null
         }
         Relationships: []
       }
@@ -1048,6 +1285,20 @@ export type Database = {
         Returns: Json
       }
       set_my_avatar: { Args: { _path: string }; Returns: undefined }
+      tg_recent_results: {
+        Args: never
+        Returns: {
+          created_at: string
+          error: string
+          event: string
+          id: number
+          status_code: number
+        }[]
+      }
+      tg_send: {
+        Args: { _event: string; _force?: boolean; _text: string }
+        Returns: number
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"

@@ -1,6 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { settingsQuery } from "@/lib/queries";
+import { langConfig } from "@/lib/site-config";
 
 export const LANGUAGES = [
   { code: "en", label: "English" },
@@ -93,10 +95,11 @@ type Ctx = {
   lang: Lang; setLang: (l: Lang) => void;
   t: (key: string, fallback?: string) => string;
   icon: (key: string) => string | null;
+  enabled: string[];
 };
 const I18nCtx = createContext<Ctx>({
   lang: "en", setLang: () => {},
-  t: (k, f) => f ?? DEFAULT_LABELS[k]?.[1] ?? k, icon: () => null,
+  t: (k, f) => f ?? DEFAULT_LABELS[k]?.[1] ?? k, icon: () => null, enabled: ["en"],
 });
 export const useI18n = () => useContext(I18nCtx);
 export const useT = () => useContext(I18nCtx).t;
@@ -104,15 +107,19 @@ export const useT = () => useContext(I18nCtx).t;
 export function I18nProvider({ children }: { children: ReactNode }) {
   const qc = useQueryClient();
   const [lang, setLangState] = useState<Lang>("en");
+  const { data: settings } = useQuery(settingsQuery);
+  const lc = langConfig(settings?.languages_config);
   useEffect(() => {
+    if (!settings) return;
     const saved = localStorage.getItem("lang");
-    if (saved && LANGUAGES.some((l) => l.code === saved)) setLangState(saved as Lang);
-  }, []);
+    const pick = saved && lc.enabled.includes(saved) ? saved : lc.default;
+    if (LANGUAGES.some((l) => l.code === pick)) setLangState(pick as Lang);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [settings?.languages_config]);
   useEffect(() => {
-    const rtl = LANGUAGES.find((l) => l.code === lang && "rtl" in l);
     document.documentElement.lang = lang;
-    document.documentElement.dir = rtl ? "rtl" : "ltr";
-  }, [lang]);
+    document.documentElement.dir = lc.rtl.includes(lang) ? "rtl" : "ltr";
+  }, [lang, lc.rtl.join()]);
   const setLang = (l: Lang) => { localStorage.setItem("lang", l); setLangState(l); };
 
   const { data } = useQuery({
@@ -139,6 +146,10 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       .on("postgres_changes", { event: "*", schema: "public", table: "site_settings" }, () => {
         qc.invalidateQueries({ queryKey: ["settings"] }); qc.invalidateQueries({ queryKey: ["welcome-song"] });
       })
+      .on("postgres_changes", { event: "*", schema: "public", table: "qna" }, () => qc.invalidateQueries({ queryKey: ["qna"] }))
+      .on("postgres_changes", { event: "*", schema: "public", table: "pages" }, () => {
+        qc.invalidateQueries({ queryKey: ["page"] }); qc.invalidateQueries({ queryKey: ["footer-pages"] });
+      })
       .subscribe();
     return () => { supabase.removeChannel(ch); };
   }, [qc]);
@@ -149,7 +160,8 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     return tr[lang] || tr["en"] || row?.default_text || fallback || DEFAULT_LABELS[key]?.[1] || key;
   }, [data, lang]);
   const icon = useCallback((key: string) => data?.icons.get(key) ?? null, [data]);
-  const value = useMemo(() => ({ lang, setLang, t, icon }), [lang, t, icon]);
+  const enabled = lc.enabled.join();
+  const value = useMemo(() => ({ lang, setLang, t, icon, enabled: enabled.split(",") }), [lang, t, icon, enabled]);
   return <I18nCtx.Provider value={value}>{children}</I18nCtx.Provider>;
 }
 

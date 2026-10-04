@@ -71,6 +71,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [profile?.sessions_revoked_at, user?.last_sign_in_at]);
 
+  // Admin-set session timeout (minutes of inactivity; 0 = never).
+  useEffect(() => {
+    if (!user) return;
+    let timeout = 0;
+    supabase.from("site_settings").select("session_timeout_min").eq("id", 1).maybeSingle().then(({ data }) => { timeout = data?.session_timeout_min ?? 0; check(); });
+    const bump = () => localStorage.setItem("last_active", String(Date.now()));
+    const check = () => {
+      const last = Number(localStorage.getItem("last_active") || Date.now());
+      if (timeout > 0 && Date.now() - last > timeout * 60_000) {
+        localStorage.removeItem("last_active");
+        supabase.auth.signOut().then(() => { window.location.href = "/sign-in"; });
+      }
+    };
+    if (!localStorage.getItem("last_active")) bump();
+    const evs = ["pointerdown", "keydown"] as const;
+    evs.forEach((e) => window.addEventListener(e, bump));
+    const t = setInterval(check, 60_000);
+    return () => { evs.forEach((e) => window.removeEventListener(e, bump)); clearInterval(t); };
+  }, [user?.id]);
+
   return (
     <AuthCtx.Provider value={{ ready, session, user, profile, verified: !!user?.email_confirmed_at, refreshProfile }}>
       {children}

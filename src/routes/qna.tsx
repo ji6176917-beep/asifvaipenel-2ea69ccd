@@ -1,5 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Card, PageTitle } from "@/components/ui-kit";
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { ChevronDown } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import { supabase } from "@/integrations/supabase/client";
+import { useI18n, pickLang } from "@/lib/i18n";
+import { Empty, PageTitle } from "@/components/ui-kit";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const Route = createFileRoute("/qna")({
   head: () => ({
@@ -8,21 +15,44 @@ export const Route = createFileRoute("/qna")({
       { name: "description", content: "Answers to the most common questions about orders and payments." },
       { property: "og:title", content: "QnA | Premium SMM Store" },
       { property: "og:description", content: "Answers to the most common questions about orders and payments." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Page,
 });
 
 function Page() {
+  const { lang, t } = useI18n();
+  const [open, setOpen] = useState<string | null>(null);
+  const { data, isLoading } = useQuery({
+    queryKey: ["qna"],
+    staleTime: 60_000,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("qna").select("id, question, answer").order("sort");
+      if (error) throw error;
+      return data;
+    },
+  });
   return (
     <div className="mx-auto max-w-2xl">
-      <PageTitle>QnA</PageTitle>
-      <div className="space-y-3">
-        <Card><h2 className="label-premium mb-2 text-xl">How long does delivery take?</h2><p className="text-muted-foreground">Each service shows its average time. Our team delivers every order manually.</p></Card>
-        <Card><h2 className="label-premium mb-2 text-xl">How do I add funds?</h2><p className="text-muted-foreground">Open Add Funds, choose Binance, USDT or P2P (bKash, Nagad, Rocket), send the payment and submit the Transaction ID. An admin approves it shortly.</p></Card>
-        <Card><h2 className="label-premium mb-2 text-xl">Can I cancel an order?</h2><p className="text-muted-foreground">Yes — while the order is still Pending you can cancel it from Order History and get a full refund.</p></Card>
-        <Card><h2 className="label-premium mb-2 text-xl">My account is private, what now?</h2><p className="text-muted-foreground">Make the profile or post public before ordering, otherwise delivery may fail.</p></Card>
-      </div>
+      <PageTitle>{t("qna.title", "QnA")}</PageTitle>
+      {isLoading ? <Skeleton className="h-48 rounded-3xl" /> : !data?.length ? <Empty text="No questions yet." /> : (
+        <div className="space-y-3">
+          {data.map((q) => {
+            const isOpen = open === q.id;
+            return (
+              <div key={q.id} className="glass rounded-3xl">
+                <button aria-expanded={isOpen} onClick={() => setOpen(isOpen ? null : q.id)} className="flex w-full items-center justify-between gap-3 p-5 text-left">
+                  <span className="label-premium text-lg">{pickLang(q.question, lang)}</span>
+                  <ChevronDown className={`h-5 w-5 shrink-0 text-primary transition ${isOpen ? "rotate-180" : ""}`} />
+                </button>
+                {isOpen && <div className="md-content px-5 pb-5 text-muted-foreground"><ReactMarkdown>{pickLang(q.answer, lang)}</ReactMarkdown></div>}
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

@@ -67,10 +67,13 @@ export const adminUploadImage = createServerFn({ method: "POST" })
   });
 
 export const adminSetIcon = createServerFn({ method: "POST" })
-  .inputValidator((d) => z.object({ key: z.string().min(1).max(100), icon_url: z.string().max(300).nullable() }).parse(d))
+  .inputValidator((d) => z.object({ key: z.string().min(1).max(100), icon_url: z.string().max(300).nullable(), page_group: z.string().max(60).optional() }).parse(d))
   .handler(async ({ data }) => {
     const { s, db } = await ctx();
-    const { error } = await db.from("ui_icons").update({ icon_url: data.icon_url, updated_at: new Date().toISOString() }).eq("key", data.key);
+    const { data: ex } = await db.from("ui_icons").select("key").eq("key", data.key).maybeSingle();
+    const { error } = ex
+      ? await db.from("ui_icons").update({ icon_url: data.icon_url, updated_at: new Date().toISOString() }).eq("key", data.key)
+      : await db.from("ui_icons").insert({ key: data.key, page_group: data.page_group ?? "Footer", icon_url: data.icon_url });
     if (error) throw new Error(error.message);
     await s.logAdmin("icon_updated", data);
     return { ok: true };
