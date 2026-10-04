@@ -243,6 +243,57 @@ export type Database = {
           },
         ]
       }
+      menu_items: {
+        Row: {
+          created_at: string
+          deleted_at: string | null
+          icon_key: string | null
+          icon_url: string | null
+          id: string
+          is_active: boolean
+          is_system: boolean
+          label: Json
+          location: Database["public"]["Enums"]["menu_location"]
+          requires_login: boolean
+          sort: number
+          system_key: string | null
+          target_type: Database["public"]["Enums"]["menu_target"]
+          target_value: string
+        }
+        Insert: {
+          created_at?: string
+          deleted_at?: string | null
+          icon_key?: string | null
+          icon_url?: string | null
+          id?: string
+          is_active?: boolean
+          is_system?: boolean
+          label?: Json
+          location: Database["public"]["Enums"]["menu_location"]
+          requires_login?: boolean
+          sort?: number
+          system_key?: string | null
+          target_type?: Database["public"]["Enums"]["menu_target"]
+          target_value?: string
+        }
+        Update: {
+          created_at?: string
+          deleted_at?: string | null
+          icon_key?: string | null
+          icon_url?: string | null
+          id?: string
+          is_active?: boolean
+          is_system?: boolean
+          label?: Json
+          location?: Database["public"]["Enums"]["menu_location"]
+          requires_login?: boolean
+          sort?: number
+          system_key?: string | null
+          target_type?: Database["public"]["Enums"]["menu_target"]
+          target_value?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           body: string
@@ -639,7 +690,11 @@ export type Database = {
       site_settings: {
         Row: {
           allow_orders: boolean
+          announcement_color: string
+          announcement_end: string | null
+          announcement_link: string
           announcement_on: boolean
+          announcement_start: string | null
           announcement_text: string | null
           api_allow_new_keys: boolean
           api_docs: string
@@ -651,22 +706,37 @@ export type Database = {
           api_rate_per_min: number
           api_url: string
           bdt_rate: number
+          content_version: number
           deposit_max: number
           deposit_min: number
           email: string | null
+          favicon_url: string | null
+          footer_copyright: string
           hero_text: string
           hero_title: string
           id: number
+          logo_url: string | null
           music_enabled: boolean
+          music_version: number
+          popup_image: string | null
+          popup_link: string
+          popup_mode: string
+          popup_on: boolean
           require_screenshot: boolean
           require_verified_email: boolean
+          share_image_url: string | null
           site_name: string
+          tagline: string
           telegram: string | null
           whatsapp: string | null
         }
         Insert: {
           allow_orders?: boolean
+          announcement_color?: string
+          announcement_end?: string | null
+          announcement_link?: string
           announcement_on?: boolean
+          announcement_start?: string | null
           announcement_text?: string | null
           api_allow_new_keys?: boolean
           api_docs?: string
@@ -678,22 +748,37 @@ export type Database = {
           api_rate_per_min?: number
           api_url?: string
           bdt_rate?: number
+          content_version?: number
           deposit_max?: number
           deposit_min?: number
           email?: string | null
+          favicon_url?: string | null
+          footer_copyright?: string
           hero_text?: string
           hero_title?: string
           id?: number
+          logo_url?: string | null
           music_enabled?: boolean
+          music_version?: number
+          popup_image?: string | null
+          popup_link?: string
+          popup_mode?: string
+          popup_on?: boolean
           require_screenshot?: boolean
           require_verified_email?: boolean
+          share_image_url?: string | null
           site_name?: string
+          tagline?: string
           telegram?: string | null
           whatsapp?: string | null
         }
         Update: {
           allow_orders?: boolean
+          announcement_color?: string
+          announcement_end?: string | null
+          announcement_link?: string
           announcement_on?: boolean
+          announcement_start?: string | null
           announcement_text?: string | null
           api_allow_new_keys?: boolean
           api_docs?: string
@@ -705,16 +790,27 @@ export type Database = {
           api_rate_per_min?: number
           api_url?: string
           bdt_rate?: number
+          content_version?: number
           deposit_max?: number
           deposit_min?: number
           email?: string | null
+          favicon_url?: string | null
+          footer_copyright?: string
           hero_text?: string
           hero_title?: string
           id?: number
+          logo_url?: string | null
           music_enabled?: boolean
+          music_version?: number
+          popup_image?: string | null
+          popup_link?: string
+          popup_mode?: string
+          popup_on?: boolean
           require_screenshot?: boolean
           require_verified_email?: boolean
+          share_image_url?: string | null
           site_name?: string
+          tagline?: string
           telegram?: string | null
           whatsapp?: string | null
         }
@@ -742,38 +838,101 @@ export type Database = {
         Row: {
           active: boolean
           artist: string
+          autoplay: boolean
           cover_path: string | null
           created_at: string
           deleted_at: string | null
           file_path: string
           id: string
           is_welcome: boolean
+          loop: boolean
+          show_for: string
           sort: number
+          source_url: string | null
           title: string
+          volume: number
         }
         Insert: {
           active?: boolean
           artist?: string
+          autoplay?: boolean
           cover_path?: string | null
           created_at?: string
           deleted_at?: string | null
           file_path: string
           id?: string
           is_welcome?: boolean
+          loop?: boolean
+          show_for?: string
           sort?: number
+          source_url?: string | null
           title: string
+          volume?: number
         }
         Update: {
           active?: boolean
           artist?: string
+          autoplay?: boolean
           cover_path?: string | null
           created_at?: string
           deleted_at?: string | null
           file_path?: string
           id?: string
           is_welcome?: boolean
+          loop?: boolean
+          show_for?: string
           sort?: number
+          source_url?: string | null
           title?: string
+          volume?: number
+        }
+        Relationships: []
+      }
+      ui_icons: {
+        Row: {
+          icon_url: string | null
+          key: string
+          page_group: string
+          updated_at: string
+        }
+        Insert: {
+          icon_url?: string | null
+          key: string
+          page_group: string
+          updated_at?: string
+        }
+        Update: {
+          icon_url?: string | null
+          key?: string
+          page_group?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ui_labels: {
+        Row: {
+          default_text: string
+          key: string
+          page_group: string
+          rich: boolean
+          translations: Json
+          updated_at: string
+        }
+        Insert: {
+          default_text?: string
+          key: string
+          page_group: string
+          rich?: boolean
+          translations?: Json
+          updated_at?: string
+        }
+        Update: {
+          default_text?: string
+          key?: string
+          page_group?: string
+          rich?: boolean
+          translations?: Json
+          updated_at?: string
         }
         Relationships: []
       }
@@ -893,6 +1052,19 @@ export type Database = {
     Enums: {
       app_role: "admin" | "moderator" | "user"
       deposit_status: "pending" | "approved" | "rejected" | "cancelled"
+      menu_location:
+        | "three_dot_menu"
+        | "bottom_bar"
+        | "footer_links"
+        | "footer_info"
+        | "home_shortcuts"
+      menu_target:
+        | "internal_route"
+        | "external_url"
+        | "telegram"
+        | "whatsapp"
+        | "email"
+        | "action"
       order_status:
         | "pending"
         | "processing"
@@ -1030,6 +1202,21 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "moderator", "user"],
       deposit_status: ["pending", "approved", "rejected", "cancelled"],
+      menu_location: [
+        "three_dot_menu",
+        "bottom_bar",
+        "footer_links",
+        "footer_info",
+        "home_shortcuts",
+      ],
+      menu_target: [
+        "internal_route",
+        "external_url",
+        "telegram",
+        "whatsapp",
+        "email",
+        "action",
+      ],
       order_status: [
         "pending",
         "processing",

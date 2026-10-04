@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Music, Pause, Play, Volume2, VolumeX, X, Power } from "lucide-react";
 import { getWelcomeSong } from "@/lib/music.functions";
+import { settingsQuery } from "@/lib/queries";
 
 type Ctx = { toggleOpen: () => void; available: boolean };
 const MusicCtx = createContext<Ctx>({ toggleOpen: () => {}, available: false });
@@ -12,7 +13,10 @@ const fmt = (t: number) => (isFinite(t) ? `${Math.floor(t / 60)}:${String(Math.f
 
 export function MusicProvider({ children }: { children: ReactNode }) {
   const fetchSong = useServerFn(getWelcomeSong);
-  const { data: song } = useQuery({ queryKey: ["welcome-song"], queryFn: () => fetchSong(), staleTime: 30 * 60_000 });
+  const { data: settings } = useQuery(settingsQuery);
+  const version = (settings as { music_version?: number } | null | undefined)?.music_version ?? 0;
+  // Versioned key: when the admin changes the song or switches music off, every visitor refetches.
+  const { data: song } = useQuery({ queryKey: ["welcome-song", version], queryFn: () => fetchSong(), staleTime: 30 * 60_000 });
   const audio = useRef<HTMLAudioElement | null>(null);
   const [open, setOpen] = useState(false);
   const [playing, setPlaying] = useState(false);
@@ -25,23 +29,30 @@ export function MusicProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     setOff(localStorage.getItem("music_off") === "1");
-    const v = Number(localStorage.getItem("music_vol"));
-    if (v > 0 && v <= 1) setVolume(v);
   }, []);
+  useEffect(() => {
+    const saved = localStorage.getItem("music_vol");
+    const v = Number(saved);
+    if (saved !== null && v >= 0 && v <= 1) setVolume(v);
+    else if (song) setVolume(song.volume / 100);
+  }, [song]);
 
   const play = () => { audio.current?.play().then(() => setPlaying(true)).catch(() => setPlaying(false)); };
 
   // Autoplay rules: first visit → one-time "Tap to enter"; returning visitors → first interaction.
   useEffect(() => {
-    if (!song?.url || off) return;
-    if (localStorage.getItem("music_entered") !== "1") { setOverlay(true); return; }
+    if (!song?.url || off) { audio.current?.pause(); return; }
+    if (!song.autoplay) return;
+    const firstVisit = localStorage.getItem("music_entered") !== "1";
+    if (firstVisit) { setOverlay(true); return; }
+    if (song.show_for === "first") return;
     const start = () => { play(); cleanup(); };
     const evs = ["pointerdown", "keydown", "scroll", "touchstart"] as const;
     const cleanup = () => evs.forEach((e) => window.removeEventListener(e, start));
     evs.forEach((e) => window.addEventListener(e, start, { once: true, passive: true }));
     return cleanup;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [song?.url, off]);
+  }, [song?.url, song?.autoplay, song?.show_for, off]);
 
   useEffect(() => { if (audio.current) { audio.current.volume = volume; audio.current.muted = muted; } }, [volume, muted]);
 
@@ -57,7 +68,7 @@ export function MusicProvider({ children }: { children: ReactNode }) {
     <MusicCtx.Provider value={{ toggleOpen: () => setOpen((o) => !o), available: !!song?.url }}>
       {children}
       {song?.url && (
-        <audio ref={audio} src={song.url} loop preload="auto"
+        <audio ref={audio} src={song.url} loop={song.loop} preload="auto"
           onTimeUpdate={(e) => setTime(e.currentTarget.currentTime)}
           onLoadedMetadata={(e) => setDur(e.currentTarget.duration)}
           onPause={() => setPlaying(false)} onPlay={() => setPlaying(true)} />

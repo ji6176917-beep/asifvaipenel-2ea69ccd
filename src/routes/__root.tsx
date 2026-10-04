@@ -14,6 +14,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AuthProvider } from "@/lib/auth";
 import { AppShell } from "@/components/layout/AppShell";
+import { I18nProvider } from "@/lib/i18n";
 import { SupportAdminProvider } from "@/components/SupportAdmin";
 import { Toaster } from "@/components/ui/sonner";
 import { VisitTracker } from "@/components/VisitTracker";
@@ -126,9 +127,9 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <AuthProvider>
-        <SupportAdminProvider><AppShell>
+        <I18nProvider><SupportAdminProvider><AppShell>
           <Outlet />
-        </AppShell></SupportAdminProvider>
+        </AppShell></SupportAdminProvider></I18nProvider>
         <Toaster richColors position="top-center" />
         <VisitTracker />
       </AuthProvider>

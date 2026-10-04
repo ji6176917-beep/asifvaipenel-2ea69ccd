@@ -18,6 +18,11 @@ import { PlatformIcon, TelegramIcon, WhatsAppIcon } from "@/lib/brand";
 import { toast } from "sonner";
 import { MusicProvider, useMusic } from "@/components/MusicPlayer";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { useI18n, LANGUAGES, pickLang } from "@/lib/i18n";
+import { useMenu, MenuIcon, type MenuItem } from "@/lib/menu";
+import { useStorageUrl } from "@/lib/storage-url";
+import { useSupportTap } from "@/components/SupportAdmin";
+import ReactMarkdown from "react-markdown";
 
 function useTheme() {
   const [dark, setDark] = useState(false);
@@ -62,43 +67,74 @@ function FloatingBackground() {
   );
 }
 
-const MENU = [
-  { to: "/", label: "Home", icon: Home },
-  { to: "/profile", label: "Profile", icon: User },
-  { to: "/balance", label: "Balance", icon: Wallet },
-  { to: "/order", label: "New Order", icon: ShoppingCart },
-  { to: "/orders", label: "Order History", icon: History },
-  { to: "/add-funds", label: "Add Funds", icon: PlusCircle },
-  { to: "/add-funds/history", label: "Add Funds History", icon: ReceiptText },
-  { to: "/reseller-api", label: "API", icon: Code2 },
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-] as const;
+type Settings = Record<string, unknown> & { telegram?: string | null; whatsapp?: string | null; email?: string | null };
 
-const MENU_AFTER = [
-  { to: "/policy", label: "Policy", icon: ShieldCheck },
-  { to: "/qna", label: "QnA", icon: HelpCircle },
-  { to: "/about", label: "About Us", icon: Info },
-] as const;
+/** Resolve where a menu item points. Returns null when it has nowhere to go (e.g. empty support contact). */
+function itemHref(m: MenuItem, s?: Settings | null): { kind: "route" | "external" | "action"; to: string } | null {
+  switch (m.target_type) {
+    case "internal_route": return { kind: "route", to: m.target_value || "/" };
+    case "external_url": return m.target_value ? { kind: "external", to: m.target_value } : null;
+    case "telegram": { const u = telegramUrl(m.target_value || s?.telegram); return u ? { kind: "external", to: u } : null; }
+    case "whatsapp": { const u = whatsappUrl(m.target_value || s?.whatsapp); return u ? { kind: "external", to: u } : null; }
+    case "email": { const e = m.target_value || s?.email; return e ? { kind: "external", to: `mailto:${e}` } : null; }
+    default: return { kind: "action", to: m.target_value };
+  }
+}
 
-const BOTTOM = [
-  { to: "/", label: "Home", icon: Home },
-  { to: "/order", label: "New Order", icon: ShoppingCart },
-  { to: "/orders", label: "Orders", icon: History },
-  { to: "/add-funds", label: "Add Funds", icon: PlusCircle },
-  { to: "/profile", label: "Account", icon: User },
-] as const;
+function NavItem({ m, className, iconClass = "h-5 w-5 text-primary", onAction, settings, children, showIcon = true }: {
+  m: MenuItem; className: string; iconClass?: string; onAction: (a: string) => void; settings?: Settings | null | undefined; children?: ReactNode; showIcon?: boolean;
+}) {
+  const { lang } = useI18n();
+  const tap = useSupportTap();
+  const h = itemHref(m, settings);
+  if (!h) return null;
+  if (h.kind === "action" && h.to === "support" && !telegramUrl(settings?.telegram)) return null;
+  const label = pickLang(m.label, lang, m.system_key ?? "");
+  const inner = <>{showIcon && <MenuIcon item={m} className={iconClass} />}{children ?? label}</>;
+  if (h.kind === "route") return <Link to={h.to as never} className={className}>{inner}</Link>;
+  if (h.kind === "external") return <a href={h.to} target={h.to.startsWith("mailto:") ? undefined : "_blank"} rel="noreferrer" className={className}>{inner}</a>;
+  return <button type="button" onClick={() => (h.to === "support" ? tap() : onAction(h.to))} className={`${className} text-left`}>{inner}</button>;
+}
+
+function WelcomePopup({ s }: { s?: Settings | null | undefined }) {
+  const { t } = useI18n();
+  const [open, setOpen] = useState(false);
+  const img = useStorageUrl("logos", (s?.["popup_image"] as string | null) ?? null);
+  useEffect(() => {
+    if (!s?.["popup_on"]) return;
+    if (s["popup_mode"] !== "every" && localStorage.getItem("popup_seen") === "1") return;
+    if (s["popup_mode"] === "every" && sessionStorage.getItem("popup_seen") === "1") return;
+    const id = setTimeout(() => setOpen(true), 800);
+    return () => clearTimeout(id);
+  }, [s]);
+  const close = () => { localStorage.setItem("popup_seen", "1"); sessionStorage.setItem("popup_seen", "1"); setOpen(false); };
+  const link = (s?.["popup_link"] as string) || "";
+  return (
+    <Dialog open={open} onOpenChange={(o) => !o && close()}>
+      <DialogContent className="max-w-md text-center">
+        {img && <img src={img} alt="" className="mx-auto max-h-48 rounded-2xl object-contain" />}
+        <DialogTitle className="text-gradient text-2xl">{t("home.popup_title")}</DialogTitle>
+        <div className="md-content text-muted-foreground"><ReactMarkdown>{t("home.popup_message")}</ReactMarkdown></div>
+        {link ? <a href={link} target="_blank" rel="noreferrer" onClick={close} className="btn-glow">{t("home.popup_button")}</a>
+          : <button onClick={close} className="btn-glow">{t("home.popup_button")}</button>}
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 export function AppShell({ children }: { children: ReactNode }) {
   return <MusicProvider><Shell>{children}</Shell></MusicProvider>;
 }
 
-const LANGS = [{ code: "en", label: "English", ready: true }, { code: "bn", label: "বাংলা (Bangla)", ready: false }];
 
 function Shell({ children }: { children: ReactNode }) {
   const music = useMusic();
   const [langOpen, setLangOpen] = useState(false);
-  const [lang, setLang] = useState("en");
-  useEffect(() => { setLang(localStorage.getItem("lang") ?? "en"); }, []);
+  const { lang, setLang, t } = useI18n();
+  const menu = useMenu("three_dot_menu");
+  const bottom = useMenu("bottom_bar");
+  const footLinks = useMenu("footer_links");
+  const footInfo = useMenu("footer_info");
   const { dark, toggle } = useTheme();
   const { user, profile, verified } = useAuth();
   const { data: settings } = useQuery(settingsQuery);
@@ -109,6 +145,25 @@ function Shell({ children }: { children: ReactNode }) {
   const qc = useQueryClient();
   const path = useRouterState({ select: (s) => s.location.pathname });
   const siteName = settings?.site_name ?? "Premium SMM Store";
+  const logo = useStorageUrl("logos", settings?.logo_url ?? null);
+  const now = Date.now();
+  const annOn = !!settings?.announcement_on && !!settings.announcement_text
+    && (!settings.announcement_start || Date.parse(settings.announcement_start) <= now)
+    && (!settings.announcement_end || Date.parse(settings.announcement_end) > now);
+  const favicon = useStorageUrl("logos", settings?.favicon_url ?? null);
+  useEffect(() => {
+    if (!favicon) return;
+    let el = document.querySelector<HTMLLinkElement>("link[rel='icon']");
+    if (!el) { el = document.createElement("link"); el.rel = "icon"; document.head.appendChild(el); }
+    el.href = favicon;
+  }, [favicon]);
+  const visible = (m: MenuItem) => !m.requires_login || !!user;
+  const onAction = (a: string) => {
+    setMenuOpen(false);
+    if (a === "language") setLangOpen(true);
+    else if (a === "music") music.toggleOpen();
+    else if (a === "logout") logout();
+  };
   const tg = telegramUrl(settings?.telegram);
   const wa = whatsappUrl(settings?.whatsapp);
   const isMobile = useIsMobile();
@@ -121,7 +176,7 @@ function Shell({ children }: { children: ReactNode }) {
     await qc.cancelQueries();
     qc.clear();
     await supabase.auth.signOut();
-    toast.success("Logged out");
+    toast.success(t("toast.logged_out"));
     navigate({ to: "/", replace: true });
   };
 
@@ -134,10 +189,14 @@ function Shell({ children }: { children: ReactNode }) {
   return (
     <div className="relative min-h-screen pb-28">
       <FloatingBackground />
+      <WelcomePopup s={settings as Settings | null | undefined} />
 
-      {settings?.announcement_on && settings.announcement_text && !bannerClosed && (
-        <div className="bg-brand flex items-center justify-center gap-3 px-4 py-2 text-sm text-primary-foreground">
-          <Sparkles className="h-4 w-4 shrink-0" /> <span className="text-center">{settings.announcement_text}</span>
+      {annOn && !bannerClosed && (
+        <div className="bg-brand flex items-center justify-center gap-3 px-4 py-2 text-sm text-primary-foreground" style={settings?.announcement_color ? { background: settings.announcement_color } : undefined}>
+          <Sparkles className="h-4 w-4 shrink-0" />
+          {settings?.announcement_link
+            ? <a href={settings.announcement_link} target="_blank" rel="noreferrer" className="text-center underline-offset-2 hover:underline">{settings.announcement_text}</a>
+            : <span className="text-center">{settings?.announcement_text}</span>}
           <button aria-label="Dismiss" onClick={() => setBannerClosed(true)}><X className="h-4 w-4" /></button>
         </div>
       )}
@@ -145,9 +204,11 @@ function Shell({ children }: { children: ReactNode }) {
       <header className="glass sticky top-0 z-40 rounded-none border-x-0 border-t-0">
         <div className="mx-auto flex max-w-5xl items-center gap-2 px-4 py-3">
           <Link to="/" className="flex min-w-0 items-center gap-2">
-            <span className="bg-brand shadow-glow flex h-9 w-9 shrink-0 items-center justify-center rounded-xl font-display text-lg font-bold text-primary-foreground">
-              {siteName.charAt(0)}
-            </span>
+            {logo ? <img src={logo} alt="" className="h-9 w-9 shrink-0 rounded-xl object-contain" /> : (
+              <span className="bg-brand shadow-glow flex h-9 w-9 shrink-0 items-center justify-center rounded-xl font-display text-lg font-bold text-primary-foreground">
+                {siteName.charAt(0)}
+              </span>
+            )}
             <span className="text-gradient truncate font-display text-base font-bold sm:text-lg">{siteName}</span>
           </Link>
           <div className="ml-auto flex items-center gap-1.5">
@@ -158,7 +219,7 @@ function Shell({ children }: { children: ReactNode }) {
             <button aria-label="Toggle theme" onClick={toggle} className="rounded-full p-2 hover:bg-accent">
               {dark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </button>
-            <button aria-label="Open menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(true)} className={`menu-btn ${menuOpen ? "is-open" : ""}`}>
+            <button aria-label={t("header.open_menu")} aria-expanded={menuOpen} onClick={() => setMenuOpen(true)} className={`menu-btn ${menuOpen ? "is-open" : ""}`}>
               <span className="menu-dots" aria-hidden><i /><i /><i /></span>
             </button>
           </div>
@@ -167,8 +228,8 @@ function Shell({ children }: { children: ReactNode }) {
 
       {user && !verified && (
         <div className="mx-auto mt-3 flex max-w-5xl items-center justify-between gap-3 rounded-2xl border border-warning/40 bg-warning/10 px-4 py-2.5 text-sm sm:mx-4 lg:mx-auto">
-          <span className="flex items-center gap-2"><Mail className="h-4 w-4 text-warning" /> Verify your email to order and add funds.</span>
-          <button onClick={resend} className="font-semibold text-primary underline-offset-2 hover:underline">Resend</button>
+          <span className="flex items-center gap-2"><Mail className="h-4 w-4 text-warning" /> {t("header.verify_banner")}</span>
+          <button onClick={resend} className="font-semibold text-primary underline-offset-2 hover:underline">{t("header.resend")}</button>
         </div>
       )}
 
@@ -176,22 +237,15 @@ function Shell({ children }: { children: ReactNode }) {
 
       <footer className="mx-auto mt-16 max-w-5xl px-4 pb-6">
         <div className="glass rounded-3xl p-6">
-          <h3 className="label-premium mb-3 text-lg">Quick Links</h3>
+          <h3 className="label-premium mb-3 text-lg">{t("footer.quick_links")}</h3>
           <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted-foreground">
-            <Link to="/" className="hover:text-primary">Home</Link>
-            {tg && <SupportAdminButton className="hover:text-primary">Support Admin</SupportAdminButton>}
-            <Link to="/qna" className="hover:text-primary">QnA</Link>
-            <Link to="/order" className="hover:text-primary">Buy Services</Link>
-            <Link to="/about" className="hover:text-primary">About Us</Link>
-            <Link to="/policy" className="hover:text-primary">Policy</Link>
+            {footLinks.filter(visible).map((m) => <NavItem key={m.id} m={m} settings={settings} onAction={onAction} showIcon={false} className="hover:text-primary" />)}
           </div>
-          <h3 className="label-premium mb-3 mt-6 text-lg">Info</h3>
-          <div className="flex gap-4">
-            {wa && <a href={wa} target="_blank" rel="noreferrer" className="tilt glass flex flex-col items-center gap-1 rounded-2xl px-4 py-3 text-xs"><WhatsAppIcon className="h-6 w-6 text-success" />WhatsApp</a>}
-            {tg && <a href={tg} target="_blank" rel="noreferrer" className="tilt glass flex flex-col items-center gap-1 rounded-2xl px-4 py-3 text-xs"><TelegramIcon className="h-6 w-6" />Telegram</a>}
-            {settings?.email && <a href={`mailto:${settings.email}`} className="tilt glass flex flex-col items-center gap-1 rounded-2xl px-4 py-3 text-xs"><Mail className="h-6 w-6 text-primary" />E-mail</a>}
+          <h3 className="label-premium mb-3 mt-6 text-lg">{t("footer.info")}</h3>
+          <div className="flex flex-wrap gap-4">
+            {footInfo.filter(visible).map((m) => <NavItem key={m.id} m={m} settings={settings} onAction={onAction} iconClass="h-6 w-6 text-primary" className="tilt glass flex flex-col items-center gap-1 rounded-2xl px-4 py-3 text-xs" />)}
           </div>
-          <p className="mt-6 text-xs text-muted-foreground">© {new Date().getFullYear()} {siteName}. All rights reserved.</p>
+          <p className="mt-6 text-xs text-muted-foreground">{settings?.footer_copyright || `© ${new Date().getFullYear()} ${siteName}. ${t("footer.rights")}`}</p>
         </div>
       </footer>
 
@@ -204,20 +258,20 @@ function Shell({ children }: { children: ReactNode }) {
 
       {!cookieOk && (
         <div className="glass fixed bottom-24 left-4 right-20 z-40 flex items-center gap-3 rounded-2xl p-3 text-xs sm:right-auto sm:max-w-sm">
-          <span>We use cookies to keep you signed in and remember your preferences.</span>
-          <button className="btn-glow !px-3 !py-1.5 text-xs" onClick={() => { localStorage.setItem("cookie_ok", "1"); setCookieOk(true); }}>OK</button>
+          <span>{t("footer.cookie")}</span>
+          <button className="btn-glow !px-3 !py-1.5 text-xs" onClick={() => { localStorage.setItem("cookie_ok", "1"); setCookieOk(true); }}>{t("footer.cookie_ok")}</button>
         </div>
       )}
 
       <nav className="glass fixed inset-x-0 bottom-0 z-40 rounded-none border-x-0 border-b-0" aria-label="Shortcuts">
-        <div className="mx-auto grid max-w-lg grid-cols-5">
-          {BOTTOM.map((b) => {
-            const active = b.to === "/" ? path === "/" : path.startsWith(b.to);
+        <div className="mx-auto grid max-w-lg" style={{ gridTemplateColumns: `repeat(${Math.max(1, bottom.filter(visible).length)}, minmax(0, 1fr))` }}>
+          {bottom.filter(visible).map((b) => {
+            const to = b.target_type === "internal_route" ? b.target_value : "";
+            const active = to ? (to === "/" ? path === "/" : path.startsWith(to)) : false;
             return (
-              <Link key={b.to} to={b.to} className={`flex flex-col items-center gap-0.5 py-2.5 text-[11px] font-semibold transition ${active ? "text-primary" : "text-muted-foreground"}`}>
-                <b.icon className={`h-5 w-5 ${active ? "drop-shadow-[0_0_8px_var(--glow)]" : ""}`} />
-                {b.label}
-              </Link>
+              <NavItem key={b.id} m={b} settings={settings} onAction={onAction}
+                iconClass={`h-5 w-5 ${active ? "drop-shadow-[0_0_8px_var(--glow)]" : ""}`}
+                className={`flex flex-col items-center gap-0.5 py-2.5 text-[11px] font-semibold transition ${active ? "text-primary" : "text-muted-foreground"}`} />
             );
           })}
         </div>
@@ -237,44 +291,23 @@ function Shell({ children }: { children: ReactNode }) {
             </Link>
           )}
           <div className="mt-2 flex flex-col gap-1 px-2">
-            {MENU.map((m) => (
-              <Link key={m.to} to={m.to} onClick={() => setMenuOpen(false)} className="label-premium flex items-center gap-3 rounded-xl px-3 py-2.5 hover:bg-accent">
-                <m.icon className="h-5 w-5 text-primary" /> {m.label}
-              </Link>
+            {menu.filter(visible).map((m) => (
+              <NavItem key={m.id} m={m} settings={settings} onAction={onAction}
+                iconClass={`h-5 w-5 ${m.system_key === "logout" ? "" : "text-primary"}`}
+                className={`label-premium flex items-center gap-3 rounded-xl px-3 py-2.5 hover:bg-accent ${m.system_key === "logout" ? "text-destructive" : ""}`} />
             ))}
-            <button onClick={() => { setMenuOpen(false); setLangOpen(true); }} className="label-premium flex items-center gap-3 rounded-xl px-3 py-2.5 hover:bg-accent text-left">
-              <Languages className="h-5 w-5 text-primary" /> Language
-            </button>
-            <button onClick={() => { setMenuOpen(false); music.toggleOpen(); }} className="label-premium flex items-center gap-3 rounded-xl px-3 py-2.5 hover:bg-accent text-left">
-              <Music className="h-5 w-5 text-primary" /> Music
-            </button>
-            {MENU_AFTER.map((m) => (
-              <Link key={m.to} to={m.to} onClick={() => setMenuOpen(false)} className="label-premium flex items-center gap-3 rounded-xl px-3 py-2.5 hover:bg-accent">
-                <m.icon className="h-5 w-5 text-primary" /> {m.label}
-              </Link>
-            ))}
-            {tg && (
-              <SupportAdminButton className="label-premium flex items-center gap-3 rounded-xl px-3 py-2.5 text-left hover:bg-accent">
-                <TelegramIcon className="h-5 w-5" /> Support Admin
-              </SupportAdminButton>
-            )}
-            {user && (
-              <button onClick={logout} className="label-premium flex items-center gap-3 rounded-xl px-3 py-2.5 text-left text-destructive hover:bg-accent">
-                <LogOut className="h-5 w-5" /> Logout
-              </button>
-            )}
           </div>
         </SheetContent>
       </Sheet>
 
       <Dialog open={langOpen} onOpenChange={setLangOpen}>
         <DialogContent className="max-w-sm">
-          <DialogTitle className="text-gradient">Language</DialogTitle>
+          <DialogTitle className="text-gradient">{t("menu.language")}</DialogTitle>
           <div className="space-y-2">
-            {LANGS.map((l) => (
-              <button key={l.code} disabled={!l.ready} onClick={() => { localStorage.setItem("lang", l.code); setLang(l.code); setLangOpen(false); toast.success(`Language: ${l.label}`); }}
-                className={`flex w-full items-center justify-between rounded-2xl border px-4 py-3 text-left ${lang === l.code ? "border-primary bg-primary/10" : "border-border"} disabled:opacity-50`}>
-                <span>{l.label}</span>{lang === l.code ? <Check className="h-4 w-4 text-primary" /> : !l.ready && <span className="text-xs">Coming soon</span>}
+            {LANGUAGES.map((l) => (
+              <button key={l.code} onClick={() => { setLang(l.code); setLangOpen(false); toast.success(l.label); }}
+                className={`flex w-full items-center justify-between rounded-2xl border px-4 py-3 text-left ${lang === l.code ? "border-primary bg-primary/10" : "border-border"}`}>
+                <span>{l.label}</span>{lang === l.code && <Check className="h-4 w-4 text-primary" />}
               </button>
             ))}
           </div>
