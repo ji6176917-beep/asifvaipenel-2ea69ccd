@@ -180,17 +180,17 @@ function Icons() {
   );
 }
 
-export function Branding() {
+export function Branding({ identityOnly = false }: { identityOnly?: boolean }) {
   const get = useServerFn(adminGetBranding);
   const { data, isLoading, isError } = useQuery({ queryKey: ["admin-branding"], queryFn: () => get() });
   if (isError) return <ErrorState />;
   if (isLoading || !data) return <Skeleton className="h-60 rounded-3xl" />;
-  return <BrandingForm s={data} />;
+  return <BrandingForm s={data} identityOnly={identityOnly} />;
 }
 
 const toLocal = (v: string | null) => (v ? new Date(v).toISOString().slice(0, 16) : "");
 
-function BrandingForm({ s }: { s: Awaited<ReturnType<typeof adminGetBranding>> }) {
+function BrandingForm({ s, identityOnly }: { s: Awaited<ReturnType<typeof adminGetBranding>>; identityOnly: boolean }) {
   const save = useServerFn(adminSaveBranding);
   const qc = useQueryClient();
   const [f, setF] = useState({ ...s, announcement_start: toLocal(s.announcement_start), announcement_end: toLocal(s.announcement_end) });
@@ -221,7 +221,9 @@ function BrandingForm({ s }: { s: Awaited<ReturnType<typeof adminGetBranding>> }
         <ImagePick label="Share image" folder="branding" value={f.share_image_url} onChange={(v) => setF({ ...f, share_image_url: v })} />
         <div><label className={labelCls} htmlFor="b-copy">Footer copyright (empty = “© year Website name”)</label><input id="b-copy" className={inputCls} {...txt("footer_copyright")} /></div>
         <p className="text-xs text-muted-foreground">Hero title, hero article, section titles and “Order Now” are in Texts & labels → Home, with a field per language.</p>
+        {identityOnly && <button disabled={busy} onClick={go} className="btn-glow w-full">{busy && <Spinner />} Save site identity</button>}
       </Card>
+      {!identityOnly && <>
       <Card className="space-y-3">
         <label className="flex items-center justify-between"><span className="label-premium">Announcement banner</span><Switch checked={f.announcement_on} onCheckedChange={(v) => setF({ ...f, announcement_on: v })} /></label>
         <div><label className={labelCls} htmlFor="b-ann">Text</label><input id="b-ann" className={inputCls} {...txt("announcement_text")} /></div>

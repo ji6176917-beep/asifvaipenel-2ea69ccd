@@ -566,7 +566,7 @@ export function AdminTheme() {
       </div>
       <h2 className="label-premium pt-4 text-xl">Site Identity</h2>
       <p className="text-xs text-muted-foreground">Website name, logo and favicon appear in the header, footer, sign-in/sign-up pages, browser tab and menu.</p>
-      <Branding />
+      <Branding identityOnly />
     </div>
   );
 }
