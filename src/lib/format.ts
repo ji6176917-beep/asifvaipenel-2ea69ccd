@@ -43,6 +43,7 @@ const ERRORS: Record<string, string> = {
   AMOUNT_OUT_OF_RANGE: "Amount is outside the allowed range.",
   INVALID_TXN: "Please enter a valid Transaction ID.",
   DUPLICATE_TXN: "This Transaction ID has already been used.",
+  SCREENSHOT_REQUIRED: "Please upload the payment screenshot.",
   CANNOT_CANCEL: "Only pending orders can be canceled.",
 };
 export function friendlyError(msg?: string) {

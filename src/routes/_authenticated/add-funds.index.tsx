@@ -59,19 +59,24 @@ function AddFunds() {
 
   const rate = Number(s?.bdt_rate ?? 130);
   const amt = Number(amount || 0);
+  const minA = Math.max(Number(m?.min_amount ?? 0), Number(s?.deposit_min ?? 0));
+  const maxA = Math.min(Number(m?.max_amount ?? Infinity), Number(s?.deposit_max ?? Infinity));
+  const needShot = !!s?.require_screenshot;
   const groups = (["binance", "usdt", "p2p"] as const).filter((g) => methods?.some((x) => x.kind === g));
   const p2p = methods?.filter((x) => x.kind === "p2p") ?? [];
 
   const pickGroup = (g: "binance" | "usdt" | "p2p") => {
     setGroup(g);
-    setM(g === "p2p" ? null : methods!.find((x) => x.kind === g) ?? null);
+    const list = methods!.filter((x) => x.kind === g);
+    setM(list.length === 1 ? list[0]! : null);
   };
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!m || !user) return;
     if (!verified) { toast.error("Please verify your email first."); return; }
-    if (!(amt >= Number(m.min_amount) && amt <= Number(m.max_amount))) { toast.error(`Amount must be ${money(m.min_amount)}–${money(m.max_amount)}`); return; }
+    if (!(amt >= minA && amt <= maxA)) { toast.error(`Amount must be ${money(minA)}–${money(maxA)}`); return; }
+    if (needShot && !file) { toast.error("Please upload the payment screenshot"); return; }
     if (txn.trim().length < 4) { toast.error("Enter the Transaction ID"); return; }
     setBusy(true);
     let path: string | null = null;
@@ -116,11 +121,11 @@ function AddFunds() {
         <Card>
           <button onClick={() => { setGroup(null); setM(null); }} className="mb-4 flex items-center gap-1 text-sm text-muted-foreground hover:text-primary"><ArrowLeft className="h-4 w-4" /> Change method</button>
 
-          {group === "p2p" && (
+          {(methods?.filter((x) => x.kind === group).length ?? 0) > 1 && (
             <div className="mb-5 grid grid-cols-3 gap-2">
-              {p2p.map((x) => (
+              {methods!.filter((x) => x.kind === group).map((x) => (
                 <button key={x.id} onClick={() => setM(x)} className={`flex flex-col items-center gap-1.5 rounded-2xl border p-3 transition ${m?.id === x.id ? "border-primary bg-primary/10 shadow-glow" : "border-border"}`}>
-                  <MethodLogo name={x.name} kind="p2p" logo={x.logo_url} className="h-10 w-12" />
+                  <MethodLogo name={x.name} kind={x.kind} logo={x.logo_url} className="h-10 w-12" />
                   <span className="text-xs font-semibold">{x.name}</span>
                 </button>
               ))}
@@ -137,10 +142,11 @@ function AddFunds() {
                   <Copyable value={m.account} className={m.kind === "usdt" ? "text-xs" : "text-base font-bold"} />
                 </div>
               </div>
+              {m.instructions && <p className="whitespace-pre-line rounded-2xl bg-muted/40 p-3 text-sm text-muted-foreground">{m.instructions}</p>}
               <div>
                 <label className={labelCls} htmlFor="amt">Amount (USD)</label>
                 <input id="amt" inputMode="decimal" className={inputCls} value={amount} onChange={(e) => setAmount(e.target.value.replace(/[^\d.]/g, ""))} />
-                <p className="mt-1 text-xs text-muted-foreground">Min {money(m.min_amount)} — Max {money(m.max_amount)}</p>
+                <p className="mt-1 text-xs text-muted-foreground">Min {money(minA)} — Max {money(maxA)}</p>
               </div>
               {m.kind === "p2p" && (
                 <div className="rounded-2xl border border-primary/40 bg-primary/5 p-4 text-center">
@@ -155,7 +161,7 @@ function AddFunds() {
               </div>
               <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-dashed border-border p-4 text-sm text-muted-foreground hover:border-primary">
                 <ImagePlus className="h-5 w-5 text-primary" />
-                {file ? file.name : "Upload payment screenshot (optional)"}
+                {file ? file.name : `Upload payment screenshot${needShot ? " (required)" : " (optional)"}`}
                 <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
               </label>
               <button disabled={busy} className="btn-glow w-full !py-4">{busy && <Spinner />} {m.kind === "p2p" ? "Confirm Add Funds" : "Add Funds"}</button>

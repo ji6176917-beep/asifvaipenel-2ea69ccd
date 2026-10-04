@@ -186,6 +186,7 @@ export type Database = {
           method_id: string
           method_kind: Database["public"]["Enums"]["pm_kind"]
           method_name: string
+          reviewed_at: string | null
           screenshot_path: string | null
           status: Database["public"]["Enums"]["deposit_status"]
           txn_id: string
@@ -205,6 +206,7 @@ export type Database = {
           method_id: string
           method_kind: Database["public"]["Enums"]["pm_kind"]
           method_name: string
+          reviewed_at?: string | null
           screenshot_path?: string | null
           status?: Database["public"]["Enums"]["deposit_status"]
           txn_id: string
@@ -224,6 +226,7 @@ export type Database = {
           method_id?: string
           method_kind?: Database["public"]["Enums"]["pm_kind"]
           method_name?: string
+          reviewed_at?: string | null
           screenshot_path?: string | null
           status?: Database["public"]["Enums"]["deposit_status"]
           txn_id?: string
@@ -641,11 +644,14 @@ export type Database = {
           api_policy: string
           api_rate_per_min: number
           bdt_rate: number
+          deposit_max: number
+          deposit_min: number
           email: string | null
           hero_text: string
           hero_title: string
           id: number
           music_enabled: boolean
+          require_screenshot: boolean
           require_verified_email: boolean
           site_name: string
           telegram: string | null
@@ -658,11 +664,14 @@ export type Database = {
           api_policy?: string
           api_rate_per_min?: number
           bdt_rate?: number
+          deposit_max?: number
+          deposit_min?: number
           email?: string | null
           hero_text?: string
           hero_title?: string
           id?: number
           music_enabled?: boolean
+          require_screenshot?: boolean
           require_verified_email?: boolean
           site_name?: string
           telegram?: string | null
@@ -675,11 +684,14 @@ export type Database = {
           api_policy?: string
           api_rate_per_min?: number
           bdt_rate?: number
+          deposit_max?: number
+          deposit_min?: number
           email?: string | null
           hero_text?: string
           hero_title?: string
           id?: number
           music_enabled?: boolean
+          require_screenshot?: boolean
           require_verified_email?: boolean
           site_name?: string
           telegram?: string | null
@@ -800,6 +812,10 @@ export type Database = {
       admin_adjust_balance: {
         Args: { _amount: number; _note: string; _user: string }
         Returns: number
+      }
+      admin_review_deposit: {
+        Args: { _action: string; _deposit_id: string; _note: string }
+        Returns: Json
       }
       admin_update_order_status: {
         Args: {
