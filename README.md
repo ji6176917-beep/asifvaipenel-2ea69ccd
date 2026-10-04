@@ -22,3 +22,10 @@ cd <repository-name>
 npm i
 npm run dev
 ```
+
+## Backups & restore
+
+- **Automatic backups:** the database is backed up daily by Lovable Cloud. For point-in-time recovery, upgrade the backend plan in Lovable Cloud settings.
+- **Manual backup:** Admin → Backup & Health → "Download full backup" gives a ZIP with a CSV and JSON file per table. Passwords, admin sessions and the Telegram bot token are never included.
+- **Restore:** ask in the Lovable chat to restore from a daily backup, or import the needed CSV files table by table (parents first: platforms → categories → services → payment_methods → profiles → orders/deposits → wallet_ledger). Always run "Reconcile balances" afterwards — it must show no mismatches.
+- **Deleted items:** most items are soft-deleted and can be restored from Admin → Trash.

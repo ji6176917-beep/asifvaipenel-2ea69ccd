@@ -29,3 +29,5 @@
 ## Spec 12–18 (Oct 4)
 - [x] 12 Home page editor  - [x] 13 Support & Contacts  - [x] 14 QnA, Policies & Pages
 - [x] 15 Languages  - [x] 16 Notifications, popups, Telegram alerts  - [x] 17 Theme  - [x] 18 General settings
+- [x] 19 Backup & Health, Activity Log, Trash
+- [ ] 20 Full verification pass (not run yet)
