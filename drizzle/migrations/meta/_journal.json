@@ -120,6 +120,13 @@
       "when": 1791125078053,
       "tag": "0016_platform_logo",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1791126586845,
+      "tag": "0017_home_qna_language",
+      "breakpoints": true
     }
   ]
 }
