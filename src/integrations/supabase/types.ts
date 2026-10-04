@@ -621,6 +621,7 @@ export type Database = {
           active: boolean
           deleted_at: string | null
           id: string
+          logo_url: string | null
           name: string
           slug: string
           sort: number
@@ -629,6 +630,7 @@ export type Database = {
           active?: boolean
           deleted_at?: string | null
           id?: string
+          logo_url?: string | null
           name: string
           slug: string
           sort?: number
@@ -637,6 +639,7 @@ export type Database = {
           active?: boolean
           deleted_at?: string | null
           id?: string
+          logo_url?: string | null
           name?: string
           slug?: string
           sort?: number

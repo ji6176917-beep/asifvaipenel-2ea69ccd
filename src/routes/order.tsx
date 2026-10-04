@@ -28,7 +28,7 @@ function OrderPage() {
         {isLoading && Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-20 rounded-3xl" />)}
         {data?.map((p) => (
           <Link key={p.id} to="/service/$platform" params={{ platform: p.slug }} className="glass tilt flex items-center gap-4 rounded-3xl p-4">
-            <PlatformIcon slug={p.slug} className="h-12 w-12" />
+            <PlatformIcon slug={p.slug} logo={p.logo_url} name={p.name} className="h-12 w-12" />
             <span className="label-premium text-lg">{p.name} Service</span>
           </Link>
         ))}

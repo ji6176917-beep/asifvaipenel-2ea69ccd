@@ -145,6 +145,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       .on("postgres_changes", { event: "*", schema: "public", table: "menu_items" }, () => qc.invalidateQueries({ queryKey: ["menu-items"] }))
       .on("postgres_changes", { event: "*", schema: "public", table: "site_settings" }, () => {
         qc.invalidateQueries({ queryKey: ["settings"] }); qc.invalidateQueries({ queryKey: ["welcome-song"] });
+        qc.invalidateQueries({ queryKey: ["catalog"] }); qc.invalidateQueries({ queryKey: ["platforms"] });
       })
       .on("postgres_changes", { event: "*", schema: "public", table: "qna" }, () => qc.invalidateQueries({ queryKey: ["qna"] }))
       .on("postgres_changes", { event: "*", schema: "public", table: "pages" }, () => {

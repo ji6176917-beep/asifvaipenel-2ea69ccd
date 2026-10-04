@@ -42,7 +42,7 @@ function ServicePage() {
   const { data, isLoading, isError } = useQuery({
     queryKey: ["catalog", platform],
     queryFn: async () => {
-      const { data: p, error } = await supabase.from("platforms").select("id,name,slug").eq("slug", platform).maybeSingle();
+      const { data: p, error } = await supabase.from("platforms").select("id,name,slug,logo_url").eq("slug", platform).maybeSingle();
       if (error) throw error;
       if (!p) return null;
       const { data: cats } = await supabase.from("categories").select("id,name").eq("platform_id", p.id).eq("active", true).is("deleted_at", null).order("sort");
@@ -106,7 +106,7 @@ function ServicePage() {
     <div className="mx-auto max-w-2xl space-y-4">
       <div className="flex items-center gap-3">
         <button aria-label="Back" onClick={() => history.back()} className="rounded-full p-2 hover:bg-accent"><ArrowLeft className="h-5 w-5" /></button>
-        <PlatformIcon slug={platform} className="h-12 w-12" />
+        <PlatformIcon slug={platform} logo={data?.platform?.logo_url} name={data?.platform?.name} className="h-12 w-12" />
         <h1 className="text-gradient text-3xl font-bold">{data?.platform.name ?? "…"} {t("service.title_suffix")}</h1>
       </div>
 

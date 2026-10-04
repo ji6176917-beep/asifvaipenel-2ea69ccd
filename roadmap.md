@@ -31,3 +31,5 @@
 - [x] 15 Languages  - [x] 16 Notifications, popups, Telegram alerts  - [x] 17 Theme  - [x] 18 General settings
 - [x] 19 Backup & Health, Activity Log, Trash
 - [ ] 20 Full verification pass (not run yet)
+- [x] Fix A: Admin Services 3-level manager (platforms/categories/services)
+- [ ] Fix B: Full-site translation (dictionary for every page, save language to account)

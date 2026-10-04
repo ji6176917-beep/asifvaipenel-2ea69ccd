@@ -13,10 +13,17 @@ export const PLATFORM_META: Record<string, { Icon: IconType; color: string }> = 
   telegram: { Icon: SiTelegram, color: "#26A5E4" },
 };
 
-export function PlatformIcon({ slug, className }: { slug: string; className?: string }) {
+/** Platform logo: uploaded image → built-in brand icon → first-letter badge. */
+export function PlatformIcon({ slug, className, logo, name }: { slug: string; className?: string | undefined; logo?: string | null | undefined; name?: string | undefined }) {
+  const url = useStorageUrl("logos", logo);
   const m = PLATFORM_META[slug];
-  if (!m) return null;
-  return <m.Icon className={className} style={{ color: m.color }} aria-hidden />;
+  if (url) return <img src={url} alt="" className={`${className ?? ""} object-contain`} />;
+  if (m) return <m.Icon className={className} style={{ color: m.color }} aria-hidden />;
+  return (
+    <span className={`${className ?? ""} inline-flex items-center justify-center rounded-xl bg-primary font-bold text-primary-foreground`} aria-hidden>
+      {(name ?? slug).charAt(0).toUpperCase()}
+    </span>
+  );
 }
 
 export function WhatsAppIcon({ className }: { className?: string }) {
