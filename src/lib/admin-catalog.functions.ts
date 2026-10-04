@@ -76,12 +76,12 @@ export const adminCatalogSave = createServerFn({ method: "POST" })
       const row: Record<string, unknown> = { ...values, sort: (last?.[0]?.sort ?? 0) + 1 };
       if (pc) row[pc] = data.parentId;
       if (data.level === "platforms") {
-        let slug = slugify(String(values.name)) || "platform";
+        let slug = slugify(String(values["name"])) || "platform";
         const { data: ex } = await db.from("platforms").select("id").eq("slug", slug).maybeSingle();
         if (ex) slug = `${slug}-${Math.floor(Math.random() * 9000 + 1000)}`;
-        row.slug = slug; row.active = true;
+        row["slug"] = slug; row["active"] = true;
       }
-      if (data.level === "categories") row.active = true;
+      if (data.level === "categories") row["active"] = true;
       const { data: ins, error } = await db.from(data.level).insert(row).select("id").single();
       if (error) throw new Error(error.message);
       await s.logAdmin(`${data.level}_add`, { id: ins.id }, null, row);

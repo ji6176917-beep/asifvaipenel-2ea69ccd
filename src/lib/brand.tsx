@@ -14,7 +14,7 @@ export const PLATFORM_META: Record<string, { Icon: IconType; color: string }> = 
 };
 
 /** Platform logo: uploaded image → built-in brand icon → first-letter badge. */
-export function PlatformIcon({ slug, className, logo, name }: { slug: string; className?: string; logo?: string | null; name?: string }) {
+export function PlatformIcon({ slug, className, logo, name }: { slug: string; className?: string | undefined; logo?: string | null | undefined; name?: string | undefined }) {
   const url = useStorageUrl("logos", logo);
   const m = PLATFORM_META[slug];
   if (url) return <img src={url} alt="" className={`${className ?? ""} object-contain`} />;
