@@ -56,6 +56,15 @@ export function SupportAdminProvider({ children }: { children: ReactNode }) {
 
 export const useSupportTap = () => useContext(Ctx);
 
+/** Opens the admin login dialog directly (used on the /admin page). */
+export function AdminLoginButton({ className }: { className?: string }) {
+  const [open, setOpen] = useState(false);
+  return (<>
+    <button type="button" onClick={() => setOpen(true)} className={className}>Admin Login</button>
+    <AdminLoginModal open={open} onClose={() => setOpen(false)} />
+  </>);
+}
+
 export function SupportAdminButton({ className, children }: { className?: string; children: ReactNode }) {
   const tap = useSupportTap();
   return <button type="button" onClick={tap} className={className}>{children}</button>;
@@ -75,7 +84,7 @@ function AdminLoginModal({ open, onClose }: { open: boolean; onClose: () => void
     setBusy(true); setErr(null);
     try {
       const r = await login({ data: { password: pw, device: deviceId() } });
-      if (!r.ok) { setErr(r.error); return; }
+      if (!r.ok) { setErr(r.error); toast.error(r.error); return; }
       close();
       toast.success("Welcome, admin");
       navigate({ to: "/admin" });
