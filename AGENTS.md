@@ -18,3 +18,5 @@
 - Storage buckets are private (workspace blocks public); store object paths and render via signed URLs (useStorageUrl). Why: public buckets are not allowed.
 - Admin user management lives in src/lib/admin-users.functions.ts (every fn calls requireAdmin + logAdmin with old/new values); admin balance edits only via the service-role-only admin_adjust_balance() function. Why: one audited path for admin writes.
 - Support messages to users use the notifications table (kind popup|notification); "sign out all devices" is enforced client-side via profiles.sessions_revoked_at. Why: auth schema must not be modified.
+- Site texts come from useT()/useI18n() (src/lib/i18n.tsx) with DEFAULT_LABELS as fallback and seed; menus come from useMenu() (src/lib/menu.tsx) backed by menu_items. Why: admins edit every label/menu without code changes.
+- Welcome music cache is keyed by site_settings.music_version, bumped on every admin music change. Why: visitors refetch instantly.
