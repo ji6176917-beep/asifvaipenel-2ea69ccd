@@ -7,6 +7,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { signInWithIdentifier } from "@/lib/sign-in.functions";
 import { Card, PageTitle, Spinner, inputCls, labelCls } from "@/components/ui-kit";
+import { OAuthButtons } from "@/components/OAuthButtons";
 import { useTr } from "@/lib/i18n";
 
 export const Route = createFileRoute("/sign-in")({
@@ -75,6 +76,7 @@ function SignIn() {
           <div className="text-right"><Link to="/forgot-password" className="text-sm text-primary">{tr("Forgot password?")}</Link></div>
           <button disabled={busy} className="btn-glow w-full">{busy && <Spinner />} {tr("Sign In")}</button>
         </form>
+        <div className="mt-5"><OAuthButtons /></div>
         <p className="mt-5 text-center text-sm text-muted-foreground">{tr("New here?")} <Link to="/sign-up" className="font-semibold text-primary">{tr("Create account")}</Link></p>
       </Card>
     </div>
