@@ -74,7 +74,7 @@ function Home() {
             : shown.map(({ c, p }) => (
                 <Link key={p!.id} to="/service/$platform" params={{ platform: p!.slug }} className={`glass ${tilt} group flex flex-col items-center gap-3 rounded-3xl p-5`}>
                   {c.logo ? <PlatformLogo path={c.logo} className={`h-14 w-14 transition ${spin} sm:h-16 sm:w-16`} />
-                    : <PlatformIcon slug={p!.slug} className={`h-14 w-14 transition ${spin} sm:h-16 sm:w-16`} />}
+                    : <PlatformIcon slug={p!.slug} logo={p!.logo_url} name={p!.name} className={`h-14 w-14 transition ${spin} sm:h-16 sm:w-16`} />}
                   <span className="text-xs font-semibold text-muted-foreground">{c.name?.trim() || p!.name}</span>
                 </Link>
               ))}

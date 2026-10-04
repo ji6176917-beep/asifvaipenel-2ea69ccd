@@ -42,7 +42,7 @@ function ServicePage() {
   const { data, isLoading, isError } = useQuery({
     queryKey: ["catalog", platform],
     queryFn: async () => {
-      const { data: p, error } = await supabase.from("platforms").select("id,name,slug").eq("slug", platform).maybeSingle();
+      const { data: p, error } = await supabase.from("platforms").select("id,name,slug,logo_url").eq("slug", platform).maybeSingle();
       if (error) throw error;
       if (!p) return null;
       const { data: cats } = await supabase.from("categories").select("id,name").eq("platform_id", p.id).eq("active", true).is("deleted_at", null).order("sort");
