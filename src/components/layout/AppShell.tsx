@@ -82,7 +82,7 @@ function itemHref(m: MenuItem, s?: Settings | null): { kind: "route" | "external
 }
 
 function NavItem({ m, className, iconClass = "h-5 w-5 text-primary", onAction, settings, children, showIcon = true }: {
-  m: MenuItem; className: string; iconClass?: string; onAction: (a: string) => void; settings?: Settings | null; children?: ReactNode; showIcon?: boolean;
+  m: MenuItem; className: string; iconClass?: string; onAction: (a: string) => void; settings?: Settings | null | undefined; children?: ReactNode; showIcon?: boolean;
 }) {
   const { lang } = useI18n();
   const tap = useSupportTap();
@@ -96,7 +96,7 @@ function NavItem({ m, className, iconClass = "h-5 w-5 text-primary", onAction, s
   return <button type="button" onClick={() => (h.to === "support" ? tap() : onAction(h.to))} className={`${className} text-left`}>{inner}</button>;
 }
 
-function WelcomePopup({ s }: { s?: Settings | null }) {
+function WelcomePopup({ s }: { s?: Settings | null | undefined }) {
   const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const img = useStorageUrl("logos", (s?.["popup_image"] as string | null) ?? null);
@@ -150,6 +150,13 @@ function Shell({ children }: { children: ReactNode }) {
   const annOn = !!settings?.announcement_on && !!settings.announcement_text
     && (!settings.announcement_start || Date.parse(settings.announcement_start) <= now)
     && (!settings.announcement_end || Date.parse(settings.announcement_end) > now);
+  const favicon = useStorageUrl("logos", settings?.favicon_url ?? null);
+  useEffect(() => {
+    if (!favicon) return;
+    let el = document.querySelector<HTMLLinkElement>("link[rel='icon']");
+    if (!el) { el = document.createElement("link"); el.rel = "icon"; document.head.appendChild(el); }
+    el.href = favicon;
+  }, [favicon]);
   const visible = (m: MenuItem) => !m.requires_login || !!user;
   const onAction = (a: string) => {
     setMenuOpen(false);
