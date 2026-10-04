@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Eye, EyeOff, Copy, RefreshCw, KeyRound, Link2, BookOpen, ShieldCheck, Code2 } from "lucide-react";
 import { toast } from "sonner";
+import ReactMarkdown from "react-markdown";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { settingsQuery } from "@/lib/queries";
@@ -27,7 +28,7 @@ export const Route = createFileRoute("/_authenticated/reseller-api")({
   component: ApiPage,
 });
 
-const ERRS: Record<string, string> = { API_DISABLED: "API access has been disabled for your account. Contact support.", ACCOUNT_SUSPENDED: "Your account is suspended." };
+const ERRS: Record<string, string> = { API_OFF: "The reseller API is turned off right now.", NEW_KEYS_CLOSED: "New API keys are not being issued right now. Contact support.", API_DISABLED: "API access has been disabled for your account. Contact support.", ACCOUNT_SUSPENDED: "Your account is suspended." };
 
 function Code({ children }: { children: string }) {
   return (
@@ -40,14 +41,14 @@ function Code({ children }: { children: string }) {
 
 function ApiPage() {
   const { profile } = useAuth();
-  const { data: settings } = useQuery(settingsQuery);
+  const { data: settings } = useQuery({ ...settingsQuery, refetchInterval: 15_000 });
   const qc = useQueryClient();
   const [show, setShow] = useState(false);
   const [confirm, setConfirm] = useState(false);
   const [busy, setBusy] = useState(false);
   const [origin, setOrigin] = useState("");
   useEffect(() => setOrigin(window.location.origin), []);
-  const url = `${origin}/api/public/v2`;
+  const url = settings?.api_url || `${origin}/api/public/v2`;
 
   const { data: key, error, isLoading } = useQuery({
     queryKey: ["my-api-key"],
@@ -102,6 +103,10 @@ function ApiPage() {
         </div>
       </Card>
 
+      {settings?.api_docs && <Card><div className="prose prose-sm max-w-none dark:prose-invert"><ReactMarkdown>{settings.api_docs}</ReactMarkdown></div></Card>}
+      {settings?.api_instructions && <Card><div className="prose prose-sm max-w-none dark:prose-invert"><ReactMarkdown>{settings.api_instructions}</ReactMarkdown></div></Card>}
+      {settings?.api_examples && <Card><div className="prose prose-sm max-w-none dark:prose-invert"><ReactMarkdown>{settings.api_examples}</ReactMarkdown></div></Card>}
+
       <Card>
         <h2 className="label-premium mb-3 flex items-center gap-2 text-lg"><BookOpen className="h-5 w-5 text-primary" /> Documentation</h2>
         <p className="mb-3 text-sm text-muted-foreground">Send <b>GET</b> or <b>POST</b> (form or JSON) requests to the API URL with your <code>key</code> and an <code>action</code>. All responses are JSON. Errors return <code>{`{"error": "..."}`}</code> with a matching HTTP status.</p>
@@ -152,7 +157,7 @@ function ApiPage() {
           <li>Keep your key secret. If it leaks, regenerate it — the old key stops working at once.</li>
           <li>Use public profile or post links in full https:// form.</li>
         </ul>
-        <p className="whitespace-pre-line text-sm">{settings?.api_policy}</p>
+        <div className="prose prose-sm max-w-none dark:prose-invert"><ReactMarkdown>{settings?.api_policy ?? ""}</ReactMarkdown></div>
       </Card>
 
       <AlertDialog open={confirm} onOpenChange={setConfirm}>
