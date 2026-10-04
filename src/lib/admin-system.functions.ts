@@ -28,7 +28,7 @@ type TrashTable = keyof typeof TRASH_TABLES;
 const trashEnum = z.enum(Object.keys(TRASH_TABLES) as [TrashTable, ...TrashTable[]]);
 
 async function fetchAll(db: any, table: string) {
-  const out: unknown[] = [];
+  const out: any[] = [];
   for (let from = 0; ; from += 1000) {
     const { data, error } = await db.from(table).select("*").range(from, from + 999);
     if (error) throw new Error(`${table}: ${error.message}`);
@@ -40,10 +40,10 @@ async function fetchAll(db: any, table: string) {
 
 export const adminBackup = createServerFn({ method: "POST" }).handler(async () => {
   const { s, db } = await ctx();
-  const tables: Record<string, unknown[]> = {};
+  const tables: Record<string, any[]> = {};
   for (const t of BACKUP_TABLES) tables[t] = await fetchAll(db, t);
   // Strip the plaintext API key column; hashes are enough to verify.
-  tables.profiles = (tables.profiles as any[]).map(({ api_key, ...r }) => r);
+  tables["profiles"] = (tables["profiles"] as any[]).map(({ api_key, ...r }) => r);
   const at = new Date().toISOString();
   await db.from("site_settings").update({ last_backup_at: at }).eq("id", 1);
   await s.logAdmin("backup_downloaded", { tables: BACKUP_TABLES.length });
