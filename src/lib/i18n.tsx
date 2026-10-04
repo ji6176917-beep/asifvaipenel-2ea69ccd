@@ -1,0 +1,160 @@
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+
+export const LANGUAGES = [
+  { code: "en", label: "English" },
+  { code: "bn", label: "বাংলা (Bangla)" },
+  { code: "hi", label: "हिन्दी (Hindi)" },
+  { code: "pt-BR", label: "Português (Brasil)" },
+  { code: "id", label: "Bahasa Indonesia" },
+  { code: "tr", label: "Türkçe" },
+  { code: "ar", label: "العربية (Arabic)", rtl: true },
+  { code: "fa", label: "فارسی (Persian)", rtl: true },
+] as const;
+export type Lang = (typeof LANGUAGES)[number]["code"];
+
+export const LABEL_GROUPS = [
+  "Header", "Home", "Sign Up", "Sign In", "Service pages", "Order form", "Success screen", "Balance", "Add Funds",
+  "Histories", "Profile", "API page", "QnA", "Footer", "3-dot menu", "Notifications", "Errors/Toasts", "Emails",
+] as const;
+
+type Def = [group: (typeof LABEL_GROUPS)[number], text: string, rich?: boolean];
+
+/** Built-in defaults. Used as fallback and as the one-time seed for the ui_labels table. */
+export const DEFAULT_LABELS: Record<string, Def> = {
+  "header.balance": ["Header", "Balance"],
+  "header.open_menu": ["Header", "Open menu"],
+  "header.verify_banner": ["Header", "Verify your email to order and add funds."],
+  "header.resend": ["Header", "Resend"],
+  "home.badge": ["Home", "Hand-delivered • Secure wallet • 24/7 support"],
+  "home.hero_title": ["Home", "Grow every account, delivered by real people", true],
+  "home.hero_text": ["Home", "Premium followers, likes, views and members for Facebook, Instagram, YouTube, TikTok and Telegram — every order is hand-delivered by our team.", true],
+  "home.hero_article": ["Home", "", true],
+  "home.services_title": ["Home", "Services"],
+  "home.order_now": ["Home", "Order Now"],
+  "home.sign_in": ["Home", "Sign In"],
+  "home.sign_up": ["Home", "Sign Up"],
+  "home.popup_title": ["Home", "Welcome!"],
+  "home.popup_message": ["Home", "Thanks for visiting. Add funds and place your first order in minutes.", true],
+  "home.popup_button": ["Home", "Get started"],
+  "home.announcement": ["Home", ""],
+  "signup.title": ["Sign Up", "Create account"],
+  "signup.submit": ["Sign Up", "Sign Up"],
+  "signin.title": ["Sign In", "Sign In"],
+  "signin.submit": ["Sign In", "Sign In"],
+  "service.title_suffix": ["Service pages", "Service"],
+  "order.category": ["Order form", "Category"],
+  "order.category_placeholder": ["Order form", "Select a category"],
+  "order.service": ["Order form", "Service"],
+  "order.service_placeholder": ["Order form", "Select a service"],
+  "order.link": ["Order form", "Paste your link"],
+  "order.quantity": ["Order form", "Quantity"],
+  "order.avg_time": ["Order form", "Average time"],
+  "order.manual": ["Order form", "Delivered manually by our team"],
+  "order.total": ["Order form", "Total charge"],
+  "order.submit": ["Order form", "Submit"],
+  "order.empty_categories": ["Order form", "No categories available."],
+  "order.empty_services": ["Order form", "No services in this category."],
+  "success.title": ["Success screen", "Order Submitted"],
+  "success.order_id": ["Success screen", "Order ID"],
+  "success.home": ["Success screen", "Back to Home"],
+  "success.history": ["Success screen", "Go to Order History"],
+  "success.new": ["Success screen", "Buy New Service"],
+  "balance.title": ["Balance", "Balance"],
+  "funds.title": ["Add Funds", "Add Funds"],
+  "funds.select": ["Add Funds", "Select Payment Method"],
+  "funds.submit": ["Add Funds", "Add Funds"],
+  "history.orders": ["Histories", "Order History"],
+  "history.funds": ["Histories", "Add Funds History"],
+  "profile.title": ["Profile", "Profile"],
+  "api.title": ["API page", "Reseller API"],
+  "qna.title": ["QnA", "Questions & Answers"],
+  "footer.quick_links": ["Footer", "Quick Links"],
+  "footer.info": ["Footer", "Info"],
+  "footer.rights": ["Footer", "All rights reserved."],
+  "footer.cookie": ["Footer", "We use cookies to keep you signed in and remember your preferences."],
+  "footer.cookie_ok": ["Footer", "OK"],
+  "menu.language": ["3-dot menu", "Language"],
+  "menu.music": ["3-dot menu", "Music"],
+  "menu.logout": ["3-dot menu", "Logout"],
+  "notif.title": ["Notifications", "Notifications"],
+  "notif.empty": ["Notifications", "No notifications yet."],
+  "toast.logged_out": ["Errors/Toasts", "Logged out"],
+  "toast.insufficient": ["Errors/Toasts", "Insufficient balance"],
+  "toast.choose_service": ["Errors/Toasts", "Choose a service"],
+  "toast.invalid_link": ["Errors/Toasts", "Enter a valid link"],
+  "toast.verify_first": ["Errors/Toasts", "Please verify your email first."],
+  "email.verify_subject": ["Emails", "Verify your email"],
+};
+
+type LabelRow = { key: string; default_text: string; translations: Record<string, string> };
+type Ctx = {
+  lang: Lang; setLang: (l: Lang) => void;
+  t: (key: string, fallback?: string) => string;
+  icon: (key: string) => string | null;
+};
+const I18nCtx = createContext<Ctx>({
+  lang: "en", setLang: () => {},
+  t: (k, f) => f ?? DEFAULT_LABELS[k]?.[1] ?? k, icon: () => null,
+});
+export const useI18n = () => useContext(I18nCtx);
+export const useT = () => useContext(I18nCtx).t;
+
+export function I18nProvider({ children }: { children: ReactNode }) {
+  const qc = useQueryClient();
+  const [lang, setLangState] = useState<Lang>("en");
+  useEffect(() => {
+    const saved = localStorage.getItem("lang");
+    if (saved && LANGUAGES.some((l) => l.code === saved)) setLangState(saved as Lang);
+  }, []);
+  useEffect(() => {
+    const rtl = LANGUAGES.find((l) => l.code === lang && "rtl" in l);
+    document.documentElement.lang = lang;
+    document.documentElement.dir = rtl ? "rtl" : "ltr";
+  }, [lang]);
+  const setLang = (l: Lang) => { localStorage.setItem("lang", l); setLangState(l); };
+
+  const { data } = useQuery({
+    queryKey: ["ui-content"],
+    staleTime: 10 * 60_000,
+    queryFn: async () => {
+      const [{ data: labels }, { data: icons }] = await Promise.all([
+        supabase.from("ui_labels").select("key, default_text, translations"),
+        supabase.from("ui_icons").select("key, icon_url"),
+      ]);
+      return {
+        labels: new Map((labels ?? []).map((l) => [l.key, l as unknown as LabelRow])),
+        icons: new Map((icons ?? []).filter((i) => i.icon_url).map((i) => [i.key, i.icon_url as string])),
+      };
+    },
+  });
+
+  // Realtime: admin edits to labels, icons, menus or settings refresh every open tab.
+  useEffect(() => {
+    const ch = supabase.channel("ui-content")
+      .on("postgres_changes", { event: "*", schema: "public", table: "ui_labels" }, () => qc.invalidateQueries({ queryKey: ["ui-content"] }))
+      .on("postgres_changes", { event: "*", schema: "public", table: "ui_icons" }, () => qc.invalidateQueries({ queryKey: ["ui-content"] }))
+      .on("postgres_changes", { event: "*", schema: "public", table: "menu_items" }, () => qc.invalidateQueries({ queryKey: ["menu-items"] }))
+      .on("postgres_changes", { event: "*", schema: "public", table: "site_settings" }, () => {
+        qc.invalidateQueries({ queryKey: ["settings"] }); qc.invalidateQueries({ queryKey: ["welcome-song"] });
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [qc]);
+
+  const t = useCallback((key: string, fallback?: string) => {
+    const row = data?.labels.get(key);
+    const tr = row?.translations ?? {};
+    return tr[lang] || tr["en"] || row?.default_text || fallback || DEFAULT_LABELS[key]?.[1] || key;
+  }, [data, lang]);
+  const icon = useCallback((key: string) => data?.icons.get(key) ?? null, [data]);
+  const value = useMemo(() => ({ lang, setLang, t, icon }), [lang, t, icon]);
+  return <I18nCtx.Provider value={value}>{children}</I18nCtx.Provider>;
+}
+
+/** Pick a per-language value from a {lang: text} object. */
+export function pickLang(obj: unknown, lang: string, fallback = "") {
+  const o = (obj ?? {}) as Record<string, string>;
+  return o[lang] || o["en"] || fallback;
+}
