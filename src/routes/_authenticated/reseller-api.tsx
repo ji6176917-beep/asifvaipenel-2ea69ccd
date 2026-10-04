@@ -103,9 +103,9 @@ function ApiPage() {
         </div>
       </Card>
 
-      {settings?.api_docs && <Card><div className="prose prose-sm max-w-none dark:prose-invert"><ReactMarkdown>{settings.api_docs}</ReactMarkdown></div></Card>}
-      {settings?.api_instructions && <Card><div className="prose prose-sm max-w-none dark:prose-invert"><ReactMarkdown>{settings.api_instructions}</ReactMarkdown></div></Card>}
-      {settings?.api_examples && <Card><div className="prose prose-sm max-w-none dark:prose-invert"><ReactMarkdown>{settings.api_examples}</ReactMarkdown></div></Card>}
+      {settings?.api_docs && <Card><div className="md-content"><ReactMarkdown>{settings.api_docs}</ReactMarkdown></div></Card>}
+      {settings?.api_instructions && <Card><div className="md-content"><ReactMarkdown>{settings.api_instructions}</ReactMarkdown></div></Card>}
+      {settings?.api_examples && <Card><div className="md-content"><ReactMarkdown>{settings.api_examples}</ReactMarkdown></div></Card>}
 
       <Card>
         <h2 className="label-premium mb-3 flex items-center gap-2 text-lg"><BookOpen className="h-5 w-5 text-primary" /> Documentation</h2>
@@ -157,7 +157,7 @@ function ApiPage() {
           <li>Keep your key secret. If it leaks, regenerate it — the old key stops working at once.</li>
           <li>Use public profile or post links in full https:// form.</li>
         </ul>
-        <div className="prose prose-sm max-w-none dark:prose-invert"><ReactMarkdown>{settings?.api_policy ?? ""}</ReactMarkdown></div>
+        <div className="md-content"><ReactMarkdown>{settings?.api_policy ?? ""}</ReactMarkdown></div>
       </Card>
 
       <AlertDialog open={confirm} onOpenChange={setConfirm}>

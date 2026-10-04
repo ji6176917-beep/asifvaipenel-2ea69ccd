@@ -32,7 +32,7 @@ export const adminSaveApiSettings = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { s, db } = await ctx();
     const { data: before } = await db.from("site_settings").select(SETTING_COLS).eq("id", 1).single();
-    const { error } = await db.from("site_settings").update(data).eq("id", 1);
+    const { error } = await db.from("site_settings").update(data as never).eq("id", 1);
     if (error) throw new Error(error.message);
     await s.logAdmin("api_settings_updated", { fields: Object.keys(data) }, before, data);
     return { ok: true };
