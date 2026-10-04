@@ -21,7 +21,8 @@ export const adminOrderPlatforms = createServerFn({ method: "POST" }).handler(as
 });
 
 const listInput = z.object({
-  platform: z.string().max(60),
+  platform: z.string().max(60).optional(),
+  source: z.enum(["web", "api"]).optional(),
   tab: z.enum(["pending", "processing", "completed", "partial", "rejected", "all"]),
   q: z.string().max(100).optional(),
   from: z.string().max(10).optional(),
@@ -29,8 +30,10 @@ const listInput = z.object({
 });
 
 async function fetchOrders(db: Awaited<ReturnType<typeof ctx>>["db"], data: z.infer<typeof listInput>, limit: number) {
-  let q = db.from("orders").select("*").eq("platform_slug", data.platform).is("deleted_at", null)
+  let q = db.from("orders").select("*").is("deleted_at", null)
     .order("created_at", { ascending: false }).limit(limit);
+  if (data.platform) q = q.eq("platform_slug", data.platform);
+  if (data.source) q = q.eq("source", data.source);
   if (data.tab === "rejected") q = q.in("status", ["rejected", "canceled"]);
   else if (data.tab !== "all") q = q.eq("status", data.tab);
   if (data.from) q = q.gte("created_at", `${data.from}T00:00:00Z`);
@@ -72,8 +75,8 @@ export const adminExportOrdersCsv = createServerFn({ method: "POST" })
     const { s, db } = await ctx();
     const rows = await fetchOrders(db, data, 5000);
     const esc = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
-    const head = ["Order ID", "User", "User ID", "Platform", "Category", "Service", "Quantity", "Delivered", "Charge", "Refunded", "Status", "Link", "Created"];
-    const lines = rows.map((o) => [o.order_code, o.user?.full_name ?? o.user?.username, o.user?.public_id, o.platform_name, o.category_name, o.service_name,
+    const head = ["Order ID", "Source", "User", "User ID", "Platform", "Category", "Service", "Quantity", "Delivered", "Charge", "Refunded", "Status", "Link", "Created"];
+    const lines = rows.map((o) => [o.order_code, o.source, o.user?.full_name ?? o.user?.username, o.user?.public_id, o.platform_name, o.category_name, o.service_name,
       o.quantity, o.delivered_qty, o.charge, o.refunded, o.status, o.link, o.created_at].map(esc).join(","));
     await s.logAdmin("orders_exported", { platform: data.platform, tab: data.tab, count: rows.length });
     return [head.join(","), ...lines].join("\n");
