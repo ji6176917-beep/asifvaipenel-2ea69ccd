@@ -245,6 +245,7 @@ function BrandingForm({ s, identityOnly }: { s: Awaited<ReturnType<typeof adminG
         <p className="text-xs text-muted-foreground">Popup title, message and button text are in Texts & labels → Home.</p>
       </Card>
       <button disabled={busy} onClick={go} className="btn-glow w-full">{busy && <Spinner />} Save</button>
+      </>}
     </div>
   );
 }
