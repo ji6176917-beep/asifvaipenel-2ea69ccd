@@ -23,7 +23,7 @@ export const Route = createFileRoute("/qna")({
 });
 
 function Page() {
-  const { lang, t } = useI18n();
+  const { lang, t, tr } = useI18n();
   const [open, setOpen] = useState<string | null>(null);
   const { data, isLoading } = useQuery({
     queryKey: ["qna"],
@@ -37,7 +37,7 @@ function Page() {
   return (
     <div className="mx-auto max-w-2xl">
       <PageTitle>{t("qna.title", "QnA")}</PageTitle>
-      {isLoading ? <Skeleton className="h-48 rounded-3xl" /> : !data?.length ? <Empty text="No questions yet." /> : (
+      {isLoading ? <Skeleton className="h-48 rounded-3xl" /> : !data?.length ? <Empty text={tr("No questions yet.")} /> : (
         <div className="space-y-3">
           {data.map((q) => {
             const isOpen = open === q.id;

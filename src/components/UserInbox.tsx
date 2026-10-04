@@ -9,9 +9,11 @@ import { fmtDate } from "@/lib/format";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Empty } from "@/components/ui-kit";
+import { useTr } from "@/lib/i18n";
 
 /** Bell with unread count + list, and show-once popups sent by support. */
 export function UserInbox() {
+  const tr = useTr();
   const { user } = useAuth();
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
@@ -57,14 +59,14 @@ export function UserInbox() {
   };
 
   const openList = () => {
-    if (!user) { toast("Sign in to see notifications"); return; }
+    if (!user) { toast(tr("Sign in to see notifications")); return; }
     setOpen(true);
     mark(unread.filter((n) => n.kind !== "popup" || n.shown_at).map((n) => n.id), false);
   };
 
   return (
     <>
-      <button aria-label="Notifications" className="relative rounded-full p-2 hover:bg-accent" onClick={openList}>
+      <button aria-label={tr("Notifications")} className="relative rounded-full p-2 hover:bg-accent" onClick={openList}>
         <Bell className="h-5 w-5" />
         {unread.length > 0 && (
           <span className="bg-brand absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-bold text-primary-foreground">
@@ -74,9 +76,9 @@ export function UserInbox() {
       </button>
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent>
-          <SheetHeader><SheetTitle>Notifications</SheetTitle></SheetHeader>
+          <SheetHeader><SheetTitle>{tr("Notifications")}</SheetTitle></SheetHeader>
           <div className="mt-4 space-y-2 overflow-y-auto px-4 pb-6">
-            {live.length === 0 ? <Empty text="No notifications yet" /> : live.map((n) => (
+            {live.length === 0 ? <Empty text={tr("No notifications yet")} /> : live.map((n) => (
               <div key={n.id} className="rounded-2xl border border-border p-3">
                 <p className="font-semibold">{n.title}</p>
                 {n.body && <p className="mt-1 whitespace-pre-wrap text-sm text-muted-foreground">{n.body}</p>}
@@ -92,8 +94,8 @@ export function UserInbox() {
           <DialogTitle className="text-gradient text-2xl">{popup?.title}</DialogTitle>
           {popup?.body && <p className="whitespace-pre-wrap text-muted-foreground">{popup.body}</p>}
           {popup?.link
-            ? <a href={popup.link} target={popup.link.startsWith("/") ? undefined : "_blank"} rel="noreferrer" className="btn-glow" onClick={closePopup}>{popup.button || "Open"}</a>
-            : <button className="btn-glow" onClick={closePopup}>{popup?.button || "OK"}</button>}
+            ? <a href={popup.link} target={popup.link.startsWith("/") ? undefined : "_blank"} rel="noreferrer" className="btn-glow" onClick={closePopup}>{popup.button || tr("Open")}</a>
+            : <button className="btn-glow" onClick={closePopup}>{popup?.button || tr("OK")}</button>}
         </DialogContent>
       </Dialog>
     </>
