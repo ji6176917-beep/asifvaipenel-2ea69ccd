@@ -68,7 +68,7 @@ function AddFunds() {
   const pickGroup = (g: "binance" | "usdt" | "p2p") => {
     setGroup(g);
     const list = methods!.filter((x) => x.kind === g);
-    setM(list.length === 1 ? list[0] : null);
+    setM(list.length === 1 ? list[0]! : null);
   };
 
   const submit = async (e: React.FormEvent) => {

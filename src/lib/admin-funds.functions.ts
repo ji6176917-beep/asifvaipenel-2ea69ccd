@@ -87,14 +87,14 @@ const methodInput = z.object({
   kind: z.enum(["binance", "usdt", "p2p"]),
   name: z.string().trim().min(1).max(60),
   account: z.string().trim().min(1).max(200),
-  network: z.string().trim().max(40).optional().nullable(),
-  account_type: z.string().trim().max(40).optional().nullable(),
+  network: z.string().trim().max(40).nullable().default(null),
+  account_type: z.string().trim().max(40).nullable().default(null),
   min_amount: z.number().min(0).max(1_000_000),
   max_amount: z.number().min(0).max(1_000_000),
-  instructions: z.string().max(2000).optional().nullable(),
+  instructions: z.string().max(2000).nullable().default(null),
   sort: z.number().int().min(0).max(10000),
   active: z.boolean(),
-  logo_url: z.string().max(300).optional().nullable(),
+  logo_url: z.string().max(300).nullable().default(null),
 }).refine((m) => m.max_amount >= m.min_amount, { message: "Max must be ≥ min" });
 
 export const adminSaveMethod = createServerFn({ method: "POST" })

@@ -281,7 +281,7 @@ function MethodDialog({ initial, onClose, onSaved }: { initial: Form; onClose: (
     setUploading(true);
     try {
       const buf = new Uint8Array(await file.arrayBuffer());
-      let bin = ""; for (let i = 0; i < buf.length; i++) bin += String.fromCharCode(buf[i]);
+      let bin = ""; for (let i = 0; i < buf.length; i++) bin += String.fromCharCode(buf[i]!);
       const { path } = await upload({ data: { base64: btoa(bin), type: file.type as "image/png" } });
       setF((x) => ({ ...x, logo_url: path }));
     } catch { toast.error("Logo upload failed"); }
