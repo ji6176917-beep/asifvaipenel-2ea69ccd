@@ -20,6 +20,7 @@ import { AdminMusic } from "@/components/admin/AdminMusic";
 import { AdminApi } from "@/components/admin/AdminApi";
 import { AdminOrders } from "@/components/admin/AdminOrders";
 import { AdminFunds } from "@/components/admin/AdminFunds";
+import { AdminServices } from "@/components/admin/AdminServices";
 
 const search = z.object({
   section: z.string().optional(),
@@ -49,7 +50,7 @@ const NAV = [
   { id: "users", label: "Users", icon: Users, ready: true },
   { id: "orders", label: "Orders", icon: ShoppingCart, ready: true },
   { id: "add-funds", label: "Add Funds", icon: PlusCircle, ready: true },
-  { id: "services", label: "Services", icon: Package },
+  { id: "services", label: "Services", icon: Package, ready: true },
   { id: "api", label: "API (Reseller)", icon: Code2, ready: true },
   { id: "music", label: "Music", icon: Music, ready: true },
   { id: "content", label: "Website Content & Labels", icon: Type },
@@ -147,6 +148,7 @@ function AdminLayout() {
           : section === "orders" ? <AdminOrders />
           : section === "api" ? <AdminApi />
           : section === "add-funds" ? <AdminFunds />
+          : section === "services" ? <AdminServices />
           : <AdminDashboard onGo={pick} />}
       </div>
     </div>
