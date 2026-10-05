@@ -874,6 +874,7 @@ export type Database = {
           email: string | null
           favicon_url: string | null
           footer_copyright: string
+          header_name: string | null
           hero_text: string
           hero_title: string
           home_config: Json
@@ -930,6 +931,7 @@ export type Database = {
           email?: string | null
           favicon_url?: string | null
           footer_copyright?: string
+          header_name?: string | null
           hero_text?: string
           hero_title?: string
           home_config?: Json
@@ -986,6 +988,7 @@ export type Database = {
           email?: string | null
           favicon_url?: string | null
           footer_copyright?: string
+          header_name?: string | null
           hero_text?: string
           hero_title?: string
           home_config?: Json
