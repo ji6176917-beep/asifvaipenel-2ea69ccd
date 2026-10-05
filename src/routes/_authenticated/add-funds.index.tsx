@@ -18,9 +18,9 @@ import { useTr } from "@/lib/i18n";
 export const Route = createFileRoute("/_authenticated/add-funds/")({
   head: () => ({
     meta: [
-      { title: "Add Funds | Premium SMM Store" },
+      { title: "Add Funds | Premium Apex SMM World" },
       { name: "description", content: "Top up your wallet with Binance, USDT, bKash, Nagad or Rocket." },
-      { property: "og:title", content: "Add Funds | Premium SMM Store" },
+      { property: "og:title", content: "Add Funds | Premium Apex SMM World" },
       { property: "og:description", content: "Top up your wallet." },
     ],
   }),

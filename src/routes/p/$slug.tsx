@@ -6,10 +6,10 @@ export const Route = createFileRoute("/p/$slug")({
     const t = params.slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
     return {
       meta: [
-        { title: `${t} | Premium SMM Store` },
-        { name: "description", content: `${t} — Premium SMM Store.` },
-        { property: "og:title", content: `${t} | Premium SMM Store` },
-        { property: "og:description", content: `${t} — Premium SMM Store.` },
+        { title: `${t} | Premium Apex SMM World` },
+        { name: "description", content: `${t} — Premium Apex SMM World.` },
+        { property: "og:title", content: `${t} | Premium Apex SMM World` },
+        { property: "og:description", content: `${t} — Premium Apex SMM World.` },
         { property: "og:type", content: "article" },
         { name: "twitter:card", content: "summary" },
       ],

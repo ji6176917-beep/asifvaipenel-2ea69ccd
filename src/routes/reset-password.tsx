@@ -9,9 +9,9 @@ import { useTr } from "@/lib/i18n";
 export const Route = createFileRoute("/reset-password")({
   head: () => ({
     meta: [
-      { title: "Set New Password | Premium SMM Store" },
+      { title: "Set New Password | Premium Apex SMM World" },
       { name: "description", content: "Choose a new password for your account." },
-      { property: "og:title", content: "Set New Password | Premium SMM Store" },
+      { property: "og:title", content: "Set New Password | Premium Apex SMM World" },
       { property: "og:description", content: "Choose a new password." },
     ],
   }),

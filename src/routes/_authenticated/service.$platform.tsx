@@ -16,9 +16,9 @@ export const Route = createFileRoute("/_authenticated/service/$platform")({
     const n = params.platform.charAt(0).toUpperCase() + params.platform.slice(1);
     return {
       meta: [
-        { title: `${n} Services | Premium SMM Store` },
+        { title: `${n} Services | Premium Apex SMM World` },
         { name: "description", content: `Order ${n} growth services, delivered manually by our team.` },
-        { property: "og:title", content: `${n} Services | Premium SMM Store` },
+        { property: "og:title", content: `${n} Services | Premium Apex SMM World` },
         { property: "og:description", content: `Buy ${n} followers, likes and more.` },
       ],
     };

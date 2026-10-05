@@ -11,9 +11,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 export const Route = createFileRoute("/qna")({
   head: () => ({
     meta: [
-      { title: "QnA | Premium SMM Store" },
+      { title: "QnA | Premium Apex SMM World" },
       { name: "description", content: "Answers to the most common questions about orders and payments." },
-      { property: "og:title", content: "QnA | Premium SMM Store" },
+      { property: "og:title", content: "QnA | Premium Apex SMM World" },
       { property: "og:description", content: "Answers to the most common questions about orders and payments." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

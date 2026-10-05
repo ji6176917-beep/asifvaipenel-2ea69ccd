@@ -1,5 +1,6 @@
 # Roadmap
-- [x] Create a green SM site logo and matching favicon; set the home tab title to SMM Store.
+- [x] Replace the old site name throughout website text and code; preserve all logo and graphical assets.
+- [x] Create a green SM site logo and matching favicon; set the home tab title to Apex SMM World.
 ## Phase 1 (done)
 - [x] Design system, header, menu, bottom bar, footer, sign up/in, ordering, Add Funds, histories, profile
 

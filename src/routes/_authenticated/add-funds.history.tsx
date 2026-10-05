@@ -13,9 +13,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 export const Route = createFileRoute("/_authenticated/add-funds/history")({
   head: () => ({
     meta: [
-      { title: "Add Funds History | Premium SMM Store" },
+      { title: "Add Funds History | Premium Apex SMM World" },
       { name: "description", content: "Track all your Add Funds requests and their status." },
-      { property: "og:title", content: "Add Funds History | Premium SMM Store" },
+      { property: "og:title", content: "Add Funds History | Premium Apex SMM World" },
       { property: "og:description", content: "Your Add Funds requests." },
     ],
   }),

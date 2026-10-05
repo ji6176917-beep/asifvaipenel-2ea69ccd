@@ -5,9 +5,9 @@ import { useTr } from "@/lib/i18n";
 export const Route = createFileRoute("/policy")({
   head: () => ({
     meta: [
-      { title: "Policy, Terms & Refunds | Premium SMM Store" },
+      { title: "Policy, Terms & Refunds | Premium Apex SMM World" },
       { name: "description", content: "Our terms of service, privacy policy and refund rules." },
-      { property: "og:title", content: "Policy, Terms & Refunds | Premium SMM Store" },
+      { property: "og:title", content: "Policy, Terms & Refunds | Premium Apex SMM World" },
       { property: "og:description", content: "Our terms of service, privacy policy and refund rules." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

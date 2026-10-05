@@ -9,9 +9,9 @@ import { useTr } from "@/lib/i18n";
 export const Route = createFileRoute("/_authenticated/balance")({
   head: () => ({
     meta: [
-      { title: "Balance | Premium SMM Store" },
+      { title: "Balance | Premium Apex SMM World" },
       { name: "description", content: "Your wallet balance and spending summary." },
-      { property: "og:title", content: "Balance | Premium SMM Store" },
+      { property: "og:title", content: "Balance | Premium Apex SMM World" },
       { property: "og:description", content: "Your wallet balance." },
     ],
   }),

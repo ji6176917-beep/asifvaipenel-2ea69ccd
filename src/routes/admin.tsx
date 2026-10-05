@@ -37,10 +37,10 @@ export const Route = createFileRoute("/admin")({
   validateSearch: (s) => search.parse(s),
   head: () => ({
     meta: [
-      { title: "Admin | Premium SMM Store" },
+      { title: "Admin | Premium Apex SMM World" },
       { name: "description", content: "Store administration." },
       { name: "robots", content: "noindex, nofollow" },
-      { property: "og:title", content: "Admin | Premium SMM Store" },
+      { property: "og:title", content: "Admin | Premium Apex SMM World" },
       { property: "og:description", content: "Store administration." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

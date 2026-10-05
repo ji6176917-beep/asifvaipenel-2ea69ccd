@@ -13,9 +13,9 @@ import { useTr } from "@/lib/i18n";
 export const Route = createFileRoute("/_authenticated/profile")({
   head: () => ({
     meta: [
-      { title: "My Account | Premium SMM Store" },
+      { title: "My Account | Premium Apex SMM World" },
       { name: "description", content: "Your account details, User ID and security options." },
-      { property: "og:title", content: "My Account | Premium SMM Store" },
+      { property: "og:title", content: "My Account | Premium Apex SMM World" },
       { property: "og:description", content: "Your account." },
     ],
   }),
