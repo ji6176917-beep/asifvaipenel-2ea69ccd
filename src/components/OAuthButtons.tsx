@@ -4,7 +4,7 @@ import { lovable } from "@/integrations/lovable";
 import { Spinner } from "@/components/ui-kit";
 import { useTr } from "@/lib/i18n";
 
-type Provider = "google" | "apple" | "microsoft";
+type Provider = "google";
 
 function GoogleIcon() {
   return (
@@ -17,29 +17,8 @@ function GoogleIcon() {
   );
 }
 
-function AppleIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5 fill-current" aria-hidden>
-      <path d="M17.05 12.54c-.03-2.9 2.37-4.29 2.48-4.36-1.35-1.98-3.46-2.25-4.21-2.28-1.79-.18-3.5 1.06-4.4 1.06-.91 0-2.31-1.03-3.8-1.01-1.95.03-3.75 1.14-4.76 2.88-2.03 3.52-.52 8.74 1.46 11.6.97 1.4 2.12 2.97 3.63 2.91 1.46-.06 2.01-.94 3.77-.94s2.26.94 3.8.91c1.57-.03 2.57-1.42 3.53-2.83 1.11-1.62 1.57-3.19 1.6-3.27-.04-.02-3.07-1.18-3.1-4.67zM14.16 4.06c.8-.97 1.34-2.32 1.19-3.66-1.15.05-2.55.77-3.38 1.74-.74.86-1.39 2.23-1.22 3.55 1.29.1 2.6-.65 3.41-1.63z" />
-    </svg>
-  );
-}
-
-function MicrosoftIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden>
-      <path fill="#F35325" d="M1 1h10v10H1z" />
-      <path fill="#81BC06" d="M13 1h10v10H13z" />
-      <path fill="#05A6F0" d="M1 13h10v10H1z" />
-      <path fill="#FFBA08" d="M13 13h10v10H13z" />
-    </svg>
-  );
-}
-
 const PROVIDERS: { id: Provider; label: string; icon: () => React.ReactNode }[] = [
   { id: "google", label: "Continue with Google", icon: GoogleIcon },
-  { id: "apple", label: "Continue with Apple", icon: AppleIcon },
-  { id: "microsoft", label: "Continue with Microsoft", icon: MicrosoftIcon },
 ];
 
 export function OAuthButtons() {
