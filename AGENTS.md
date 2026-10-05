@@ -10,6 +10,7 @@
 <!-- LOVABLE:END -->
 
 ## Project rules
+- Use the bundled site mark as the default logo and derive the public favicon from the same asset; admin branding overrides remain supported. Why: consistent branding without relying on private storage for the default icon.
 - All money changes go through SECURITY DEFINER Postgres functions (place_order, create_deposit, cancel_my_order) that write wallet_ledger; clients have SELECT-only grants on business tables. Why: balances must never be trusted from the client.
 - Sign-in by email/phone/User ID/username is resolved in a server function (src/lib/sign-in.functions.ts) so emails are never exposed to anonymous clients.
 - Signed-in pages live under src/routes/_authenticated/ (gate redirects to /sign-in?redirect=). Why: one place for auth guarding.

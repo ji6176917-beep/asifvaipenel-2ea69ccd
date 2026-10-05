@@ -15,9 +15,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Premium SMM Store — Followers, Likes & Views" },
+      { title: "SMM Store" },
       { name: "description", content: "Order Facebook, Instagram, YouTube, TikTok and Telegram growth services, hand-delivered by our team." },
-      { property: "og:title", content: "Premium SMM Store — Followers, Likes & Views" },
+      { property: "og:title", content: "SMM Store" },
       { property: "og:description", content: "Hand-delivered social growth for Facebook, Instagram, YouTube, TikTok and Telegram." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
