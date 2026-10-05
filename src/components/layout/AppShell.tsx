@@ -185,6 +185,8 @@ function Shell({ children }: { children: ReactNode }) {
   const qc = useQueryClient();
   const path = useRouterState({ select: (s) => s.location.pathname });
   const siteName = settings?.site_name ?? "SMM Store";
+  // The top header can show its own brand text; every other place keeps the website name.
+  const headerName = settings?.header_name || siteName;
   const customLogo = useStorageUrl("logos", settings?.logo_url ?? null);
   const logo = customLogo ?? siteLogo;
   const now = Date.now();
@@ -257,7 +259,7 @@ function Shell({ children }: { children: ReactNode }) {
         <div className="mx-auto flex max-w-5xl items-center gap-2 px-4 py-3">
           <Link to="/" className="flex min-w-0 items-center gap-2">
             <img src={logo} alt={`${siteName} logo`} width={36} height={36} className="h-9 w-9 shrink-0 rounded-xl object-contain" />
-            <span className="text-gradient truncate font-display text-base font-bold sm:text-lg">{siteName}</span>
+            <span className="text-gradient truncate font-display text-base font-bold sm:text-lg">{headerName}</span>
           </Link>
           <div className="ml-auto flex items-center gap-1.5">
             <Link to={user ? "/balance" : "/sign-in"} className="btn-ghost-glow !px-3 !py-1.5 text-sm">

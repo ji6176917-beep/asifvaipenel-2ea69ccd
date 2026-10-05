@@ -195,7 +195,7 @@ function BrandingForm({ s, identityOnly }: { s: Awaited<ReturnType<typeof adminG
   const qc = useQueryClient();
   const [f, setF] = useState({ ...s, announcement_start: toLocal(s.announcement_start), announcement_end: toLocal(s.announcement_end) });
   const [busy, setBusy] = useState(false);
-  const txt = (k: "site_name" | "tagline" | "footer_copyright" | "announcement_text" | "announcement_link" | "popup_link") =>
+  const txt = (k: "site_name" | "header_name" | "tagline" | "footer_copyright" | "announcement_text" | "announcement_link" | "popup_link") =>
     ({ value: f[k] ?? "", onChange: (e: React.ChangeEvent<HTMLInputElement>) => setF({ ...f, [k]: e.target.value }) });
   const go = async () => {
     setBusy(true);
@@ -215,6 +215,7 @@ function BrandingForm({ s, identityOnly }: { s: Awaited<ReturnType<typeof adminG
       <Card className="space-y-3">
         <h3 className="label-premium">Branding</h3>
         <div><label className={labelCls} htmlFor="b-name">Website name</label><input id="b-name" className={inputCls} {...txt("site_name")} /></div>
+        <div><label className={labelCls} htmlFor="b-hname">Header name (optional)</label><input id="b-hname" className={inputCls} placeholder="Same as website name" {...txt("header_name")} /><p className="mt-1 text-xs text-muted-foreground">Text shown at the top of every page. Empty = website name.</p></div>
         <div><label className={labelCls} htmlFor="b-tag">Tagline</label><input id="b-tag" className={inputCls} {...txt("tagline")} /></div>
         <ImagePick label="Logo" folder="branding" value={f.logo_url} onChange={(v) => setF({ ...f, logo_url: v })} />
         <ImagePick label="Favicon" folder="branding" value={f.favicon_url} onChange={(v) => setF({ ...f, favicon_url: v })} />
