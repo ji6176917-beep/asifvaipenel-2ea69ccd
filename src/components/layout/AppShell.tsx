@@ -24,6 +24,7 @@ import { useStorageUrl } from "@/lib/storage-url";
 import { useSupportTap } from "@/components/SupportAdmin";
 import ReactMarkdown from "react-markdown";
 import { FONTS, homeConfig, themeConfig, themeIsCustom, type HomeConfig, type ThemeConfig } from "@/lib/site-config";
+import siteLogo from "@/assets/smm-store-logo.png";
 
 function useTheme(def: "dark" | "light" | "system" | undefined) {
   const [dark, setDark] = useState(false);
@@ -183,18 +184,19 @@ function Shell({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const path = useRouterState({ select: (s) => s.location.pathname });
-  const siteName = settings?.site_name ?? "Premium SMM Store";
-  const logo = useStorageUrl("logos", settings?.logo_url ?? null);
+  const siteName = settings?.site_name ?? "SMM Store";
+  const customLogo = useStorageUrl("logos", settings?.logo_url ?? null);
+  const logo = customLogo ?? siteLogo;
   const now = Date.now();
   const annOn = !!settings?.announcement_on && !!settings.announcement_text
     && (!settings.announcement_start || Date.parse(settings.announcement_start) <= now)
     && (!settings.announcement_end || Date.parse(settings.announcement_end) > now);
   const favicon = useStorageUrl("logos", settings?.favicon_url ?? null);
   useEffect(() => {
-    if (!favicon) return;
     let el = document.querySelector<HTMLLinkElement>("link[rel='icon']");
     if (!el) { el = document.createElement("link"); el.rel = "icon"; document.head.appendChild(el); }
-    el.href = favicon;
+    el.href = favicon ?? "/favicon.png";
+    el.type = "image/png";
   }, [favicon]);
   // Show the admin's website name in every browser tab title.
   useEffect(() => {
@@ -254,11 +256,7 @@ function Shell({ children }: { children: ReactNode }) {
       <header className="glass sticky top-0 z-40 rounded-none border-x-0 border-t-0">
         <div className="mx-auto flex max-w-5xl items-center gap-2 px-4 py-3">
           <Link to="/" className="flex min-w-0 items-center gap-2">
-            {logo ? <img src={logo} alt="" className="h-9 w-9 shrink-0 rounded-xl object-contain" /> : (
-              <span className="bg-brand shadow-glow flex h-9 w-9 shrink-0 items-center justify-center rounded-xl font-display text-lg font-bold text-primary-foreground">
-                {siteName.charAt(0)}
-              </span>
-            )}
+            <img src={logo} alt={`${siteName} logo`} width={36} height={36} className="h-9 w-9 shrink-0 rounded-xl object-contain" />
             <span className="text-gradient truncate font-display text-base font-bold sm:text-lg">{siteName}</span>
           </Link>
           <div className="ml-auto flex items-center gap-1.5">
