@@ -81,7 +81,7 @@ export const adminSetIcon = createServerFn({ method: "POST" })
 
 /* ---------------- Branding, announcement, popup ---------------- */
 
-const BRAND_COLS = "site_name, tagline, logo_url, favicon_url, share_image_url, footer_copyright, announcement_on, announcement_text, announcement_color, announcement_link, announcement_start, announcement_end, popup_on, popup_image, popup_link, popup_mode";
+const BRAND_COLS = "site_name, header_name, tagline, logo_url, favicon_url, share_image_url, footer_copyright, announcement_on, announcement_text, announcement_color, announcement_link, announcement_start, announcement_end, popup_on, popup_image, popup_link, popup_mode";
 
 export const adminGetBranding = createServerFn({ method: "POST" }).handler(async () => {
   const { db } = await ctx();
@@ -93,7 +93,7 @@ export const adminGetBranding = createServerFn({ method: "POST" }).handler(async
 const url = z.string().trim().max(500).refine((v) => v === "" || /^https?:\/\//i.test(v), "Must start with https://");
 export const adminSaveBranding = createServerFn({ method: "POST" })
   .inputValidator((d) => z.object({
-    site_name: z.string().trim().min(1).max(80), tagline: z.string().max(200), logo_url: z.string().max(500).nullable(),
+    site_name: z.string().trim().min(1).max(80), header_name: z.string().trim().max(80).nullable(), tagline: z.string().max(200), logo_url: z.string().max(500).nullable(),
     favicon_url: z.string().max(500).nullable(), share_image_url: z.string().max(500).nullable(), footer_copyright: z.string().max(300),
     announcement_on: z.boolean(), announcement_text: z.string().max(500), announcement_color: z.string().max(30).regex(/^(#[0-9a-fA-F]{3,8})?$/),
     announcement_link: url, announcement_start: z.string().max(40).nullable(), announcement_end: z.string().max(40).nullable(),
