@@ -14,9 +14,9 @@ export const Route = createFileRoute("/sign-in")({
   validateSearch: (s) => z.object({ redirect: z.string().optional() }).parse(s),
   head: () => ({
     meta: [
-      { title: "Sign In | Premium SMM Store" },
+      { title: "Sign In | Premium Apex SMM World" },
       { name: "description", content: "Sign in with your email, phone, User ID or username." },
-      { property: "og:title", content: "Sign In | Premium SMM Store" },
+      { property: "og:title", content: "Sign In | Premium Apex SMM World" },
       { property: "og:description", content: "Access your wallet and orders." },
     ],
   }),

@@ -12,9 +12,9 @@ import { useTr } from "@/lib/i18n";
 export const Route = createFileRoute("/sign-up")({
   head: () => ({
     meta: [
-      { title: "Create Account | Premium SMM Store" },
+      { title: "Create Account | Premium Apex SMM World" },
       { name: "description", content: "Create your free account to start ordering social media growth services." },
-      { property: "og:title", content: "Create Account | Premium SMM Store" },
+      { property: "og:title", content: "Create Account | Premium Apex SMM World" },
       { property: "og:description", content: "Sign up in seconds." },
     ],
   }),

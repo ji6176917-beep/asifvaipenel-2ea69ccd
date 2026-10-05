@@ -17,9 +17,9 @@ import {
 export const Route = createFileRoute("/_authenticated/reseller-api")({
   head: () => ({
     meta: [
-      { title: "Reseller API | Premium SMM Store" },
+      { title: "Reseller API | Premium Apex SMM World" },
       { name: "description", content: "Your personal API key, endpoint and full documentation for reselling our services." },
-      { property: "og:title", content: "Reseller API | Premium SMM Store" },
+      { property: "og:title", content: "Reseller API | Premium Apex SMM World" },
       { property: "og:description", content: "Resell our SMM services through a simple JSON API." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

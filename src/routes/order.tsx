@@ -9,9 +9,9 @@ import { useTr } from "@/lib/i18n";
 export const Route = createFileRoute("/order")({
   head: () => ({
     meta: [
-      { title: "Order Now — Pick a Platform | Premium SMM Store" },
+      { title: "Order Now — Pick a Platform | Premium Apex SMM World" },
       { name: "description", content: "Choose Facebook, Instagram, YouTube, TikTok or Telegram to start your order." },
-      { property: "og:title", content: "Order Now — Premium SMM Store" },
+      { property: "og:title", content: "Order Now — Premium Apex SMM World" },
       { property: "og:description", content: "Choose a platform and start growing." },
     ],
   }),

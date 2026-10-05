@@ -10,9 +10,9 @@ import { useTr } from "@/lib/i18n";
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [
-      { title: "Dashboard | Premium SMM Store" },
+      { title: "Dashboard | Premium Apex SMM World" },
       { name: "description", content: "Your balance, orders and quick actions at a glance." },
-      { property: "og:title", content: "Dashboard | Premium SMM Store" },
+      { property: "og:title", content: "Dashboard | Premium Apex SMM World" },
       { property: "og:description", content: "Your account overview." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

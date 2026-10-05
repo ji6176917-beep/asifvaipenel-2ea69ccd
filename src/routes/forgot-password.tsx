@@ -12,9 +12,9 @@ import { useTr } from "@/lib/i18n";
 export const Route = createFileRoute("/forgot-password")({
   head: () => ({
     meta: [
-      { title: "Forgot Password | Premium SMM Store" },
+      { title: "Forgot Password | Premium Apex SMM World" },
       { name: "description", content: "Reset your password by email or contact support on Telegram." },
-      { property: "og:title", content: "Forgot Password | Premium SMM Store" },
+      { property: "og:title", content: "Forgot Password | Premium Apex SMM World" },
       { property: "og:description", content: "Recover access to your account." },
     ],
   }),

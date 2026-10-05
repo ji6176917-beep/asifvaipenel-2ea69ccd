@@ -184,7 +184,7 @@ function Shell({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const path = useRouterState({ select: (s) => s.location.pathname });
-  const siteName = settings?.site_name ?? "SMM Store";
+  const siteName = settings?.site_name ?? "Apex SMM World";
   // The top header can show its own brand text; every other place keeps the website name.
   const headerName = settings?.header_name || siteName;
   const customLogo = useStorageUrl("logos", settings?.logo_url ?? null);
@@ -202,8 +202,8 @@ function Shell({ children }: { children: ReactNode }) {
   }, [favicon]);
   // Show the admin's website name in every browser tab title.
   useEffect(() => {
-    if (!settings?.site_name || settings.site_name === "Premium SMM Store") return;
-    if (document.title.includes("Premium SMM Store")) document.title = document.title.replace("Premium SMM Store", settings.site_name);
+    if (!settings?.site_name || settings.site_name === "Premium Apex SMM World") return;
+    if (document.title.includes("Premium Apex SMM World")) document.title = document.title.replace("Premium Apex SMM World", settings.site_name);
   }, [path, settings?.site_name]);
   const visible = (m: MenuItem) => !m.requires_login || !!user;
   const onAction = (a: string) => {

@@ -38,7 +38,7 @@ create policy "own profile" on public.profiles for select to authenticated using
 
 create table public.site_settings (
   id int primary key default 1 check (id = 1),
-  site_name text not null default 'Premium SMM Store',
+  site_name text not null default 'Premium Apex SMM World',
   hero_title text not null default 'Grow every account, delivered by real people',
   hero_text text not null default 'Premium followers, likes, views and members for Facebook, Instagram, YouTube, TikTok and Telegram — every order is hand-delivered by our team.',
   whatsapp text default '8801700000000',

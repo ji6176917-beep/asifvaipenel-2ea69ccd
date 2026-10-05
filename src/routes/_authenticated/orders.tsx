@@ -14,9 +14,9 @@ import { useTr } from "@/lib/i18n";
 export const Route = createFileRoute("/_authenticated/orders")({
   head: () => ({
     meta: [
-      { title: "Order History | Premium SMM Store" },
+      { title: "Order History | Premium Apex SMM World" },
       { name: "description", content: "Track every order and its delivery status in real time." },
-      { property: "og:title", content: "Order History | Premium SMM Store" },
+      { property: "og:title", content: "Order History | Premium Apex SMM World" },
       { property: "og:description", content: "Your orders." },
     ],
   }),
