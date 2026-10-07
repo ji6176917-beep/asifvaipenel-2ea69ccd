@@ -256,7 +256,7 @@ function Shell({ children }: { children: ReactNode }) {
       <header className="glass sticky top-0 z-40 rounded-none border-x-0 border-t-0">
         <div className="mx-auto flex max-w-5xl items-center gap-2 px-4 py-3">
           <Link to="/" className="flex min-w-0 items-center gap-2">
-            <img src={siteLogo.url} alt={`${siteName} logo`} width={36} height={36} className="h-9 w-auto shrink-0 object-contain" />
+            <img src={siteLogo.url} alt={`${siteName} - Global Social Media Growth Logo`} width={36} height={36} className="h-9 w-auto shrink-0 object-contain" />
             <span className="text-gradient truncate font-display text-base font-bold sm:text-lg">{headerName}</span>
           </Link>
           <div className="ml-auto flex items-center gap-1.5">

@@ -13,16 +13,41 @@ import { PlatformIcon } from "@/lib/brand";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "Apex SMM World" },
-      { name: "description", content: "Order Facebook, Instagram, YouTube, TikTok and Telegram growth services, hand-delivered by our team." },
-      { property: "og:title", content: "Apex SMM World" },
-      { property: "og:description", content: "Hand-delivered social growth for Facebook, Instagram, YouTube, TikTok and Telegram." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
+  head: () => {
+    const title = "Apex SMM World | #1 Global SMM Panel for Instagram, TikTok, YouTube & Social Growth";
+    const desc = "The world's top-rated and cheapest SMM panel. Buy genuine Instagram followers & likes, TikTok views & followers, YouTube subscribers & watch hours, Telegram members, and Facebook marketing services. Instant delivery & 24/7 support.";
+    const ogTitle = "Apex SMM World - #1 Social Media Marketing Panel";
+    const ogDesc = "Boost your social media profiles worldwide with real followers, likes, views, and subscribers. Instant delivery and 24/7 customer support.";
+    const img = "https://apexsmmworld.com/favicon.png";
+    return {
+      meta: [
+        { title },
+        { name: "description", content: desc },
+        { name: "keywords", content: "apex smm world, best smm panel in the world, #1 global smm panel, cheapest smm provider worldwide, buy instagram followers, buy real instagram likes, buy tiktok followers, tiktok likes and views panel, buy youtube subscribers, youtube watch time provider, buy telegram members, buy facebook page followers, global smm panel, smm reseller panel" },
+        { name: "robots", content: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" },
+        { property: "og:title", content: ogTitle },
+        { property: "og:description", content: ogDesc },
+        { property: "og:type", content: "website" },
+        { property: "og:url", content: "https://apexsmmworld.com/" },
+        { property: "og:image", content: img },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: ogTitle },
+        { name: "twitter:description", content: ogDesc },
+        { name: "twitter:image", content: img },
+      ],
+      links: [{ rel: "canonical", href: "https://apexsmmworld.com/" }],
+      scripts: [{
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            { "@type": "Organization", "@id": "https://apexsmmworld.com/#organization", name: "Apex SMM World", url: "https://apexsmmworld.com", logo: img },
+            { "@type": "WebSite", "@id": "https://apexsmmworld.com/#website", url: "https://apexsmmworld.com", name: "Apex SMM World", publisher: { "@id": "https://apexsmmworld.com/#organization" } },
+          ],
+        }),
+      }],
+    };
+  },
   component: Home,
 });
 

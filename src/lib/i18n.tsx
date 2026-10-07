@@ -36,7 +36,7 @@ export const DEFAULT_LABELS: Record<string, Def> = {
   "header.verify_banner": ["Header", "Verify your email to order and add funds."],
   "header.resend": ["Header", "Resend"],
   "home.badge": ["Home", "Hand-delivered • Secure wallet • 24/7 support"],
-  "home.hero_title": ["Home", "Grow every account, delivered by real people", true],
+  "home.hero_title": ["Home", "Grow Every Account Worldwide — Delivered by Real People", true],
   "home.hero_text": ["Home", "Premium followers, likes, views and members for Facebook, Instagram, YouTube, TikTok and Telegram — every order is hand-delivered by our team.", true],
   "home.hero_article": ["Home", "", true],
   "home.services_title": ["Home", "Services"],
