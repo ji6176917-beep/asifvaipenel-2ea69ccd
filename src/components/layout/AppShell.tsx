@@ -24,7 +24,7 @@ import { useStorageUrl } from "@/lib/storage-url";
 import { useSupportTap } from "@/components/SupportAdmin";
 import ReactMarkdown from "react-markdown";
 import { FONTS, homeConfig, themeConfig, themeIsCustom, type HomeConfig, type ThemeConfig } from "@/lib/site-config";
-import siteLogo from "@/assets/apex-logo.png.asset.json";
+import siteLogo from "@/assets/apex-header-logo.png.asset.json";
 
 function useTheme(def: "dark" | "light" | "system" | undefined) {
   const [dark, setDark] = useState(false);
@@ -187,8 +187,6 @@ function Shell({ children }: { children: ReactNode }) {
   const siteName = settings?.site_name ?? "Apex SMM World";
   // The top header can show its own brand text; every other place keeps the website name.
   const headerName = settings?.header_name || siteName;
-  const customLogo = useStorageUrl("logos", settings?.logo_url ?? null);
-  const logo = customLogo ?? siteLogo.url;
   const now = Date.now();
   const annOn = !!settings?.announcement_on && !!settings.announcement_text
     && (!settings.announcement_start || Date.parse(settings.announcement_start) <= now)
@@ -258,7 +256,7 @@ function Shell({ children }: { children: ReactNode }) {
       <header className="glass sticky top-0 z-40 rounded-none border-x-0 border-t-0">
         <div className="mx-auto flex max-w-5xl items-center gap-2 px-4 py-3">
           <Link to="/" className="flex min-w-0 items-center gap-2">
-            <img src={logo} alt={`${siteName} logo`} width={36} height={36} className="h-9 w-9 shrink-0 object-contain" />
+            <img src={siteLogo.url} alt={`${siteName} logo`} width={36} height={36} className="h-9 w-auto shrink-0 object-contain" />
             <span className="text-gradient truncate font-display text-base font-bold sm:text-lg">{headerName}</span>
           </Link>
           <div className="ml-auto flex items-center gap-1.5">
