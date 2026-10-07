@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Apply the uploaded green A logo site-wide and derive its browser favicon; verify desktop and mobile header alignment.
 - [x] Replace the old site name throughout website text and code; preserve all logo and graphical assets.
 - [x] Create a green SM site logo and matching favicon; set the home tab title to Apex SMM World.
 ## Phase 1 (done)
