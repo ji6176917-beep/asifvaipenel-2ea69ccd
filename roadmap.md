@@ -1,4 +1,5 @@
 # Roadmap
+- [x] Pin the shared desktop/mobile header to a fresh uploaded A logo asset, bypassing stale SM overrides; check footer for retired marks.
 - [x] Apply the uploaded green A logo site-wide and derive its browser favicon; verify desktop and mobile header alignment.
 - [x] Replace the old site name throughout website text and code; preserve all logo and graphical assets.
 - [x] Create a green SM site logo and matching favicon; set the home tab title to Apex SMM World.
