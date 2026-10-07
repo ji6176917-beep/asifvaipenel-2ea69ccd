@@ -17,8 +17,9 @@ export const PLATFORM_META: Record<string, { Icon: IconType; color: string }> = 
 export function PlatformIcon({ slug, className, logo, name }: { slug: string; className?: string | undefined; logo?: string | null | undefined; name?: string | undefined }) {
   const url = useStorageUrl("logos", logo);
   const m = PLATFORM_META[slug];
-  if (url) return <img src={url} alt="" className={`${className ?? ""} object-contain`} />;
-  if (m) return <m.Icon className={className} style={{ color: m.color }} aria-hidden />;
+  const alt = `${name ?? slug} growth service`;
+  if (url) return <img src={url} alt={alt} className={`${className ?? ""} object-contain`} />;
+  if (m) return <m.Icon className={className} style={{ color: m.color }} role="img" aria-label={alt} />;
   return (
     <span className={`${className ?? ""} inline-flex items-center justify-center rounded-xl bg-primary font-bold text-primary-foreground`} aria-hidden>
       {(name ?? slug).charAt(0).toUpperCase()}
