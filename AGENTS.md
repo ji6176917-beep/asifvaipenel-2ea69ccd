@@ -11,6 +11,7 @@
 
 ## Project rules
 - Use the uploaded brand logo CDN pointer directly in the shared desktop/mobile header; derive the public favicon from the same source asset. Why: stale admin logo overrides must not restore the retired mark.
+- Serve brand favicons through stable public files declared in the root head; do not replace them with expiring storage URLs after hydration. Why: crawlers and browsers need the same persistent brand icon.
 - All money changes go through SECURITY DEFINER Postgres functions (place_order, create_deposit, cancel_my_order) that write wallet_ledger; clients have SELECT-only grants on business tables. Why: balances must never be trusted from the client.
 - Sign-in by email/phone/User ID/username is resolved in a server function (src/lib/sign-in.functions.ts) so emails are never exposed to anonymous clients.
 - Signed-in pages live under src/routes/_authenticated/ (gate redirects to /sign-in?redirect=). Why: one place for auth guarding.

@@ -18,7 +18,7 @@ export const Route = createFileRoute("/")({
     const desc = "The world's top-rated and cheapest SMM panel. Buy genuine Instagram followers & likes, TikTok views & followers, YouTube subscribers & watch hours, Telegram members, and Facebook marketing services. Instant delivery & 24/7 support.";
     const ogTitle = "Apex SMM World - #1 Social Media Marketing Panel";
     const ogDesc = "Boost your social media profiles worldwide with real followers, likes, views, and subscribers. Instant delivery and 24/7 customer support.";
-    const img = "https://apexsmmworld.com/favicon.png";
+    const logo = "https://apexsmmworld.com/favicon-192.png";
     return {
       meta: [
         { title },
@@ -28,12 +28,11 @@ export const Route = createFileRoute("/")({
         { property: "og:title", content: ogTitle },
         { property: "og:description", content: ogDesc },
         { property: "og:type", content: "website" },
+        { property: "og:site_name", content: "Apex SMM World" },
         { property: "og:url", content: "https://apexsmmworld.com/" },
-        { property: "og:image", content: img },
         { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:title", content: ogTitle },
         { name: "twitter:description", content: ogDesc },
-        { name: "twitter:image", content: img },
       ],
       links: [{ rel: "canonical", href: "https://apexsmmworld.com/" }],
       scripts: [{
@@ -41,8 +40,8 @@ export const Route = createFileRoute("/")({
         children: JSON.stringify({
           "@context": "https://schema.org",
           "@graph": [
-            { "@type": "Organization", "@id": "https://apexsmmworld.com/#organization", name: "Apex SMM World", url: "https://apexsmmworld.com", logo: img },
-            { "@type": "WebSite", "@id": "https://apexsmmworld.com/#website", url: "https://apexsmmworld.com", name: "Apex SMM World", publisher: { "@id": "https://apexsmmworld.com/#organization" } },
+            { "@type": "Organization", "@id": "https://apexsmmworld.com/#organization", name: "Apex SMM World", url: "https://apexsmmworld.com/", logo },
+            { "@type": "WebSite", "@id": "https://apexsmmworld.com/#website", url: "https://apexsmmworld.com/", name: "Apex SMM World", alternateName: "ApexSMMWorld", inLanguage: "en", publisher: { "@id": "https://apexsmmworld.com/#organization" } },
           ],
         }),
       }],
@@ -83,11 +82,6 @@ function Home() {
         <h1 className="mx-auto max-w-3xl text-3xl font-extrabold leading-tight text-primary dark:text-gradient sm:text-5xl">
           {t("home.hero_title").replace(/[*_#`]/g, "")}
         </h1>
-        {t("home.hero_subtitle", "") && (
-          <p className="mx-auto mt-4 max-w-2xl text-lg font-semibold text-primary sm:text-xl">
-            {t("home.hero_subtitle")}
-          </p>
-        )}
         <div className="md-content mx-auto mt-4 max-w-2xl leading-relaxed text-foreground/85 sm:text-lg"><ReactMarkdown>{t("home.hero_text")}</ReactMarkdown></div>
         {t("home.hero_article", "") && t("home.hero_article", "") !== "home.hero_article" && (
           <div className="md-content glass mx-auto mt-6 max-w-2xl rounded-3xl p-5 text-left"><ReactMarkdown>{t("home.hero_article", "")}</ReactMarkdown></div>
