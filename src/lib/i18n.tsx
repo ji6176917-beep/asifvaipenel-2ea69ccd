@@ -37,7 +37,7 @@ export const DEFAULT_LABELS: Record<string, Def> = {
   "header.resend": ["Header", "Resend"],
   "home.badge": ["Home", "Fast delivery • Secure wallet • 24/7 Human support"],
   "home.hero_title": ["Home", "Cheapest Panel: Services at Unbeatable Prices! Grow your social media.", true],
-  "home.hero_subtitle": ["Home", "Welcome to Apex SMM World, one of the best SMM panels in the world!"],
+  "home.hero_subtitle": ["Home", "Welcome to Apex SMM World of the Best SMM Panels in the World!"],
   "home.hero_text": ["Home", "Boost your social media presence with affordable, high-quality services. Get social media followers, likes, views, and more at competitive prices. Enjoy a smooth, user-friendly platform designed for your convenience. Grow your brand, reach a wider audience, and stand out from the competition. Whether you're a creator, influencer, business owner, or reseller, we've got you covered. Experience convenient ordering, fast processing, and dedicated customer support. Make social media growth easier, smarter, and more affordable than ever.", true],
   "home.hero_article": ["Home", "", true],
   "home.services_title": ["Home", "Services"],
@@ -136,26 +136,17 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     if (user) void supabase.rpc("set_my_language", { _lang: l });
   };
 
-  const { data } = useQuery({
-    queryKey: ["ui-content"],
-    staleTime: 10 * 60_000,
-    queryFn: async () => {
-      const [{ data: labels }, { data: icons }] = await Promise.all([
-        supabase.from("ui_labels").select("key, default_text, translations"),
-        supabase.from("ui_icons").select("key, icon_url"),
-      ]);
-      return {
-        labels: new Map((labels ?? []).map((l) => [l.key, l as unknown as LabelRow])),
-        icons: new Map((icons ?? []).filter((i) => i.icon_url).map((i) => [i.key, i.icon_url as string])),
-      };
-    },
-  });
+  const { data: raw } = useQuery(uiContentQuery);
+  const data = useMemo(() => raw && Array.isArray(raw.labels) && Array.isArray(raw.icons) ? {
+    labels: new Map(raw.labels.map((l) => [l.key, l as unknown as LabelRow])),
+    icons: new Map(raw.icons.filter((i) => i.icon_url).map((i) => [i.key, i.icon_url as string])),
+  } : undefined, [raw]);
 
   // Realtime: admin edits to labels, icons, menus or settings refresh every open tab.
   useEffect(() => {
     const ch = supabase.channel("ui-content")
-      .on("postgres_changes", { event: "*", schema: "public", table: "ui_labels" }, () => qc.invalidateQueries({ queryKey: ["ui-content"] }))
-      .on("postgres_changes", { event: "*", schema: "public", table: "ui_icons" }, () => qc.invalidateQueries({ queryKey: ["ui-content"] }))
+      .on("postgres_changes", { event: "*", schema: "public", table: "ui_labels" }, () => qc.invalidateQueries({ queryKey: uiContentQuery.queryKey }))
+      .on("postgres_changes", { event: "*", schema: "public", table: "ui_icons" }, () => qc.invalidateQueries({ queryKey: uiContentQuery.queryKey }))
       .on("postgres_changes", { event: "*", schema: "public", table: "menu_items" }, () => qc.invalidateQueries({ queryKey: ["menu-items"] }))
       .on("postgres_changes", { event: "*", schema: "public", table: "site_settings" }, () => {
         qc.invalidateQueries({ queryKey: ["settings"] }); qc.invalidateQueries({ queryKey: ["welcome-song"] });
@@ -189,3 +180,15 @@ export function pickLang(obj: unknown, lang: string, fallback = "") {
   const o = (obj ?? {}) as Record<string, string>;
   return o[lang] || (o["en"] ? trFor(lang, o["en"]) : "") || fallback;
 }
+
+export const uiContentQuery = {
+  queryKey: ["ui-content", 2] as const,
+  staleTime: 10 * 60_000,
+  queryFn: async () => {
+    const [{ data: labels }, { data: icons }] = await Promise.all([
+      supabase.from("ui_labels").select("key, default_text, translations"),
+      supabase.from("ui_icons").select("key, icon_url"),
+    ]);
+    return { labels: labels ?? [], icons: icons ?? [] };
+  },
+};

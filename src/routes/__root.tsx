@@ -14,7 +14,8 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AuthProvider } from "@/lib/auth";
 import { AppShell } from "@/components/layout/AppShell";
-import { I18nProvider } from "@/lib/i18n";
+import { I18nProvider, uiContentQuery } from "@/lib/i18n";
+import { settingsQuery, platformsQuery } from "@/lib/queries";
 import { SupportAdminProvider } from "@/components/SupportAdmin";
 import { Toaster } from "@/components/ui/sonner";
 import { VisitTracker } from "@/components/VisitTracker";
@@ -88,6 +89,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "Apex SMM World" },
       { name: "description", content: "Premium social media growth services, delivered by hand." },
       { property: "og:type", content: "website" },
+      { property: "og:site_name", content: "Apex SMM World" },
+      { name: "application-name", content: "Apex SMM World" },
+      { name: "apple-mobile-web-app-title", content: "Apex SMM World" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
@@ -96,11 +100,25 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: appCss,
       },
       { rel: "icon", href: "/favicon.png?v=apex-20261007", type: "image/png" },
+      { rel: "icon", href: "/favicon-192.png", type: "image/png", sizes: "192x192" },
+      { rel: "apple-touch-icon", href: "/favicon-192.png" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@500;600;700;800&display=swap" },
     ],
   }),
+  // Load admin-saved settings/texts before first paint so built-in defaults never flash.
+  loader: async ({ context }) => {
+    const qc = context.queryClient;
+    const safe = <T,>(p: Promise<T>) => p.catch(() => null);
+    const [settings, ui, platforms] = await Promise.all([
+      safe(qc.ensureQueryData(settingsQuery)),
+      safe(qc.ensureQueryData(uiContentQuery)),
+      safe(qc.ensureQueryData(platformsQuery)),
+    ]);
+    return { settings, ui, platforms };
+  },
+  staleTime: Infinity,
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
@@ -109,7 +127,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
@@ -123,6 +141,12 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const seed = Route.useLoaderData();
+  if (seed) {
+    if (seed.settings && !queryClient.getQueryData(settingsQuery.queryKey)) queryClient.setQueryData(settingsQuery.queryKey, seed.settings);
+    if (seed.ui && !queryClient.getQueryData(uiContentQuery.queryKey)) queryClient.setQueryData(uiContentQuery.queryKey, seed.ui);
+    if (seed.platforms && !queryClient.getQueryData(platformsQuery.queryKey)) queryClient.setQueryData(platformsQuery.queryKey, seed.platforms);
+  }
 
   return (
     <QueryClientProvider client={queryClient}>

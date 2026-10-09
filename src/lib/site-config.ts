@@ -59,7 +59,7 @@ export type ThemeConfig = {
 };
 export const THEME_DEFAULTS: ThemeConfig = {
   primary_light: "#127a45", primary_dark: "#2fd47a", glow_light: "#16884e", glow_dark: "#2fd47a",
-  glow: 100, radius: 1, font: "manrope", bg3d: true, anim: "high", default_theme: "dark",
+  glow: 100, radius: 1, font: "manrope", bg3d: true, anim: "high", default_theme: "light",
 };
 export function themeConfig(raw: unknown): ThemeConfig {
   return { ...THEME_DEFAULTS, ...((raw ?? {}) as Partial<ThemeConfig>) };
