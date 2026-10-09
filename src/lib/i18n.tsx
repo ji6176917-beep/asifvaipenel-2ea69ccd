@@ -180,3 +180,15 @@ export function pickLang(obj: unknown, lang: string, fallback = "") {
   const o = (obj ?? {}) as Record<string, string>;
   return o[lang] || (o["en"] ? trFor(lang, o["en"]) : "") || fallback;
 }
+
+export const uiContentQuery = {
+  queryKey: ["ui-content"] as const,
+  staleTime: 10 * 60_000,
+  queryFn: async () => {
+    const [{ data: labels }, { data: icons }] = await Promise.all([
+      supabase.from("ui_labels").select("key, default_text, translations"),
+      supabase.from("ui_icons").select("key, icon_url"),
+    ]);
+    return { labels: labels ?? [], icons: icons ?? [] };
+  },
+};
