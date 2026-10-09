@@ -80,15 +80,15 @@ function Home() {
     hero: (
       <section className="pt-6 text-center">
         <p className="label-premium mb-3 inline-block rounded-full border border-primary/40 px-3 py-1 text-xs text-primary">{t("home.badge")}</p>
-        <h1 className="text-gradient mx-auto max-w-3xl text-4xl font-extrabold leading-tight sm:text-6xl">
+        <h1 className="mx-auto max-w-3xl text-3xl font-extrabold leading-tight text-primary dark:text-gradient sm:text-5xl">
           {t("home.hero_title").replace(/[*_#`]/g, "")}
         </h1>
         {t("home.hero_subtitle", "") && (
-          <p className="mx-auto mt-4 max-w-2xl text-lg font-semibold text-foreground sm:text-xl">
+          <p className="mx-auto mt-4 max-w-2xl text-lg font-semibold text-primary sm:text-xl">
             {t("home.hero_subtitle")}
           </p>
         )}
-        <div className="md-content mx-auto mt-4 max-w-2xl text-muted-foreground sm:text-lg"><ReactMarkdown>{t("home.hero_text")}</ReactMarkdown></div>
+        <div className="md-content mx-auto mt-4 max-w-2xl leading-relaxed text-foreground/85 sm:text-lg"><ReactMarkdown>{t("home.hero_text")}</ReactMarkdown></div>
         {t("home.hero_article", "") && t("home.hero_article", "") !== "home.hero_article" && (
           <div className="md-content glass mx-auto mt-6 max-w-2xl rounded-3xl p-5 text-left"><ReactMarkdown>{t("home.hero_article", "")}</ReactMarkdown></div>
         )}

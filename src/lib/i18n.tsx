@@ -37,7 +37,7 @@ export const DEFAULT_LABELS: Record<string, Def> = {
   "header.resend": ["Header", "Resend"],
   "home.badge": ["Home", "Fast delivery • Secure wallet • 24/7 Human support"],
   "home.hero_title": ["Home", "Cheapest Panel: Services at Unbeatable Prices! Grow your social media.", true],
-  "home.hero_subtitle": ["Home", "Welcome to Apex SMM World, one of the best SMM panels in the world!"],
+  "home.hero_subtitle": ["Home", "Welcome to Apex SMM World of the Best SMM Panels in the World!"],
   "home.hero_text": ["Home", "Boost your social media presence with affordable, high-quality services. Get social media followers, likes, views, and more at competitive prices. Enjoy a smooth, user-friendly platform designed for your convenience. Grow your brand, reach a wider audience, and stand out from the competition. Whether you're a creator, influencer, business owner, or reseller, we've got you covered. Experience convenient ordering, fast processing, and dedicated customer support. Make social media growth easier, smarter, and more affordable than ever.", true],
   "home.hero_article": ["Home", "", true],
   "home.services_title": ["Home", "Services"],
