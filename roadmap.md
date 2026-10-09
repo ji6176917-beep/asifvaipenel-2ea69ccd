@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Remove the homepage welcome subtitle and verify Google site-name schema and stable brand favicon.
 - [x] Pin the shared desktop/mobile header to a fresh uploaded A logo asset, bypassing stale SM overrides; check footer for retired marks.
 - [x] Apply the uploaded green A logo site-wide and derive its browser favicon; verify desktop and mobile header alignment.
 - [x] Replace the old site name throughout website text and code; preserve all logo and graphical assets.
