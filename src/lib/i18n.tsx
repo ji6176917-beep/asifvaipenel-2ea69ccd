@@ -136,20 +136,11 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     if (user) void supabase.rpc("set_my_language", { _lang: l });
   };
 
-  const { data } = useQuery({
-    queryKey: ["ui-content"],
-    staleTime: 10 * 60_000,
-    queryFn: async () => {
-      const [{ data: labels }, { data: icons }] = await Promise.all([
-        supabase.from("ui_labels").select("key, default_text, translations"),
-        supabase.from("ui_icons").select("key, icon_url"),
-      ]);
-      return {
-        labels: new Map((labels ?? []).map((l) => [l.key, l as unknown as LabelRow])),
-        icons: new Map((icons ?? []).filter((i) => i.icon_url).map((i) => [i.key, i.icon_url as string])),
-      };
-    },
-  });
+  const { data: raw } = useQuery(uiContentQuery);
+  const data = useMemo(() => raw && {
+    labels: new Map(raw.labels.map((l) => [l.key, l as unknown as LabelRow])),
+    icons: new Map(raw.icons.filter((i) => i.icon_url).map((i) => [i.key, i.icon_url as string])),
+  }, [raw]);
 
   // Realtime: admin edits to labels, icons, menus or settings refresh every open tab.
   useEffect(() => {
