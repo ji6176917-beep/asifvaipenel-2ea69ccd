@@ -137,16 +137,16 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   };
 
   const { data: raw } = useQuery(uiContentQuery);
-  const data = useMemo(() => raw && {
+  const data = useMemo(() => raw && Array.isArray(raw.labels) && Array.isArray(raw.icons) ? {
     labels: new Map(raw.labels.map((l) => [l.key, l as unknown as LabelRow])),
     icons: new Map(raw.icons.filter((i) => i.icon_url).map((i) => [i.key, i.icon_url as string])),
-  }, [raw]);
+  } : undefined, [raw]);
 
   // Realtime: admin edits to labels, icons, menus or settings refresh every open tab.
   useEffect(() => {
     const ch = supabase.channel("ui-content")
-      .on("postgres_changes", { event: "*", schema: "public", table: "ui_labels" }, () => qc.invalidateQueries({ queryKey: ["ui-content"] }))
-      .on("postgres_changes", { event: "*", schema: "public", table: "ui_icons" }, () => qc.invalidateQueries({ queryKey: ["ui-content"] }))
+      .on("postgres_changes", { event: "*", schema: "public", table: "ui_labels" }, () => qc.invalidateQueries({ queryKey: uiContentQuery.queryKey }))
+      .on("postgres_changes", { event: "*", schema: "public", table: "ui_icons" }, () => qc.invalidateQueries({ queryKey: uiContentQuery.queryKey }))
       .on("postgres_changes", { event: "*", schema: "public", table: "menu_items" }, () => qc.invalidateQueries({ queryKey: ["menu-items"] }))
       .on("postgres_changes", { event: "*", schema: "public", table: "site_settings" }, () => {
         qc.invalidateQueries({ queryKey: ["settings"] }); qc.invalidateQueries({ queryKey: ["welcome-song"] });
@@ -182,7 +182,7 @@ export function pickLang(obj: unknown, lang: string, fallback = "") {
 }
 
 export const uiContentQuery = {
-  queryKey: ["ui-content"] as const,
+  queryKey: ["ui-content", 2] as const,
   staleTime: 10 * 60_000,
   queryFn: async () => {
     const [{ data: labels }, { data: icons }] = await Promise.all([
