@@ -191,13 +191,6 @@ function Shell({ children }: { children: ReactNode }) {
   const annOn = !!settings?.announcement_on && !!settings.announcement_text
     && (!settings.announcement_start || Date.parse(settings.announcement_start) <= now)
     && (!settings.announcement_end || Date.parse(settings.announcement_end) > now);
-  const favicon = useStorageUrl("logos", settings?.favicon_url ?? null);
-  useEffect(() => {
-    let el = document.querySelector<HTMLLinkElement>("link[rel='icon']");
-    if (!el) { el = document.createElement("link"); el.rel = "icon"; document.head.appendChild(el); }
-    el.href = favicon ?? "/favicon.png?v=apex-20261007";
-    el.type = "image/png";
-  }, [favicon]);
   // Show the admin's website name in every browser tab title.
   useEffect(() => {
     if (!settings?.site_name || settings.site_name === "Premium Apex SMM World") return;
