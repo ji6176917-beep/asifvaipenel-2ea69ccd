@@ -83,6 +83,11 @@ function Home() {
         <h1 className="text-gradient mx-auto max-w-3xl text-4xl font-extrabold leading-tight sm:text-6xl">
           {t("home.hero_title").replace(/[*_#`]/g, "")}
         </h1>
+        {t("home.hero_subtitle", "") && (
+          <p className="mx-auto mt-4 max-w-2xl text-lg font-semibold text-foreground sm:text-xl">
+            {t("home.hero_subtitle")}
+          </p>
+        )}
         <div className="md-content mx-auto mt-4 max-w-2xl text-muted-foreground sm:text-lg"><ReactMarkdown>{t("home.hero_text")}</ReactMarkdown></div>
         {t("home.hero_article", "") && t("home.hero_article", "") !== "home.hero_article" && (
           <div className="md-content glass mx-auto mt-6 max-w-2xl rounded-3xl p-5 text-left"><ReactMarkdown>{t("home.hero_article", "")}</ReactMarkdown></div>
