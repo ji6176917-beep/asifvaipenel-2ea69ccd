@@ -7,6 +7,7 @@ import {
   Head,
   Heading,
   Html,
+  Img,
   Link,
   Preview,
   Text,
@@ -37,6 +38,8 @@ export const EmailChangeEmail = ({
     <Preview>Confirm your email change for {siteName}</Preview>
     <Body style={main}>
       <Container style={container}>
+        <Img src="https://apexsmmworld.com/favicon-192.png" width="64" height="64" alt="Apex SMM World" style={{ margin: '0 auto 12px', display: 'block', borderRadius: '14px' }} />
+        <Text style={{ textAlign: 'center' as const, fontSize: '18px', fontWeight: 'bold' as const, color: '#16a34a', margin: '0 0 24px' }}>Apex SMM World</Text>
         <Heading style={h1}>Confirm your email change</Heading>
         <Text style={text}>
           You requested to change your email address for {siteName} from{' '}
