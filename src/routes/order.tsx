@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Search, ChevronRight } from "lucide-react";
+import { Search, ChevronRight, Rocket } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { platformsQuery } from "@/lib/queries";
 import { PlatformIcon } from "@/lib/brand";
@@ -44,7 +44,7 @@ function OrderPage() {
       <section className="order-welcome">
         <img className="order-banner-art" src={orderBanner} alt="" width={1280} height={560} />
         <div className="order-welcome-copy">
-          <span className="order-title-rocket" aria-hidden>🚀</span>
+          <span className="order-title-rocket" aria-hidden><Rocket /></span>
           <h1>{tr("Order Now")}.</h1>
           <p>{tr("Tap a platform to open its order form.")}</p>
         </div>
