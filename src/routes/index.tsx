@@ -83,14 +83,13 @@ function Home() {
           {isLoading
             ? Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-36 rounded-lg" />)
             : shown.map(({ c, p }) => (
-                <Link key={p.id} to="/service/$platform" params={{ platform: p.slug }} className="home-service-tile group">
+                <Link key={p.id} to="/service/$platform" params={{ platform: p.slug }} className={`home-service-tile home-service-${p.slug}`}>
                   <span className={`home-platform-icon home-platform-${p.slug}`}>
                   {c.logo ? <PlatformLogo path={c.logo} className="h-10 w-10" />
                     : <PlatformIcon slug={p.slug} logo={p.logo_url} name={p.name} className="h-10 w-10" />}
                   </span>
                   <strong>{c.name?.trim() || p.name}</strong>
-                  <span className="home-service-detail">{tr(p.slug === "telegram" ? "Members • Views • Shares" : p.slug === "youtube" ? "Subscribers • Likes • Views" : "Followers • Likes • Views")}</span>
-                  <span className="home-service-arrow"><ArrowRight aria-hidden="true" /></span>
+                  <span className="home-service-arrow" aria-hidden="true"><ArrowRight /></span>
                 </Link>
               ))}
         </div>
