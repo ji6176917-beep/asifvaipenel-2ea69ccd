@@ -348,6 +348,10 @@
 .home-reference-shell .home-whatsapp-float { background: var(--home-green); }
 .home-reference-shell > footer { margin-top: 24px; }
 .home-reference-shell > footer > div { box-shadow: none; background: transparent; border: none; }
+/* Homepage Q&A: questions and answers read at a normal size. */
+.home-qna .label-premium { font-size: 15px; }
+.home-qna h2.label-premium { font-size: 26px; }
+.home-qna .md-content { font-size: 14px; line-height: 1.7; }
 @media (max-width: 1100px) {
   .home-desktop-nav { gap: 19px; }
   .home-reference-shell .home-header-inner { gap: 15px; }
@@ -397,6 +401,9 @@
   .home-reference-shell .home-service-tile strong { font-size: 13.5px; margin-top: 6px; }
   .home-service-detail { font-size: 9px; margin: 3px 0 5px; }
   .home-service-arrow { width: 15px; height: 15px; }
+  .home-qna .label-premium { font-size: 13px; }
+  .home-qna h2.label-premium { font-size: 21px; }
+  .home-qna .md-content { font-size: 12.5px; }
   .home-reference-shell .home-bottom-nav a { font-size: 10.5px; padding: 9px 0; }
   .home-reference-shell .home-bottom-nav svg { width: 18px; height: 18px; }
 }
