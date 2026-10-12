@@ -6,8 +6,9 @@ const CORS = {
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type",
 };
-const json = (body: unknown, status = 200) =>
-  new Response(JSON.stringify(body), { status, headers: { ...CORS, "Content-Type": "application/json", "Cache-Control": "no-store" } });
+// Standard SMM API (PerfectPanel v2): every response is HTTP 200 JSON; errors are {"error": "..."}
+const json = (body: unknown, _status = 200) =>
+  new Response(JSON.stringify(body), { status: 200, headers: { ...CORS, "Content-Type": "application/json", "Cache-Control": "no-store" } });
 
 const ERR: Record<string, [string, number]> = {
   INSUFFICIENT_BALANCE: ["Insufficient balance. Add funds to your account first.", 402],
@@ -65,14 +66,18 @@ async function handle(request: Request) {
         .eq("active", true).is("deleted_at", null).eq("categories.active", true).is("categories.deleted_at", null)
         .eq("categories.platforms.active", true).is("categories.platforms.deleted_at", null).order("sort");
       return json((data ?? []).map((s) => ({
-        service: s.service_no, name: s.name, type: "Default", platform: s.categories.platforms.name, category: s.categories.name,
-        rate: Number(s.rate).toString(), rate_per: s.rate_per, min: String(s.min_qty), max: String(s.max_qty), avg_time: s.avg_time,
-        refill: !!s.refill_info, cancel: false, description: s.description ?? "",
+        service: s.service_no, name: s.name, type: "Default",
+        category: `${s.categories.platforms.name} - ${s.categories.name}`,
+        rate: Number(s.rate).toString(), min: String(s.min_qty), max: String(s.max_qty),
+        refill: !!s.refill_info, cancel: false,
       })));
     }
     case "add": {
       const v = z.object({ service: z.coerce.number().int().positive(), link: z.string().min(5).max(500), quantity: z.coerce.number().int().positive() }).safeParse(p);
-      if (!v.success) return json({ error: "Missing or invalid parameters: service (number), link, quantity" }, 400);
+      if (!v.success) {
+        const miss = ["service", "link", "quantity"].find((k) => !p[k]);
+        return json({ error: miss ? `Missing parameter: ${miss}` : "Incorrect request" });
+      }
       const { data: svc } = await db.from("services").select("id").eq("service_no", v.data.service).is("deleted_at", null).maybeSingle();
       if (!svc) return json({ error: "Service is inactive or does not exist." }, 400);
       const { data, error } = await db.rpc("api_place_order", { _uid: prof.id, _service_id: svc.id, _link: v.data.link.trim(), _quantity: v.data.quantity });
@@ -83,28 +88,33 @@ async function handle(request: Request) {
         return json({ error: "Could not place order" }, 500);
       }
       const r = data as { order: string; charge: number; balance: number };
-      return json({ order: r.order, charge: Number(r.charge).toFixed(2), balance: Number(r.balance).toFixed(2), status: "pending" });
+      return json({ order: /^\d+$/.test(String(r.order)) ? Number(r.order) : r.order });
     }
     case "status": {
       const ids = String(p["orders"] ?? p["order"] ?? "").split(",").map((x) => x.trim()).filter(Boolean).slice(0, 100);
-      if (!ids.length) return json({ error: "Missing parameter: order" }, 400);
+      if (!ids.length) return json({ error: "Missing parameter: order" });
       const { data } = await db.from("orders").select("order_code,status,quantity,delivered_qty,charge,refunded,created_at")
         .eq("user_id", prof.id).in("order_code", ids);
+      const STATUS: Record<string, string> = { pending: "Pending", processing: "In progress", completed: "Completed", partial: "Partial", rejected: "Canceled", canceled: "Canceled" };
       const fmt = (o: NonNullable<typeof data>[number]) => {
         const delivered = o.delivered_qty ?? (o.status === "completed" ? o.quantity : 0);
-        return { order: o.order_code, status: o.status, quantity: o.quantity, delivered, remains: Math.max(0, o.quantity - delivered),
-          charge: Number(o.charge).toFixed(2), refunded: Number(o.refunded).toFixed(2), created_at: o.created_at };
+        return { charge: Number(o.charge).toFixed(5), start_count: "0", status: STATUS[o.status] ?? "Pending",
+          remains: String(Math.max(0, o.quantity - delivered)), currency: "USD" };
       };
       if (ids.length === 1 && !p["orders"]) {
         const o = data?.[0];
-        return o ? json(fmt(o)) : json({ error: "Order not found" }, 404);
+        return o ? json(fmt(o)) : json({ error: "Incorrect order ID" });
       }
       const map: Record<string, unknown> = {};
-      ids.forEach((id) => { const o = data?.find((x) => x.order_code === id); map[id] = o ? fmt(o) : { error: "Order not found" }; });
+      ids.forEach((id) => { const o = data?.find((x) => x.order_code === id); map[id] = o ? fmt(o) : { error: "Incorrect order ID" }; });
       return json(map);
     }
+    case "refill":
+    case "refill_status":
+    case "cancel":
+      return json({ error: "Not supported" });
     default:
-      return json({ error: "Unknown action. Use: services, add, status, balance" }, 400);
+      return json({ error: "Incorrect request" });
   }
 }
 
