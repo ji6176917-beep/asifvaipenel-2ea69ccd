@@ -18,8 +18,8 @@ function makeRouter(loader: () => Promise<void>, unmounted: () => void = () => {
     useEffect(() => unmounted, []);
     return <div>Original page</div>;
   } });
-  const second = createRoute({ getParentRoute: () => root, path: "/next", loader, component: () => <div>Destination page</div> });
-  const item = createRoute({ getParentRoute: () => root, path: "/item/$id", component: () => {
+  const second = createRoute({ getParentRoute: () => root, path: "/about", loader, component: () => <div>Destination page</div> });
+  const item = createRoute({ getParentRoute: () => root, path: "/service/$platform", component: () => {
     const [value, setValue] = useState("");
     return <input aria-label="Page-local value" value={value} onChange={(e) => setValue(e.target.value)} />;
   } });
@@ -42,7 +42,7 @@ describe("Global route transitions", () => {
     render(<RouterProvider router={router} />);
     await screen.findByText("Original page");
     let navigation: Promise<void> | undefined;
-    act(() => { navigation = router.navigate({ to: "/next" }); });
+    act(() => { navigation = router.navigate({ to: "/about" }); });
     await screen.findByRole("status");
     expect(screen.queryByText("Original page")).toBeNull();
     expect(unmounts).toBe(1);
@@ -51,14 +51,14 @@ describe("Global route transitions", () => {
     expect(screen.queryByRole("status")).toBeNull();
   });
 
-  it("resets local form state when dynamic route parameters change without clearing shared cache", async () => {
+  it("resets local form state when dynamic route parameters change", async () => {
     const router = makeRouter(async () => {});
     await router.load();
     render(<RouterProvider router={router} />);
-    await act(async () => { await router.navigate({ to: "/item/$id", params: { id: "facebook" } }); });
+    await act(async () => { await router.navigate({ to: "/service/$platform", params: { platform: "facebook" } }); });
     fireEvent.change(await screen.findByLabelText("Page-local value"), { target: { value: "previous selection" } });
     expect(screen.getByLabelText("Page-local value")).toHaveValue("previous selection");
-    await act(async () => { await router.navigate({ to: "/item/$id", params: { id: "instagram" } }); });
+    await act(async () => { await router.navigate({ to: "/service/$platform", params: { platform: "instagram" } }); });
     await waitFor(() => expect(screen.getByLabelText("Page-local value")).toHaveValue(""));
   });
 });
