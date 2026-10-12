@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Search, ChevronRight, Rocket } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { platformsQuery } from "@/lib/queries";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { catalogQuery, platformsQuery } from "@/lib/queries";
 import { PlatformIcon } from "@/lib/brand";
 import { Empty, ErrorState } from "@/components/ui-kit";
 import { Button } from "@/components/ui/button";
@@ -29,6 +29,9 @@ function OrderPage() {
   const tr = useTr();
   const [search, setSearch] = useState("");
   const { data, isLoading, isError } = useQuery(platformsQuery);
+  const qc = useQueryClient();
+  // Warm every platform's order form so the first tap opens it fully populated.
+  useEffect(() => { (data ?? []).forEach((p) => { qc.prefetchQuery(catalogQuery(p.slug)); }); }, [data, qc]);
   const descriptions: Record<string, string> = {
     tiktok: "Grow your TikTok presence", instagram: "Boost your Instagram",
     facebook: "Get more Facebook engagement", youtube: "Increase your YouTube growth",
