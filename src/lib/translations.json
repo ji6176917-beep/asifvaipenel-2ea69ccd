@@ -213,7 +213,8 @@
     "required": "আবশ্যক",
     "unverified": "যাচাইবিহীন",
     "verified": "যাচাইকৃত",
-    "or continue with": "অথবা চালিয়ে যান"
+    "or continue with": "অথবা চালিয়ে যান",
+    "Menu": "মেনু"
   },
   "hi": {
     "API Policy": "API पॉलिसी",
@@ -429,7 +430,8 @@
     "required": "अनिवार्य",
     "unverified": "असत्यापित",
     "verified": "सत्यापित",
-    "or continue with": "या इसके साथ जारी रखें"
+    "or continue with": "या इसके साथ जारी रखें",
+    "Menu": "मेनू"
   },
   "pt-BR": {
     "API Policy": "Política de API",
@@ -645,7 +647,8 @@
     "required": "obrigatório",
     "unverified": "não verificado",
     "verified": "verificado",
-    "or continue with": "ou continue com"
+    "or continue with": "ou continue com",
+    "Menu": "Menu"
   },
   "id": {
     "API Policy": "Kebijakan API",
@@ -861,7 +864,8 @@
     "required": "wajib",
     "unverified": "belum diverifikasi",
     "verified": "terverifikasi",
-    "or continue with": "atau lanjutkan dengan"
+    "or continue with": "atau lanjutkan dengan",
+    "Menu": "Menu"
   },
   "tr": {
     "API Policy": "API Politikası",
@@ -1077,7 +1081,8 @@
     "required": "gerekli",
     "unverified": "doğrulanmamış",
     "verified": "doğrulanmış",
-    "or continue with": "veya şununla devam et"
+    "or continue with": "veya şununla devam et",
+    "Menu": "Menü"
   },
   "ar": {
     "API Policy": "سياسة API",
@@ -1293,7 +1298,8 @@
     "required": "مطلوب",
     "unverified": "غير موثق",
     "verified": "موثق",
-    "or continue with": "أو تابع باستخدام"
+    "or continue with": "أو تابع باستخدام",
+    "Menu": "القائمة"
   },
   "fa": {
     "API Policy": "سیاست API",
@@ -1509,6 +1515,7 @@
     "required": "ضروری",
     "unverified": "تایید نشده",
     "verified": "تایید شده",
-    "or continue with": "یا ادامه با"
+    "or continue with": "یا ادامه با",
+    "Menu": "منو"
   }
 }
