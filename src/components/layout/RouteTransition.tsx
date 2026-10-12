@@ -1,13 +1,7 @@
 import { Suspense, type ReactNode } from "react";
 import { useRouterState } from "@tanstack/react-router";
 
-export function RouteLoading() {
-  return (
-    <div className="route-loading" role="status" aria-label="Loading page" aria-live="polite">
-      <span className="route-loading-spinner" aria-hidden="true" />
-    </div>
-  );
-}
+export function RoutePending() { return null; }
 
 /** Keep shared sessions/cache alive, but never paint an outgoing page during navigation. */
 export function RouteTransition({ children }: { children: ReactNode }) {
@@ -21,10 +15,10 @@ export function RouteTransition({ children }: { children: ReactNode }) {
     }),
   });
 
-  if (pending) return <RouteLoading />;
+  if (pending) return null;
 
   return (
-    <Suspense fallback={<RouteLoading />}>
+    <Suspense fallback={null}>
       <div key={pageKey} className="route-page-enter">
         {children}
       </div>

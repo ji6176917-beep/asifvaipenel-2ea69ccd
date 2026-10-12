@@ -1,7 +1,7 @@
 import { QueryClient } from "@tanstack/react-query";
 import { createRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
-import { RouteLoading } from "./components/layout/RouteTransition";
+import { RoutePending } from "./components/layout/RouteTransition";
 
 export const getRouter = () => {
   const queryClient = new QueryClient();
@@ -11,7 +11,9 @@ export const getRouter = () => {
     context: { queryClient },
     scrollRestoration: true,
     defaultPreloadStaleTime: 0,
-    defaultPendingComponent: RouteLoading,
+    defaultPreload: "intent",
+    defaultPreloadDelay: 0,
+    defaultPendingComponent: RoutePending,
     defaultPendingMs: 0,
     defaultPendingMinMs: 0,
     defaultRemountDeps: ({ routeId, params }) => ({ routeId, params }),

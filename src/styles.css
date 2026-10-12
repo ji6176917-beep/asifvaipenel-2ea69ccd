@@ -553,11 +553,8 @@
 @media (prefers-reduced-motion: reduce) { .order-platform-card { transition: none; } }
 
 /* Global navigation: outgoing content is unmounted, incoming content fades in. */
-.route-loading { display: grid; place-items: center; min-height: 45vh; width: 100%; }
-.route-loading-spinner { display: block; width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: route-loading-spin .7s linear infinite; }
-.route-page-enter { min-width: 0; animation: route-page-fade-in .16s ease-out; }
-@keyframes route-loading-spin { to { transform: rotate(360deg); } }
+.route-page-enter { min-width: 0; animation: route-page-fade-in .1s ease-out; }
 @keyframes route-page-fade-in { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) {
-  .route-page-enter, .route-loading-spinner { animation: none; }
+  .route-page-enter { animation: none; }
 }

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { createMemoryHistory, createRootRoute, createRoute, createRouter, Outlet, RouterProvider } from "@tanstack/react-router";
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
-import { RouteLoading, RouteTransition } from "@/components/layout/RouteTransition";
+import { RoutePending, RouteTransition } from "@/components/layout/RouteTransition";
 
 afterEach(cleanup);
 
@@ -26,7 +26,7 @@ function makeRouter(loader: () => Promise<void>, unmounted: () => void = () => {
   return createRouter({
     routeTree: root.addChildren([first, second, item]),
     history: createMemoryHistory({ initialEntries: ["/"] }),
-    defaultPendingComponent: RouteLoading,
+    defaultPendingComponent: RoutePending,
     defaultPendingMs: 0,
     defaultPendingMinMs: 0,
     defaultRemountDeps: ({ routeId, params }) => ({ routeId, params }),
@@ -43,8 +43,8 @@ describe("Global route transitions", () => {
     await screen.findByText("Original page");
     let navigation: Promise<void> | undefined;
     act(() => { navigation = router.navigate({ to: "/about" }); });
-    await screen.findByRole("status");
-    expect(screen.queryByText("Original page")).toBeNull();
+    await waitFor(() => expect(screen.queryByText("Original page")).toBeNull());
+    expect(screen.queryByRole("status")).toBeNull();
     expect(unmounts).toBe(1);
     await act(async () => { gate.resolve(); await navigation; });
     await screen.findByText("Destination page");
