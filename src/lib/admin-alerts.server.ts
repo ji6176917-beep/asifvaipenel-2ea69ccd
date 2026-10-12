@@ -40,7 +40,9 @@ export async function sendAdminActivityAlert(kind: 'order' | 'deposit', code: st
     // A committed order/deposit must never be reported as failed because mail failed.
     const reason = error != null && typeof error === 'object' && 'code' in error ? String(error.code) : 'send_failed'
     console.error('Admin email alert failed', { kind, code, reason })
-    await db.from('admin_log').insert({ action: 'admin_email_failed', detail: { kind, code, reason } })
+    try {
+      await db.from('admin_log').insert({ action: 'admin_email_failed', detail: { kind, code, reason } })
+    } catch { /* A log outage must not turn a committed purchase into a failure. */ }
     return { sent: false, reason: 'send_failed' as const }
   }
 }

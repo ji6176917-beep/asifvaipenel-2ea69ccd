@@ -1,5 +1,6 @@
 import type { ComponentType } from 'react'
-import { orderTemplate, depositTemplate } from './admin-activity'
+import { template as orderTemplate } from './admin-order-alert'
+import { template as depositTemplate } from './admin-deposit-alert'
 
 export interface TemplateEntry {
   component: ComponentType<any>

@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { Body, Button, Container, Head, Heading, Html, Img, Link, Preview, Section, Text } from '@react-email/components'
-import type { TemplateEntry } from './registry'
-import { ADMIN_ALERT_RECIPIENT, type AdminAlertData } from './admin-alert-data'
+import type { AdminAlertData } from './admin-alert-data'
 
 const colors = { ink: '#17251d', green: '#16a34a', mint: '#effbf2', border: '#d7ebde', muted: '#617269', white: '#ffffff' }
 const text = { color: colors.ink, fontSize: '14px', lineHeight: '1.6', margin: '8px 0', overflowWrap: 'anywhere' as const }
@@ -59,19 +58,3 @@ export function AdminActivityEmail(data: AdminAlertData) {
     </Html>
   )
 }
-
-export const orderTemplate = {
-  component: (data: AdminAlertData) => <AdminActivityEmail {...data} kind="order" />,
-  subject: (data: AdminAlertData) => `🛒 নতুন অর্ডার #${data.code ?? '—'} · ${data.amount ?? ''} | Apex SMM World`,
-  displayName: 'Admin — new order',
-  to: ADMIN_ALERT_RECIPIENT,
-  previewData: { code: '1234567890', amount: '$5.00', name: 'Demo Customer', username: 'demo_user', email: 'customer@example.com', publicId: '12345678', platform: 'Facebook', category: 'Followers', service: 'Facebook Followers', serviceId: '101', quantity: 1000, link: 'https://facebook.com/example', source: 'Website', status: 'Pending', createdAt: '12 Oct 2026, 10:15 PM' },
-} satisfies TemplateEntry
-
-export const depositTemplate = {
-  component: (data: AdminAlertData) => <AdminActivityEmail {...data} kind="deposit" />,
-  subject: (data: AdminAlertData) => `💰 নতুন ডিপোজিট #${data.code ?? '—'} · ${data.amount ?? ''} | Apex SMM World`,
-  displayName: 'Admin — new deposit request',
-  to: ADMIN_ALERT_RECIPIENT,
-  previewData: { code: 'ADD-123456', amount: '$10.00', localAmount: '৳1,300.00 BDT', name: 'Demo Customer', username: 'demo_user', email: 'customer@example.com', publicId: '12345678', method: 'bKash', transactionId: 'DEMO-TXN-12345', paymentAccount: 'Demo payment account', status: 'Pending', createdAt: '12 Oct 2026, 10:15 PM' },
-} satisfies TemplateEntry
