@@ -3,7 +3,8 @@ import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Home, User, Wallet, ShoppingCart, History, PlusCircle, ReceiptText, ShieldCheck, HelpCircle, Info,
-  LogOut, Sun, Moon, Bell, X, Mail, Sparkles, Code2, LayoutDashboard, Languages, Music, Check,
+  LogOut, Bell, X, Mail, Sparkles, Code2, LayoutDashboard, Languages, Music, Check,
+
 } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useAuth } from "@/lib/auth";
@@ -28,23 +29,8 @@ import siteLogo from "@/assets/apex-header-logo.png.asset.json";
 import { Button } from "@/components/ui/button";
 import { RouteTransition } from "@/components/layout/RouteTransition";
 
-function useTheme(def: "dark" | "light" | "system" | undefined) {
-  const [dark, setDark] = useState(false);
-  useEffect(() => {
-    if (!def) return;
-    const saved = localStorage.getItem("theme");
-    const d = saved ? saved === "dark" : def === "system" ? window.matchMedia("(prefers-color-scheme: dark)").matches : def === "dark";
-    setDark(d);
-    document.documentElement.classList.toggle("dark", d);
-  }, [def]);
-  const toggle = () => {
-    const d = !dark;
-    setDark(d);
-    localStorage.setItem("theme", d ? "dark" : "light");
-    document.documentElement.classList.toggle("dark", d);
-  };
-  return { dark, toggle };
-}
+// Light mode only: the dark-mode system was removed; no `.dark` class is ever applied.
+
 
 function FloatingBackground({ cfg, glowOn }: { cfg: HomeConfig["bg"]; glowOn: boolean }) {
   const [hidden, setHidden] = useState(false);
@@ -86,8 +72,8 @@ function ThemeApplier({ t }: { t: ThemeConfig }) {
   }, [t.anim]);
   if (!custom) return null;
   const g = (c: string) => `color-mix(in oklab, ${c} ${t.glow}%, transparent)`;
-  const css = `:root{--primary:${t.primary_light};--ring:${t.primary_light};--glow:${g(t.glow_light)};--radius:${t.radius}rem;--font-sans:"${font.body}",ui-sans-serif,system-ui,sans-serif;--font-display:"${font.display}",ui-sans-serif,system-ui,sans-serif}`
-    + `.dark{--primary:${t.primary_dark};--ring:${t.primary_dark};--glow:${g(t.glow_dark)}}`;
+  const css = `:root{--primary:${t.primary_light};--ring:${t.primary_light};--glow:${g(t.glow_light)};--radius:${t.radius}rem;--font-sans:"${font.body}",ui-sans-serif,system-ui,sans-serif;--font-display:"${font.display}",ui-sans-serif,system-ui,sans-serif}`;
+
   return (<>
     {font.id !== "manrope" && <link rel="stylesheet" href={`https://fonts.googleapis.com/css2?${font.q}&display=swap`} />}
     <style>{css}</style>
@@ -175,7 +161,7 @@ function Shell({ children }: { children: ReactNode }) {
   const theme = themeConfig(settings?.theme_config);
   const home = homeConfig(settings?.home_config);
   const fc = home.footer;
-  const { dark, toggle } = useTheme(settings ? theme.default_theme : undefined);
+
   const { data: footerPages } = useQuery({
     queryKey: ["footer-pages"], staleTime: 60_000,
     queryFn: async () => (await supabase.from("pages").select("slug, title").eq("is_custom", true).eq("show_in_footer", true)).data ?? [],
@@ -250,27 +236,22 @@ function Shell({ children }: { children: ReactNode }) {
       )}
 
       <header className={`glass sticky top-0 z-40 rounded-none border-x-0 border-t-0 ${path === "/" ? "home-header" : ""}`}>
-        <div className="home-header-inner mx-auto grid max-w-5xl grid-cols-[minmax(0,1fr)_auto] items-center gap-2 px-4 py-3 lg:flex">
+        <div className="home-header-inner mx-auto grid max-w-5xl grid-cols-[minmax(0,1fr)_auto] items-center gap-2 px-4 py-2 lg:flex">
           <Link to="/" className="flex min-w-0 items-center gap-2">
             <img src={siteLogo.url} alt={`${siteName} - Global Social Media Growth Logo`} width={36} height={36} className="h-9 w-auto shrink-0 object-contain" />
             <span className="home-brand-copy min-w-0"><span className="home-brand-name block truncate font-display text-base font-bold sm:text-lg">{headerName}</span>{path === "/" && <span className="home-brand-tagline">{tr("Social Media Growth Partner")}</span>}</span>
           </Link>
-          {path === "/" && <nav className="home-desktop-nav" aria-label={tr("Main navigation")}>
-            {bottom.filter((m) => m.target_type === "internal_route").map((m) => <NavItem key={m.id} m={m} settings={settings} onAction={onAction} showIcon={false} className={`home-desktop-link ${m.target_value === "/" ? "is-active" : ""}`} />)}
-          </nav>}
           <div className="home-header-tools ml-auto flex shrink-0 items-center gap-1.5">
             <Link to={user ? "/balance" : "/sign-in"} className="home-wallet btn-ghost-glow !px-3 !py-1.5 text-sm">
               <Wallet className="h-4 w-4 text-primary" /> {money(profile?.balance ?? 0)}
             </Link>
             <UserInbox />
-            <Button variant="ghost" size="icon" aria-label="Toggle theme" onClick={toggle} className="home-theme-toggle rounded-full">
-              {dark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-            </Button>
             <Button variant="ghost" size="icon" aria-label={t("header.open_menu")} aria-expanded={menuOpen} onClick={() => setMenuOpen(true)} className={`${path === "/" ? "home-menu-button" : "menu-btn"} ${menuOpen ? "is-open" : ""}`}>
               <span className="menu-dots" aria-hidden><i /><i /><i /></span>{path === "/" && <span className="home-menu-label">{tr("Menu")}</span>}
             </Button>
           </div>
         </div>
+
       </header>
 
       {user && !verified && (
