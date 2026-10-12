@@ -26,6 +26,7 @@ import ReactMarkdown from "react-markdown";
 import { FONTS, homeConfig, themeConfig, themeIsCustom, type HomeConfig, type ThemeConfig } from "@/lib/site-config";
 import siteLogo from "@/assets/apex-header-logo.png.asset.json";
 import { Button } from "@/components/ui/button";
+import { RouteTransition } from "@/components/layout/RouteTransition";
 
 function useTheme(def: "dark" | "light" | "system" | undefined) {
   const [dark, setDark] = useState(false);
@@ -184,7 +185,8 @@ function Shell({ children }: { children: ReactNode }) {
   const [cookieOk, setCookieOk] = useState(true);
   const navigate = useNavigate();
   const qc = useQueryClient();
-  const path = useRouterState({ select: (s) => s.location.pathname });
+  // Shell styling follows the committed page, not the still-loading destination.
+  const path = useRouterState({ select: (s) => s.resolvedLocation?.pathname ?? s.location.pathname });
   const siteName = settings?.site_name ?? "Apex SMM World";
   // The top header can show its own brand text; every other place keeps the website name.
   const headerName = settings?.header_name || siteName;
@@ -285,7 +287,7 @@ function Shell({ children }: { children: ReactNode }) {
             <h1 className="text-gradient mt-3 text-3xl font-bold">{t("maintenance.title", "Under maintenance")}</h1>
             <p className="mt-2 whitespace-pre-wrap text-muted-foreground">{settings.maintenance_text}</p>
           </div>
-        ) : children}
+        ) : <RouteTransition>{children}</RouteTransition>}
       </main>
 
       {path !== "/order" && !(path === "/" && home.sections.find((x) => x.id === "footer")?.on === false) && <footer className="mx-auto mt-20 max-w-5xl px-4 pb-8 sm:mt-24">

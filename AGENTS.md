@@ -10,6 +10,7 @@
 <!-- LOVABLE:END -->
 
 ## Project rules
+- Global navigation uses RouteTransition inside the persistent AppShell, immediate router pending UI, and parameter-keyed route remounts; shell styling follows the resolved location. Why: outgoing page state/layout must not flash while preserving shared auth, music, wallet and query caches.
 - New Order reference styling is scoped to /order with order-reference classes; preserve shared wallet, menus, authentication and service-order behavior. Why: page redesigns must not affect other screens.
 - The reference homepage uses a dedicated HomeShowcase and homepage-scoped CSS; keep shared auth, wallet, menu data and non-home styling intact so visual redesigns cannot alter business behavior.
 - Homepage desktop and mobile statistics share LiveStats with layout variants. Why: both views must use the same count-up timing and data without changing their placement.
