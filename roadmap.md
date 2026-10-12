@@ -1,5 +1,5 @@
 # Roadmap
-- [ ] Match the supplied homepage desktop/mobile design and verify navigation and layout.
+- [x] Match the supplied homepage desktop/mobile design; browser-verified five service tiles, CTA navigation and no horizontal overflow. Existing routing smoke tests still time out (2 failures); browser flow and preview build pass.
 - [x] Remove the homepage welcome subtitle and verify Google site-name schema and stable brand favicon in the rendered homepage and server HTML.
 - [x] Pin the shared desktop/mobile header to a fresh uploaded A logo asset, bypassing stale SM overrides; check footer for retired marks.
 - [x] Apply the uploaded green A logo site-wide and derive its browser favicon; verify desktop and mobile header alignment.
