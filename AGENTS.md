@@ -10,6 +10,7 @@
 <!-- LOVABLE:END -->
 
 ## Project rules
+- The reference homepage uses a dedicated HomeShowcase and homepage-scoped CSS; keep shared auth, wallet, menu data and non-home styling intact so visual redesigns cannot alter business behavior.
 - Use the uploaded brand logo CDN pointer directly in the shared desktop/mobile header; derive the public favicon from the same source asset. Why: stale admin logo overrides must not restore the retired mark.
 - Serve brand favicons through stable public files declared in the root head; do not replace them with expiring storage URLs after hydration. Why: crawlers and browsers need the same persistent brand icon.
 - All money changes go through SECURITY DEFINER Postgres functions (place_order, create_deposit, cancel_my_order) that write wallet_ledger; clients have SELECT-only grants on business tables. Why: balances must never be trusted from the client.
