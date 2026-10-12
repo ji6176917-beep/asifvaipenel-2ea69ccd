@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Match New Order desktop/mobile reference, add platform search, preserve other pages and verify navigation.
 - [x] Fix mobile illustration cropping, refine service-title typography, and share mobile count-up animation with the desktop statistics strip; browser-verified both sizes and matching final counts.
 - [x] Match the supplied homepage desktop/mobile design; browser-verified five service tiles, CTA navigation and no horizontal overflow. Existing routing smoke tests still time out (2 failures); browser flow and preview build pass.
 - [x] Remove the homepage welcome subtitle and verify Google site-name schema and stable brand favicon in the rendered homepage and server HTML.
