@@ -583,7 +583,7 @@ export function GeneralSettings() {
   );
   const lc = langConfig(f.languages_config);
   const save = () => saveSite({
-    maintenance_on: f.maintenance_on, maintenance_text: f.maintenance_text, allow_signups: f.allow_signups, allow_orders: f.allow_orders,
+    whatsapp_float: f.whatsapp_float, maintenance_on: f.maintenance_on, maintenance_text: f.maintenance_text, allow_signups: f.allow_signups, allow_orders: f.allow_orders,
     api_global_enabled: f.api_global_enabled, require_verified_email: f.require_verified_email, require_screenshot: f.require_screenshot,
     cookie_notice: f.cookie_notice, blocked_email_domains: f.blocked_email_domains, seo_title: f.seo_title, seo_description: f.seo_description,
     share_image_url: f.share_image_url, session_timeout_min: Number(f.session_timeout_min) || 0, languages_config: lc,
@@ -591,7 +591,14 @@ export function GeneralSettings() {
   }, "Settings saved");
   return (
     <Card>
-      <h2 className="label-premium mb-1 text-lg">General switches</h2>
+      <h2 className="label-premium mb-1 text-lg">WhatsApp support</h2>
+      <div className="flex gap-2 pb-2">
+        <input className={inputCls} placeholder="e.g. 01608445043 or 8801608445043" value={f.whatsapp ?? ""} onChange={(e) => setF({ ...f, whatsapp: e.target.value })} />
+        <button disabled={busy} onClick={() => saveSite({ whatsapp: f.whatsapp ?? "" }, "WhatsApp number saved")} className="btn-glow !py-2 text-sm">Save</button>
+      </div>
+      <p className="pb-2 text-xs text-muted-foreground">Floating button opens {whatsappUrl(f.whatsapp) ?? "nothing (empty hides it)"}.</p>
+      {sw("whatsapp_float", "Floating WhatsApp button", "Saved with the settings below.")}
+      <h2 className="label-premium mb-1 mt-4 text-lg">General switches</h2>
       {sw("maintenance_on", "Maintenance mode", "Visitors see a maintenance message. The admin panel still works.")}
       {f.maintenance_on && <textarea rows={2} className={`${inputCls} mb-2`} value={f.maintenance_text} onChange={(e) => setF({ ...f, maintenance_text: e.target.value })} />}
       {sw("allow_signups", "Allow new sign-ups")}
