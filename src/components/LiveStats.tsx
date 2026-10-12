@@ -36,7 +36,7 @@ function useCountUp(target: number, run: boolean, ms = 1800) {
   return v;
 }
 
-function Stat({ icon: Icon, target, decimals = 0, suffix = "", label, run, fixed, layout }: { icon: typeof UsersRound; target: number; decimals?: number; suffix?: string; label: string; run: boolean; fixed?: string; layout?: "strip" }) {
+function Stat({ icon: Icon, target, decimals = 0, suffix = "", label, run, fixed, layout }: { icon: typeof UsersRound; target: number; decimals?: number; suffix?: string; label: string; run: boolean; fixed?: string; layout?: "strip" | undefined }) {
   const v = useCountUp(target, run);
   if (layout === "strip") return (
     <div className="home-trust-item">
