@@ -88,6 +88,8 @@ async function handle(request: Request) {
         return json({ error: "Could not place order" }, 500);
       }
       const r = data as { order: string; charge: number; balance: number };
+      const { sendAdminActivityAlert } = await import("@/lib/admin-alerts.server");
+      await sendAdminActivityAlert("order", r.order, prof.id);
       return json({ order: /^\d+$/.test(String(r.order)) ? Number(r.order) : r.order });
     }
     case "status": {
