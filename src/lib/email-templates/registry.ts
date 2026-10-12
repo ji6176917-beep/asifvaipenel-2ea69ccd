@@ -1,4 +1,5 @@
 import type { ComponentType } from 'react'
+import { orderTemplate, depositTemplate } from './admin-activity'
 
 export interface TemplateEntry {
   component: ComponentType<any>
@@ -18,6 +19,6 @@ export interface TemplateEntry {
  *   // then add to TEMPLATES: 'welcome': welcomeTemplate
  */
 export const TEMPLATES: Record<string, TemplateEntry> = {
-  // Add templates here as they are created, e.g.:
-  // 'welcome': welcomeTemplate,
+  'admin-order-alert': orderTemplate,
+  'admin-deposit-alert': depositTemplate,
 }
