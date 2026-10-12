@@ -51,3 +51,4 @@
 - [x] WhatsApp: remove header icon, keep single fixed floating button bottom-right on every page with pulse animation (Oct 12).
 - [x] Mobile header: logo + brand name inline and vertically centered, tagline hidden on mobile; feature badge removed on all devices (Oct 12).
 - [x] Homepage text raised to normal reading size on desktop and mobile, service names set in Manrope, three-dot trigger turned into a highlighted mint "Menu" pill (word hidden on mobile so the brand name never truncates); browser-verified both sizes (Oct 12).
+- [x] Popular Services cards redesigned as brand-tinted cards showing only the platform logo and name; the "Followers • Likes • Views" / "Subscribers • Likes • Views" / "Members • Views • Shares" captions removed on all devices; hover adds lift, brand glow, sheen and a corner arrow. Desktop, mobile and dark mode browser-verified (Oct 12).
