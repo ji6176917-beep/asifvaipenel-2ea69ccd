@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Fix mobile illustration cropping, refine service-title typography, and share mobile count-up animation with the desktop statistics strip; verify both sizes.
 - [x] Match the supplied homepage desktop/mobile design; browser-verified five service tiles, CTA navigation and no horizontal overflow. Existing routing smoke tests still time out (2 failures); browser flow and preview build pass.
 - [x] Remove the homepage welcome subtitle and verify Google site-name schema and stable brand favicon in the rendered homepage and server HTML.
 - [x] Pin the shared desktop/mobile header to a fresh uploaded A logo asset, bypassing stale SM overrides; check footer for retired marks.
