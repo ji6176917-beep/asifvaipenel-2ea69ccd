@@ -10,7 +10,7 @@
 <!-- LOVABLE:END -->
 
 ## Project rules
-- Global navigation uses RouteTransition inside the persistent AppShell, null pending/Suspense fallbacks, intent preloading without delay, and parameter-keyed route remounts; shell styling follows the resolved location. Why: outgoing page state must unmount without loading screens while preserving auth guards, music, wallet and query caches.
+- Global navigation keys RouteTransition and AppShell styling to the resolved location, uses no global pending/Suspense fallback, intent preloading without delay, and parameter-keyed remounts. Why: keep committed content until an atomic replacement is ready, avoiding blank gaps and mismatched layouts while preserving auth guards and shared caches.
 - New Order reference styling is scoped to /order with order-reference classes; preserve shared wallet, menus, authentication and service-order behavior. Why: page redesigns must not affect other screens.
 - The reference homepage uses a dedicated HomeShowcase and homepage-scoped CSS; keep shared auth, wallet, menu data and non-home styling intact so visual redesigns cannot alter business behavior.
 - Homepage desktop and mobile statistics share LiveStats with layout variants. Why: both views must use the same count-up timing and data without changing their placement.

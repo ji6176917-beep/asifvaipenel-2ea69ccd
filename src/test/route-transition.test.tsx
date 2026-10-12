@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { createMemoryHistory, createRootRoute, createRoute, createRouter, Outlet, RouterProvider } from "@tanstack/react-router";
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
-import { RoutePending, RouteTransition } from "@/components/layout/RouteTransition";
+import { RouteTransition } from "@/components/layout/RouteTransition";
 
 afterEach(cleanup);
 
@@ -26,15 +26,13 @@ function makeRouter(loader: () => Promise<void>, unmounted: () => void = () => {
   return createRouter({
     routeTree: root.addChildren([first, second, item]),
     history: createMemoryHistory({ initialEntries: ["/"] }),
-    defaultPendingComponent: RoutePending,
-    defaultPendingMs: 0,
     defaultPendingMinMs: 0,
     defaultRemountDeps: ({ routeId, params }) => ({ routeId, params }),
   });
 }
 
 describe("Global route transitions", () => {
-  it("unmounts the outgoing page while a destination loader is unresolved and then displays the destination", async () => {
+  it("keeps committed content during an unresolved destination and replaces it without a blank gap", async () => {
     const gate = deferred();
     let unmounts = 0;
     const router = makeRouter(() => gate.promise, () => { unmounts += 1; });
@@ -43,11 +41,14 @@ describe("Global route transitions", () => {
     await screen.findByText("Original page");
     let navigation: Promise<void> | undefined;
     act(() => { navigation = router.navigate({ to: "/about" }); });
-    await waitFor(() => expect(screen.queryByText("Original page")).toBeNull());
+    await waitFor(() => expect(router.state.status).toBe("pending"));
+    expect(screen.getByText("Original page")).toBeInTheDocument();
     expect(screen.queryByRole("status")).toBeNull();
-    expect(unmounts).toBe(1);
+    expect(unmounts).toBe(0);
     await act(async () => { gate.resolve(); await navigation; });
     await screen.findByText("Destination page");
+    expect(screen.queryByText("Original page")).toBeNull();
+    expect(unmounts).toBe(1);
     expect(screen.queryByRole("status")).toBeNull();
   });
 
