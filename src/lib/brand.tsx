@@ -55,9 +55,12 @@ function Badge({ name, kind, className }: { name: string; kind: string; classNam
 }
 
 /** Payment method logo: uploaded image (square, contain, white tile) → brand icon → coloured name badge. */
-export function MethodLogo({ name, kind, logo, className = "h-10 w-10" }: { name: string; kind: string; logo?: string | null | undefined; className?: string }) {
+export function MethodLogo({ name, kind, logo, officialLogo, className = "h-10 w-10" }: { name: string; kind: string; logo?: string | null | undefined; officialLogo?: string; className?: string }) {
   const url = useStorageUrl("logos", logo);
   const [failed, setFailed] = useState(false);
+  if (officialLogo) {
+    return <img src={officialLogo} alt={`${name} logo`} className={`${className} shrink-0 object-contain`} />;
+  }
   if (url && !failed) {
     return (
       <span className={`${className} inline-flex shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white p-1 ring-1 ring-border`}>
