@@ -289,9 +289,13 @@
 .home-desktop-link { padding: 12px 0; font-size: 14px; white-space: nowrap; border-bottom: 2px solid transparent; }
 .home-desktop-link.is-active { color: var(--home-green); border-color: var(--home-green); font-weight: 700; }
 .home-reference-shell .home-wallet { border: 1px solid var(--home-line); background: var(--home-mint); color: var(--home-green); box-shadow: none; font-family: inherit; font-size: 13.5px; white-space: nowrap; }
-.home-reference-shell .home-menu-button { width: 26px; }
-.home-reference-shell .menu-dots { gap: 3px; }
-.home-reference-shell .menu-dots i { width: 3px; height: 3px; background: var(--home-subtle); }
+/* Highlighted three-dot menu trigger: mint pill, green dots, "Menu" word in Manrope. */
+.home-reference-shell .home-menu-button { width: auto; min-width: 0; height: 38px; gap: 8px; padding: 0 14px; border-radius: 999px; background: var(--home-mint); border: 1px solid color-mix(in oklch, var(--home-green) 34%, var(--home-line)); box-shadow: var(--home-shadow); color: var(--home-green); transition: transform .18s ease, border-color .18s ease, background .18s ease; }
+.home-reference-shell .home-menu-button:hover { transform: translateY(-2px); border-color: var(--home-green); background: color-mix(in oklch, var(--home-green) 12%, var(--home-white)); }
+.home-reference-shell .home-menu-button:focus-visible { outline: 2px solid var(--home-green); outline-offset: 2px; }
+.home-reference-shell .menu-dots { gap: 4px; }
+.home-reference-shell .menu-dots i { width: 4px; height: 4px; background: var(--home-green); }
+.home-menu-label { font-family: "Manrope", ui-sans-serif, sans-serif; font-size: 13px; font-weight: 700; letter-spacing: .02em; color: var(--home-green); white-space: nowrap; }
 .home-main { max-width: 1200px; margin: auto; padding: 0 32px; }
 .home-hero-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); align-items: center; gap: 12px; padding-top: 38px; }
 .home-eyebrow { margin: 20px 0 10px; font-size: 13.5px; font-weight: 700; letter-spacing: .07em; color: var(--home-green); }
