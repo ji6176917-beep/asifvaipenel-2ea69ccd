@@ -172,8 +172,8 @@ function WarmRoutes() {
   useEffect(() => {
     const ids = ["/order", "/_authenticated/service/$platform", "/_authenticated/orders", "/_authenticated/add-funds/", "/_authenticated/dashboard", "/sign-in", "/qna"];
     const run = () => ids.forEach((id) => {
-      const r = (router.routesById as Record<string, unknown>)[id];
-      if (r) router.loadRouteChunk(r as never).catch(() => {});
+      const r = (router.routesById as unknown as Record<string, unknown>)[id];
+      if (r) router.loadRouteChunk(r as never)?.catch(() => {});
     });
     const w = window as Window & { requestIdleCallback?: (cb: () => void) => number };
     if (w.requestIdleCallback) w.requestIdleCallback(run); else setTimeout(run, 300);

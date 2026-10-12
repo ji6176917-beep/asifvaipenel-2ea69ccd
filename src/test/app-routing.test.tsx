@@ -11,7 +11,7 @@ function renderAt(path: string) {
     routeTree,
     context: { queryClient },
     history: createMemoryHistory({ initialEntries: [path] }),
-  }, 15_000);
+  });
   render(<RouterProvider router={router} />);
   return router;
 }
