@@ -290,20 +290,25 @@ function Shell({ children }: { children: ReactNode }) {
 
       {!(path === "/" && home.sections.find((x) => x.id === "footer")?.on === false) && <footer className="mx-auto mt-20 max-w-5xl px-4 pb-8 sm:mt-24">
         <div className="glass space-y-6 rounded-3xl p-6">
-          {(fc.quick_links || (fc.pages && !!footerPages?.length)) && <div>
-            <h3 className="label-premium mb-3 text-lg">{t("footer.quick_links")}</h3>
-            <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted-foreground">
+          {fc.info && <div>
+            <h3 className="label-premium mb-3 text-lg">{t("footer.info")}</h3>
+            <div className="grid gap-2 sm:grid-cols-3">
+              {footInfo.filter(visible).map((m) => {
+                const txt = m.target_type === "whatsapp" ? (m.target_value || settings?.whatsapp || undefined)
+                  : m.target_type === "telegram" ? tr("Telegram Support")
+                  : m.target_type === "email" ? (m.target_value || settings?.email || undefined) : undefined;
+                return <NavItem key={m.id} m={m} settings={settings} onAction={onAction} iconClass="h-5 w-5 shrink-0 text-primary" className="footer-contact flex min-w-0 items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 text-sm font-medium">{txt ? <span className="truncate">{txt}</span> : undefined}</NavItem>;
+              })}
+            </div>
+          </div>}
+          {fc.hours && settings?.support_hours && <p className="text-xs text-muted-foreground">{t("footer.hours", "Support hours")}: {settings.support_hours}</p>}
+          {(fc.quick_links || (fc.pages && !!footerPages?.length)) && <div className="border-t border-border pt-5">
+            <h3 className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t("footer.quick_links")}</h3>
+            <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-muted-foreground">
               {fc.quick_links && footLinks.filter(visible).map((m) => <NavItem key={m.id} m={m} settings={settings} onAction={onAction} showIcon={false} className="hover:text-primary" />)}
               {fc.pages && (footerPages ?? []).map((p) => <Link key={p.slug} to="/p/$slug" params={{ slug: p.slug }} className="hover:text-primary">{pickLang(p.title, lang, p.slug)}</Link>)}
             </div>
           </div>}
-          {fc.info && <div>
-            <h3 className="label-premium mb-3 text-lg">{t("footer.info")}</h3>
-            <div className="flex flex-wrap gap-4">
-              {footInfo.filter(visible).map((m) => <NavItem key={m.id} m={m} settings={settings} onAction={onAction} iconClass="h-6 w-6 text-primary" className="tilt glass flex flex-col items-center gap-1 rounded-2xl px-4 py-3 text-xs" />)}
-            </div>
-          </div>}
-          {fc.hours && settings?.support_hours && <p className="text-xs text-muted-foreground">{t("footer.hours", "Support hours")}: {settings.support_hours}</p>}
           {fc.copyright && <p className="text-xs text-muted-foreground">{settings?.footer_copyright || `© ${new Date().getFullYear()} ${siteName}. ${t("footer.rights")}`}</p>}
         </div>
       </footer>}

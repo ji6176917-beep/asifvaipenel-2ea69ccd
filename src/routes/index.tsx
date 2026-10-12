@@ -11,6 +11,7 @@ import { homeConfig, type HomeSectionId } from "@/lib/site-config";
 import { PlatformIcon } from "@/lib/brand";
 import { Skeleton } from "@/components/ui/skeleton";
 import { HomeShowcase } from "@/components/HomeShowcase";
+import { LiveStats } from "@/components/LiveStats";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/")({
@@ -121,6 +122,7 @@ function Home() {
   return (
     <div className="home-reference-content">
       {cfg.sections.filter((x) => x.on && blocks[x.id]).map((x) => <div key={x.id}>{blocks[x.id]}</div>)}
+      <div className="home-mobile-only"><LiveStats /></div>
     </div>
   );
 }
