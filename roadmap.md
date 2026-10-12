@@ -42,3 +42,4 @@
 - [x] Home layout, footer toggles, home QnA, Site Identity, full-site translations (Oct 2026)
 - [x] New Order service dropdown shows numeric service ID before the name (Oct 12, live on apexsmmworld.com)
 - [x] Reseller API documentation: replace tabs with stacked action tables and visible code examples.
+- [x] WhatsApp: remove header icon, keep single fixed floating button bottom-right on every page with pulse animation (Oct 12).
