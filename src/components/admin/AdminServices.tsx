@@ -73,7 +73,7 @@ function LevelView({ level, parentId, title, sub, onBack, onOpen }: {
                 <button disabled={trash || !onOpen} onClick={() => onOpen?.(r)} className="flex min-w-0 flex-1 items-center gap-3 text-left">
                   {level === "platforms" && <PlatformIcon slug={r.slug} logo={r.logo_url} name={r.name} className="h-10 w-10 shrink-0" />}
                   <div className="min-w-0">
-                    <div className={`font-semibold ${level === "platforms" ? "text-lg" : ""} break-words`}>{r.name}</div>
+                    <div className={`font-semibold ${level === "platforms" ? "text-lg" : ""} break-words`}>{level === "services" && r.service_no != null && <span className="mr-1 text-brand">#{r.service_no}</span>}{r.name}</div>
                     {level === "services" && (
                       <div className="text-xs text-muted-foreground">
                         {money(Number(r.rate))} per {r.rate_per} · min {r.min_qty} · max {r.max_qty} · {r.avg_time}
