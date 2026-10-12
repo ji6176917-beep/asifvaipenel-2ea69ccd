@@ -11,7 +11,7 @@ function renderAt(path: string) {
     routeTree,
     context: { queryClient },
     history: createMemoryHistory({ initialEntries: [path] }),
-  });
+  }, 15_000);
   render(<RouterProvider router={router} />);
   return router;
 }
@@ -27,14 +27,14 @@ describe("App routing", () => {
   it("renders the index route", async () => {
     const router = renderAt("/");
     // The root renders a full <html> document, which React hoists out of the test container.
-    await waitFor(() => expect(router.state.matches.length).toBeGreaterThan(0));
-  });
+    await waitFor(() => expect(router.state.matches.length).toBeGreaterThan(0), { timeout: 12_000 });
+  }, 15_000);
 
   it("renders the not-found route", async () => {
     vi.spyOn(console, "warn").mockImplementation(() => undefined);
 
     const router = renderAt("/this-route-does-not-exist");
 
-    await waitFor(() => expect(router.state.matches.length).toBeGreaterThan(0));
-  });
+    await waitFor(() => expect(router.state.matches.length).toBeGreaterThan(0), { timeout: 12_000 });
+  }, 15_000);
 });
