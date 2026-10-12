@@ -74,7 +74,7 @@ async function handle(request: Request) {
       const v = z.object({ service: z.coerce.number().int().positive(), link: z.string().min(5).max(500), quantity: z.coerce.number().int().positive() }).safeParse(p);
       if (!v.success) return json({ error: "Missing or invalid parameters: service (number), link, quantity" }, 400);
       const { data: svc } = await db.from("services").select("id").eq("service_no", v.data.service).is("deleted_at", null).maybeSingle();
-      if (!svc) return json({ error: ERR.SERVICE_UNAVAILABLE![0] }, 400);
+      if (!svc) return json({ error: "Service is inactive or does not exist." }, 400);
       const { data, error } = await db.rpc("api_place_order", { _uid: prof.id, _service_id: svc.id, _link: v.data.link.trim(), _quantity: v.data.quantity });
       if (error) {
         const code = Object.keys(ERR).find((k) => error.message.includes(k));
