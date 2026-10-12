@@ -7,6 +7,7 @@ import {
   Head,
   Heading,
   Html,
+  Img,
   Preview,
   Text,
 } from '@react-email/components'
@@ -27,6 +28,8 @@ export const RecoveryEmail = ({
     <Preview>Reset your password for {siteName}</Preview>
     <Body style={main}>
       <Container style={container}>
+        <Img src="https://apexsmmworld.com/favicon-192.png" width="64" height="64" alt="Apex SMM World" style={{ margin: '0 auto 12px', display: 'block', borderRadius: '14px' }} />
+        <Text style={{ textAlign: 'center' as const, fontSize: '18px', fontWeight: 'bold' as const, color: '#16a34a', margin: '0 0 24px' }}>Apex SMM World</Text>
         <Heading style={h1}>Reset your password</Heading>
         <Text style={text}>
           We received a request to reset your password for {siteName}. Click
