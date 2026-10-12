@@ -79,7 +79,7 @@ const button = {
   backgroundColor: '#16a34a',
   color: '#ffffff',
   fontSize: '14px',
-  border: '1px solid #000000',
+  border: '1px solid #16a34a',
   borderRadius: '8px',
   padding: '12px 20px',
   textDecoration: 'none',
