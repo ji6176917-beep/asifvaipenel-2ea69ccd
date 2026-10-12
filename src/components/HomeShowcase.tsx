@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Zap } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LiveStats } from "@/components/LiveStats";
 import { useI18n } from "@/lib/i18n";
@@ -16,7 +16,6 @@ export function HomeShowcase() {
     <section className="home-welcome">
       <div className="home-hero-grid">
         <div className="home-hero-copy">
-          <div className="home-feature-badge"><Zap aria-hidden="true" />{t("home.badge")}</div>
           <p className="home-eyebrow">{tr("WELCOME TO APEX SMM WORLD")}</p>
           <h1 className="home-headline">{lang === "en" && parts.length === 2 ? <>{parts[0]}<span>{highlight}</span>{parts[1]}</> : title}</h1>
           <p className="home-description">{t("home.hero_text")}</p>
