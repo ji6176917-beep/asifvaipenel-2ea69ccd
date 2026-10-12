@@ -9,7 +9,7 @@ import { EmailChangeEmail } from '@/lib/email-templates/email-change'
 import { ReauthenticationEmail } from '@/lib/email-templates/reauthentication'
 
 // Configuration
-const SITE_NAME = "Cuddly Dev Playground"
+const SITE_NAME = "Apex SMM World"
 const SENDER_DOMAIN = "notify.apexsmmworld.com"
 const ROOT_DOMAIN = "apexsmmworld.com"
 const FROM_DOMAIN = "apexsmmworld.com"

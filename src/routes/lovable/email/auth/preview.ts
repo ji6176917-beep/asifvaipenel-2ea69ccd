@@ -18,7 +18,7 @@ const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
 }
 
 // Configuration
-const SITE_NAME = "Cuddly Dev Playground"
+const SITE_NAME = "Apex SMM World"
 const ROOT_DOMAIN = "apexsmmworld.com"
 
 // Sample data for preview mode ONLY (not used in actual email sending).
