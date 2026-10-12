@@ -264,7 +264,6 @@ function Shell({ children }: { children: ReactNode }) {
             <Button variant="ghost" size="icon" aria-label="Toggle theme" onClick={toggle} className="home-theme-toggle rounded-full">
               {dark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </Button>
-            {path === "/" && wa && <Button asChild variant="ghost" size="icon" className="home-header-whatsapp rounded-full"><a href={wa} target="_blank" rel="noreferrer" aria-label={tr("Chat on WhatsApp")}><WhatsAppIcon className="h-5 w-5 text-primary" /></a></Button>}
             <Button variant="ghost" size="icon" aria-label={t("header.open_menu")} aria-expanded={menuOpen} onClick={() => setMenuOpen(true)} className={`${path === "/" ? "home-menu-button" : "menu-btn"} ${menuOpen ? "is-open" : ""}`}>
               <span className="menu-dots" aria-hidden><i /><i /><i /></span>
             </Button>
