@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Headphones, ShieldCheck, UsersRound, ClipboardCheck, Zap } from "lucide-react";
+import { ArrowRight, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { LiveStats } from "@/components/LiveStats";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
 import growthImage from "@/assets/social-growth.jpg";
@@ -11,12 +12,6 @@ export function HomeShowcase() {
   const title = t("home.hero_title").replace(/[*_#`]/g, "");
   const highlight = "Unbeatable Prices!";
   const parts = title.split(highlight);
-  const stats = [
-    { icon: UsersRound, value: "100K+", label: "Happy Customers" },
-    { icon: ClipboardCheck, value: "5M+", label: "Orders Completed" },
-    { icon: ShieldCheck, value: "99.9%", label: "Success Rate" },
-    { icon: Headphones, value: "24/7", label: "Support" },
-  ];
   return (
     <section className="home-welcome">
       <div className="home-hero-grid">
@@ -32,9 +27,7 @@ export function HomeShowcase() {
         </div>
         <div className="home-growth-art"><img src={growthImage} alt={tr("Social media growth dashboard with Instagram, TikTok, Facebook, YouTube and Telegram")} width={1024} height={1024} fetchPriority="high" /></div>
       </div>
-      <div className="home-trust-strip">
-        {stats.map(({ icon: Icon, value, label }) => <div className="home-trust-item" key={label}><span className="home-trust-icon"><Icon aria-hidden="true" /></span><div><strong>{value}</strong><span>{tr(label)}</span></div></div>)}
-      </div>
+      <LiveStats layout="strip" />
     </section>
   );
 }

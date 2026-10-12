@@ -20,6 +20,10 @@ function useCountUp(target: number, run: boolean, ms = 1800) {
   const [v, setV] = useState(0);
   useEffect(() => {
     if (!run) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setV(target);
+      return;
+    }
     let raf = 0; const t0 = performance.now();
     const step = (t: number) => {
       const p = Math.min(1, (t - t0) / ms);
@@ -32,8 +36,14 @@ function useCountUp(target: number, run: boolean, ms = 1800) {
   return v;
 }
 
-function Stat({ icon: Icon, target, decimals = 0, suffix = "", label, run, fixed }: { icon: typeof UsersRound; target: number; decimals?: number; suffix?: string; label: string; run: boolean; fixed?: string }) {
+function Stat({ icon: Icon, target, decimals = 0, suffix = "", label, run, fixed, layout }: { icon: typeof UsersRound; target: number; decimals?: number; suffix?: string; label: string; run: boolean; fixed?: string; layout?: "strip" | undefined }) {
   const v = useCountUp(target, run);
+  if (layout === "strip") return (
+    <div className="home-trust-item">
+      <span className="home-trust-icon"><Icon aria-hidden="true" /></span>
+      <div><strong>{`${v.toLocaleString("en-US", { maximumFractionDigits: decimals, minimumFractionDigits: decimals })}${suffix}`}</strong><span>{label}</span></div>
+    </div>
+  );
   return (
     <div className="live-stat">
       <span className="live-stat-icon"><Icon aria-hidden="true" /></span>
@@ -43,7 +53,7 @@ function Stat({ icon: Icon, target, decimals = 0, suffix = "", label, run, fixed
   );
 }
 
-export function LiveStats() {
+export function LiveStats({ layout }: { layout?: "strip" }) {
   const { tr } = useI18n();
   const ref = useRef<HTMLElement>(null);
   const [run, setRun] = useState(false);
@@ -53,16 +63,16 @@ export function LiveStats() {
     setUsers(grownValue(50_000, 1000, 2000));
     setOrders(grownValue(100_000, 2000, 4000));
     const el = ref.current; if (!el) return;
-    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setRun(true); io.disconnect(); } }, { threshold: 0.3 });
+    const io = new IntersectionObserver(([e]) => { if (e?.isIntersecting) { setRun(true); io.disconnect(); } }, { threshold: 0.3 });
     io.observe(el);
     return () => io.disconnect();
   }, []);
   return (
-    <section ref={ref} className="live-stats" aria-label={tr("Live statistics")}>
-      <Stat icon={UsersRound} target={users} suffix="+" label={tr("Happy Customers")} run={run} />
-      <Stat icon={ClipboardCheck} target={orders} suffix="+" label={tr("Orders Completed")} run={run} />
-      <Stat icon={ShieldCheck} target={99} suffix="%" label={tr("Success Rate")} run={run} />
-      <Stat icon={Headphones} target={24} suffix="/7" label={tr("Support")} run={run} />
+    <section ref={ref} className={layout === "strip" ? "home-trust-strip" : "live-stats"} aria-label={tr("Live statistics")}>
+      <Stat layout={layout} icon={UsersRound} target={users} suffix="+" label={tr("Happy Customers")} run={run} />
+      <Stat layout={layout} icon={ClipboardCheck} target={orders} suffix="+" label={tr("Orders Completed")} run={run} />
+      <Stat layout={layout} icon={ShieldCheck} target={99} suffix="%" label={tr("Success Rate")} run={run} />
+      <Stat layout={layout} icon={Headphones} target={24} suffix="/7" label={tr("Support")} run={run} />
     </section>
   );
 }
