@@ -98,7 +98,7 @@ function Home() {
     ),
     order: null,
     qna: homeQna.length ? (
-      <section className="mx-auto max-w-2xl">
+      <section className="home-qna mx-auto max-w-2xl">
         <h2 className="label-premium mb-4 text-center text-2xl">{t("home.qna_title")}</h2>
         <div className="space-y-2">
           {homeQna.map((q) => {

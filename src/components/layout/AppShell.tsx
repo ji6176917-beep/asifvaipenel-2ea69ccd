@@ -265,7 +265,7 @@ function Shell({ children }: { children: ReactNode }) {
               {dark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </Button>
             <Button variant="ghost" size="icon" aria-label={t("header.open_menu")} aria-expanded={menuOpen} onClick={() => setMenuOpen(true)} className={`${path === "/" ? "home-menu-button" : "menu-btn"} ${menuOpen ? "is-open" : ""}`}>
-              <span className="menu-dots" aria-hidden><i /><i /><i /></span>
+              <span className="menu-dots" aria-hidden><i /><i /><i /></span>{path === "/" && <span className="home-menu-label">{tr("Menu")}</span>}
             </Button>
           </div>
         </div>
