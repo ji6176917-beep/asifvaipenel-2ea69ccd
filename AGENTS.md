@@ -10,6 +10,7 @@
 <!-- LOVABLE:END -->
 
 ## Project rules
+- New Order reference styling is scoped to /order with order-reference classes; preserve shared wallet, menus, authentication and service-order behavior. Why: page redesigns must not affect other screens.
 - The reference homepage uses a dedicated HomeShowcase and homepage-scoped CSS; keep shared auth, wallet, menu data and non-home styling intact so visual redesigns cannot alter business behavior.
 - Homepage desktop and mobile statistics share LiveStats with layout variants. Why: both views must use the same count-up timing and data without changing their placement.
 - Use the uploaded brand logo CDN pointer directly in the shared desktop/mobile header; derive the public favicon from the same source asset. Why: stale admin logo overrides must not restore the retired mark.
