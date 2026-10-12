@@ -160,7 +160,23 @@ function RootComponent() {
         </AppShell></SupportAdminProvider></I18nProvider>
         <Toaster richColors position="top-center" />
         <VisitTracker />
+        <WarmRoutes />
       </AuthProvider>
     </QueryClientProvider>
   );
+}
+
+/** After first paint, download main page code so first taps (incl. touch) switch instantly. */
+function WarmRoutes() {
+  const router = useRouter();
+  useEffect(() => {
+    const ids = ["/order", "/_authenticated/service/$platform", "/_authenticated/orders", "/_authenticated/add-funds/", "/_authenticated/dashboard", "/sign-in", "/qna"];
+    const run = () => ids.forEach((id) => {
+      const r = (router.routesById as Record<string, unknown>)[id];
+      if (r) router.loadRouteChunk(r as never).catch(() => {});
+    });
+    const w = window as Window & { requestIdleCallback?: (cb: () => void) => number };
+    if (w.requestIdleCallback) w.requestIdleCallback(run); else setTimeout(run, 300);
+  }, [router]);
+  return null;
 }

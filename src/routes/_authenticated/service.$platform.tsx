@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { useT } from "@/lib/i18n";
 import { PlatformIcon } from "@/lib/brand";
+import { catalogQuery } from "@/lib/queries";
 import { computeCharge, friendlyError, money, newIdemKey } from "@/lib/format";
 import { Card, Copyable, Empty, ErrorState, Spinner, inputCls, labelCls } from "@/components/ui-kit";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -42,20 +43,7 @@ function ServicePage() {
   const [done, setDone] = useState<string | null>(null);
   const idem = useRef(newIdemKey());
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["catalog", platform],
-    queryFn: async () => {
-      const { data: p, error } = await supabase.from("platforms").select("id,name,slug,logo_url").eq("slug", platform).maybeSingle();
-      if (error) throw error;
-      if (!p) return null;
-      const { data: cats } = await supabase.from("categories").select("id,name").eq("platform_id", p.id).eq("active", true).is("deleted_at", null).order("sort");
-      const ids = (cats ?? []).map((c) => c.id);
-      const { data: svcs } = ids.length
-        ? await supabase.from("services").select("*").in("category_id", ids).eq("active", true).is("deleted_at", null).order("sort")
-        : { data: [] };
-      return { platform: p, cats: cats ?? [], svcs: svcs ?? [] };
-    },
-  });
+  const { data, isLoading, isError } = useQuery(catalogQuery(platform));
 
   const cats = useMemo(() => (data ? data.cats.filter((c) => data.svcs.some((s) => s.category_id === c.id)) : []), [data]);
   const svcs = (data?.svcs ?? []).filter((s) => s.category_id === catId);

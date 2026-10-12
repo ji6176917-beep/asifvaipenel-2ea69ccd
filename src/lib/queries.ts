@@ -20,3 +20,19 @@ export const platformsQuery = queryOptions({
   },
   staleTime: 60_000,
 });
+
+export const catalogQuery = (platform: string) => queryOptions({
+  queryKey: ["catalog", platform],
+  queryFn: async () => {
+    const { data: p, error } = await supabase.from("platforms").select("id,name,slug,logo_url").eq("slug", platform).maybeSingle();
+    if (error) throw error;
+    if (!p) return null;
+    const { data: cats } = await supabase.from("categories").select("id,name").eq("platform_id", p.id).eq("active", true).is("deleted_at", null).order("sort");
+    const ids = (cats ?? []).map((c) => c.id);
+    const { data: svcs } = ids.length
+      ? await supabase.from("services").select("*").in("category_id", ids).eq("active", true).is("deleted_at", null).order("sort")
+      : { data: [] };
+    return { platform: p, cats: cats ?? [], svcs: svcs ?? [] };
+  },
+  staleTime: 60_000,
+});
