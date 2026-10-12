@@ -13,6 +13,8 @@ export const Route = createFileRoute("/_authenticated/balance")({
       { name: "description", content: "Your wallet balance and spending summary." },
       { property: "og:title", content: "Balance | Premium Apex SMM World" },
       { property: "og:description", content: "Your wallet balance." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Balance,

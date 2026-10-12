@@ -18,6 +18,8 @@ export const Route = createFileRoute("/sign-in")({
       { name: "description", content: "Sign in with your email, phone, User ID or username." },
       { property: "og:title", content: "Sign In | Premium Apex SMM World" },
       { property: "og:description", content: "Access your wallet and orders." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: SignIn,

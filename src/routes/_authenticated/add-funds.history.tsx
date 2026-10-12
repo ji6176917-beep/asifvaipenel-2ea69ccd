@@ -17,6 +17,8 @@ export const Route = createFileRoute("/_authenticated/add-funds/history")({
       { name: "description", content: "Track all your Add Funds requests and their status." },
       { property: "og:title", content: "Add Funds History | Premium Apex SMM World" },
       { property: "og:description", content: "Your Add Funds requests." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: History,

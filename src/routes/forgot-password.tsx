@@ -16,6 +16,8 @@ export const Route = createFileRoute("/forgot-password")({
       { name: "description", content: "Reset your password by email or contact support on Telegram." },
       { property: "og:title", content: "Forgot Password | Premium Apex SMM World" },
       { property: "og:description", content: "Recover access to your account." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Forgot,

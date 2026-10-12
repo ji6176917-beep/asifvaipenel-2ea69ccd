@@ -16,6 +16,8 @@ export const Route = createFileRoute("/sign-up")({
       { name: "description", content: "Create your free account to start ordering social media growth services." },
       { property: "og:title", content: "Create Account | Premium Apex SMM World" },
       { property: "og:description", content: "Sign up in seconds." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: SignUp,

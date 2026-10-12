@@ -17,6 +17,8 @@ export const Route = createFileRoute("/_authenticated/profile")({
       { name: "description", content: "Your account details, User ID and security options." },
       { property: "og:title", content: "My Account | Premium Apex SMM World" },
       { property: "og:description", content: "Your account." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Profile,

@@ -13,6 +13,8 @@ export const Route = createFileRoute("/reset-password")({
       { name: "description", content: "Choose a new password for your account." },
       { property: "og:title", content: "Set New Password | Premium Apex SMM World" },
       { property: "og:description", content: "Choose a new password." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Reset,

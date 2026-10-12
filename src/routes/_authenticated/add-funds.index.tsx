@@ -22,6 +22,8 @@ export const Route = createFileRoute("/_authenticated/add-funds/")({
       { name: "description", content: "Top up your wallet with Binance, USDT, bKash, Nagad or Rocket." },
       { property: "og:title", content: "Add Funds | Premium Apex SMM World" },
       { property: "og:description", content: "Top up your wallet." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: AddFunds,

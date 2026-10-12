@@ -21,6 +21,8 @@ export const Route = createFileRoute("/_authenticated/service/$platform")({
         { name: "description", content: `Order ${n} growth services, delivered manually by our team.` },
         { property: "og:title", content: `${n} Services | Premium Apex SMM World` },
         { property: "og:description", content: `Buy ${n} followers, likes and more.` },
+        { property: "og:type", content: "website" },
+        { name: "twitter:card", content: "summary" },
       ],
     };
   },

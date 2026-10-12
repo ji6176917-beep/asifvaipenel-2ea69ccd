@@ -18,6 +18,8 @@ export const Route = createFileRoute("/_authenticated/orders")({
       { name: "description", content: "Track every order and its delivery status in real time." },
       { property: "og:title", content: "Order History | Premium Apex SMM World" },
       { property: "og:description", content: "Your orders." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Orders,
