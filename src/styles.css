@@ -541,7 +541,6 @@
 .order-platform-arrow { flex-shrink: 0; margin-left: auto; background: var(--order-mint); color: var(--order-green); display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; }
 .order-platform-arrow svg { width: 22px; height: 22px; }
 .order-growth-art { position: absolute; width: 600px; max-width: none; right: -90px; bottom: -5px; pointer-events: none; mix-blend-mode: multiply; mask-image: linear-gradient(to right, transparent, var(--order-ink) 35%); }
-.dark .order-growth-art { opacity: .3; mix-blend-mode: normal; }
 .order-growth-caption { display: none; }
 .order-reference-shell .home-bottom-nav { inset-inline: 20px; bottom: 14px; max-width: 740px; margin: auto; background: var(--order-surface); border: 1px solid var(--order-line); border-radius: 999px; box-shadow: var(--order-shadow); padding: 6px 12px; }
 .order-reference-shell .home-bottom-nav > div { max-width: none; }
