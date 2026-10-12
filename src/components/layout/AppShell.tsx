@@ -232,9 +232,9 @@ function Shell({ children }: { children: ReactNode }) {
   };
 
   return (
-    <div className={`relative min-h-screen pb-28 ${path === "/" ? "home-reference-shell" : ""}`}>
+    <div className={`relative min-h-screen pb-28 ${path === "/" ? "home-reference-shell" : path === "/order" ? "order-reference-shell" : ""}`}>
       <ThemeApplier t={theme} />
-      {path !== "/" && <FloatingBackground cfg={home.bg} glowOn={theme.bg3d} />}
+      {path !== "/" && path !== "/order" && <FloatingBackground cfg={home.bg} glowOn={theme.bg3d} />}
       <WelcomePopup s={settings as Settings | null | undefined} />
 
       {annOn && !bannerClosed && (
@@ -278,7 +278,7 @@ function Shell({ children }: { children: ReactNode }) {
         </div>
       )}
 
-      <main className={path === "/" ? "home-main" : `mx-auto px-4 pt-6 ${path.startsWith("/admin") ? "max-w-7xl" : "max-w-5xl"}`}>
+      <main className={path === "/" ? "home-main" : path === "/order" ? "order-main" : `mx-auto px-4 pt-6 ${path.startsWith("/admin") ? "max-w-7xl" : "max-w-5xl"}`}>
         {settings?.maintenance_on && !path.startsWith("/admin") ? (
           <div className="glass mx-auto mt-10 max-w-lg rounded-3xl p-8 text-center">
             <Sparkles className="mx-auto h-10 w-10 text-primary" />
@@ -288,7 +288,7 @@ function Shell({ children }: { children: ReactNode }) {
         ) : children}
       </main>
 
-      {!(path === "/" && home.sections.find((x) => x.id === "footer")?.on === false) && <footer className="mx-auto mt-20 max-w-5xl px-4 pb-8 sm:mt-24">
+      {path !== "/order" && !(path === "/" && home.sections.find((x) => x.id === "footer")?.on === false) && <footer className="mx-auto mt-20 max-w-5xl px-4 pb-8 sm:mt-24">
         <div className="glass space-y-6 rounded-3xl p-6">
           {fc.info && <div>
             <h3 className="label-premium mb-3 text-lg">{t("footer.info")}</h3>
