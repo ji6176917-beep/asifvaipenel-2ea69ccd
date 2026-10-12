@@ -6,7 +6,6 @@ import { supabase } from "@/integrations/supabase/client";
 import ReactMarkdown from "react-markdown";
 import { useI18n, pickLang } from "@/lib/i18n";
 import { useStorageUrl } from "@/lib/storage-url";
-import { useAuth } from "@/lib/auth";
 import { platformsQuery, settingsQuery } from "@/lib/queries";
 import { homeConfig, type HomeSectionId } from "@/lib/site-config";
 import { PlatformIcon } from "@/lib/brand";
@@ -52,14 +51,7 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
-function UiIcon({ k, fallback }: { k: string; fallback: React.ReactNode }) {
-  const { icon } = useI18n();
-  const url = useStorageUrl("logos", icon(k));
-  return url ? <img src={url} alt="" className="h-5 w-5 object-contain" /> : <>{fallback}</>;
-}
-
 function Home() {
-  const { user } = useAuth();
   const { t, tr, lang } = useI18n();
   const [openQ, setOpenQ] = useState<string | null>(null);
   const { data: homeQna = [] } = useQuery({
@@ -77,8 +69,6 @@ function Home() {
     const p = platforms?.find((p) => p.slug === c.slug);
     return p ? [{ c, p }] : [];
   });
-  const spin = cfg.anim === "high" ? "group-hover:animate-spin3d" : "";
-  const tilt = cfg.anim === "off" ? "" : "tilt";
 
   const blocks: Record<HomeSectionId, React.ReactNode> = {
     hero: <HomeShowcase />,

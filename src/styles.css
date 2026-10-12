@@ -266,6 +266,8 @@
   --home-line: oklch(0.91 0.024 157);
   --home-mint: oklch(0.95 0.04 157);
   --home-white: oklch(1 0 0);
+  --home-on-green: oklch(1 0 0);
+  --home-instagram: conic-gradient(from 210deg, oklch(0.8 0.16 75), oklch(0.65 0.22 20), oklch(0.5 0.23 310), oklch(0.65 0.22 20), oklch(0.8 0.16 75));
   --home-shadow: 0 8px 28px oklch(0.45 0.08 157 / 0.08);
   --home-button: linear-gradient(180deg, oklch(0.56 0.17 151), oklch(0.38 0.11 155));
   background: var(--home-paper);
@@ -300,7 +302,7 @@
 .home-description { font-size: 12px; line-height: 1.75; margin-top: 15px; color: var(--home-subtle); max-width: 570px; }
 .home-actions { display: flex; gap: 14px; margin-top: 20px; }
 .home-reference-shell .home-primary-cta, .home-reference-shell .home-secondary-cta { border-radius: 999px; min-width: 160px; height: 42px; font-size: 12px; font-weight: 600; }
-.home-reference-shell .home-primary-cta { background: var(--home-button); color: oklch(1 0 0); box-shadow: var(--home-shadow); }
+.home-reference-shell .home-primary-cta { background: var(--home-button); color: var(--home-on-green); box-shadow: var(--home-shadow); }
 .home-reference-shell .home-secondary-cta { border-color: var(--home-green); background: transparent; color: var(--home-ink); }
 .home-growth-art { min-width: 0; }
 .home-growth-art img { display: block; width: 100%; height: auto; mix-blend-mode: multiply; }
@@ -325,8 +327,8 @@
 .home-service-arrow { display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; color: var(--home-green); background: var(--home-mint); }
 .home-service-arrow svg { width: 12px; height: 12px; }
 .home-platform-icon { display: grid; place-items: center; width: 43px; height: 43px; }
-.home-platform-instagram { border-radius: 10px; background: conic-gradient(from 210deg, oklch(0.8 0.16 75), oklch(0.65 0.22 20), oklch(0.5 0.23 310), oklch(0.65 0.22 20), oklch(0.8 0.16 75)); }
-.home-platform-instagram svg { color: oklch(1 0 0) !important; width: 31px; height: 31px; }
+.home-platform-instagram { border-radius: 10px; background: var(--home-instagram); }
+.home-platform-instagram svg { color: var(--home-on-green) !important; width: 31px; height: 31px; }
 .home-reference-shell .home-bottom-nav { background: var(--home-white); border-color: var(--home-line); box-shadow: none; }
 .home-reference-shell .home-bottom-nav > div { max-width: 900px; }
 .home-reference-shell .home-bottom-nav a { color: var(--home-subtle); font-weight: 500; font-size: 11px; }
@@ -356,11 +358,12 @@
   .home-feature-badge { font-size: 8px; padding: 5px 9px; gap: 5px; }
   .home-feature-badge svg { width: 12px; height: 12px; }
   .home-eyebrow { font-size: 9px; margin: 15px 0 7px; }
-  .home-headline { font-size: 27px; line-height: 1.1; font-weight: 800; }
-  .home-description { font-size: 9px; line-height: 1.7; margin-top: 12px; }
+  .home-headline { font-size: 25px; line-height: 1.1; font-weight: 800; }
+  .home-description { font-size: 8px; line-height: 1.7; margin-top: 12px; }
   .home-actions { gap: 10px; margin-top: 13px; }
   .home-reference-shell .home-primary-cta, .home-reference-shell .home-secondary-cta { min-width: 0; flex: 1; height: 35px; padding: 0 12px; font-size: 10px; }
-  .home-growth-art { width: 80%; margin: 1px auto 0; }
+  .home-growth-art { width: 100%; height: 178px; margin: 1px auto 0; }
+  .home-growth-art img { width: 100%; height: 100%; object-fit: contain; }
   .home-trust-strip { padding: 11px 0; margin-top: -6px; position: relative; }
   .home-trust-item { gap: 4px; padding: 0 3px; }
   .home-trust-icon { width: 20px; height: 20px; }
