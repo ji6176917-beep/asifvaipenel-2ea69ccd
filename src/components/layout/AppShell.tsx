@@ -25,6 +25,7 @@ import { useSupportTap } from "@/components/SupportAdmin";
 import ReactMarkdown from "react-markdown";
 import { FONTS, homeConfig, themeConfig, themeIsCustom, type HomeConfig, type ThemeConfig } from "@/lib/site-config";
 import siteLogo from "@/assets/apex-header-logo.png.asset.json";
+import { Button } from "@/components/ui/button";
 
 function useTheme(def: "dark" | "light" | "system" | undefined) {
   const [dark, setDark] = useState(false);
@@ -231,9 +232,9 @@ function Shell({ children }: { children: ReactNode }) {
   };
 
   return (
-    <div className="relative min-h-screen pb-28">
+    <div className={`relative min-h-screen pb-28 ${path === "/" ? "home-reference-shell" : ""}`}>
       <ThemeApplier t={theme} />
-      <FloatingBackground cfg={home.bg} glowOn={theme.bg3d} />
+      {path !== "/" && <FloatingBackground cfg={home.bg} glowOn={theme.bg3d} />}
       <WelcomePopup s={settings as Settings | null | undefined} />
 
       {annOn && !bannerClosed && (
@@ -246,23 +247,27 @@ function Shell({ children }: { children: ReactNode }) {
         </div>
       )}
 
-      <header className="glass sticky top-0 z-40 rounded-none border-x-0 border-t-0">
-        <div className="mx-auto flex max-w-5xl items-center gap-2 px-4 py-3">
+      <header className={`glass sticky top-0 z-40 rounded-none border-x-0 border-t-0 ${path === "/" ? "home-header" : ""}`}>
+        <div className="home-header-inner mx-auto grid max-w-5xl grid-cols-[minmax(0,1fr)_auto] items-center gap-2 px-4 py-3 lg:flex">
           <Link to="/" className="flex min-w-0 items-center gap-2">
             <img src={siteLogo.url} alt={`${siteName} - Global Social Media Growth Logo`} width={36} height={36} className="h-9 w-auto shrink-0 object-contain" />
-            <span className="text-gradient truncate font-display text-base font-bold sm:text-lg">{headerName}</span>
+            <span className="home-brand-copy min-w-0"><span className="home-brand-name block truncate font-display text-base font-bold sm:text-lg">{headerName}</span>{path === "/" && <span className="home-brand-tagline">{tr("Social Media Growth Partner")}</span>}</span>
           </Link>
-          <div className="ml-auto flex items-center gap-1.5">
-            <Link to={user ? "/balance" : "/sign-in"} className="btn-ghost-glow !px-3 !py-1.5 text-sm">
+          {path === "/" && <nav className="home-desktop-nav" aria-label={tr("Main navigation")}>
+            {bottom.filter((m) => m.target_type === "internal_route").map((m) => <NavItem key={m.id} m={m} settings={settings} onAction={onAction} showIcon={false} className={`home-desktop-link ${m.target_value === "/" ? "is-active" : ""}`} />)}
+          </nav>}
+          <div className="home-header-tools ml-auto flex shrink-0 items-center gap-1.5">
+            <Link to={user ? "/balance" : "/sign-in"} className="home-wallet btn-ghost-glow !px-3 !py-1.5 text-sm">
               <Wallet className="h-4 w-4 text-primary" /> {money(profile?.balance ?? 0)}
             </Link>
             <UserInbox />
-            <button aria-label="Toggle theme" onClick={toggle} className="rounded-full p-2 hover:bg-accent">
+            <Button variant="ghost" size="icon" aria-label="Toggle theme" onClick={toggle} className="home-theme-toggle rounded-full">
               {dark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-            </button>
-            <button aria-label={t("header.open_menu")} aria-expanded={menuOpen} onClick={() => setMenuOpen(true)} className={`menu-btn ${menuOpen ? "is-open" : ""}`}>
+            </Button>
+            {path === "/" && wa && <Button asChild variant="ghost" size="icon" className="home-header-whatsapp rounded-full"><a href={wa} target="_blank" rel="noreferrer" aria-label={tr("Chat on WhatsApp")}><WhatsAppIcon className="h-5 w-5 text-primary" /></a></Button>}
+            <Button variant="ghost" size="icon" aria-label={t("header.open_menu")} aria-expanded={menuOpen} onClick={() => setMenuOpen(true)} className={`${path === "/" ? "home-menu-button" : "menu-btn"} ${menuOpen ? "is-open" : ""}`}>
               <span className="menu-dots" aria-hidden><i /><i /><i /></span>
-            </button>
+            </Button>
           </div>
         </div>
       </header>
@@ -274,7 +279,7 @@ function Shell({ children }: { children: ReactNode }) {
         </div>
       )}
 
-      <main className={`mx-auto px-4 pt-6 ${path.startsWith("/admin") ? "max-w-7xl" : "max-w-5xl"}`}>
+      <main className={path === "/" ? "home-main" : `mx-auto px-4 pt-6 ${path.startsWith("/admin") ? "max-w-7xl" : "max-w-5xl"}`}>
         {settings?.maintenance_on && !path.startsWith("/admin") ? (
           <div className="glass mx-auto mt-10 max-w-lg rounded-3xl p-8 text-center">
             <Sparkles className="mx-auto h-10 w-10 text-primary" />
@@ -304,7 +309,7 @@ function Shell({ children }: { children: ReactNode }) {
         </div>
       </footer>}
 
-      {wa && settings?.whatsapp_float !== false && (
+      {path !== "/" && wa && settings?.whatsapp_float !== false && (
         <a href={wa} target="_blank" rel="noreferrer" aria-label="Chat on WhatsApp"
           className="animate-pulse-ring fixed bottom-24 right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-success text-primary-foreground shadow-glow">
           <ContactIcon k="contact.whatsapp" className="h-7 w-7" fallback={<WhatsAppIcon className="h-7 w-7" />} />
@@ -318,9 +323,9 @@ function Shell({ children }: { children: ReactNode }) {
         </div>
       )}
 
-      <nav className="glass fixed inset-x-0 bottom-0 z-40 rounded-none border-x-0 border-b-0" aria-label="Shortcuts">
-        <div className="mx-auto grid max-w-lg" style={{ gridTemplateColumns: `repeat(${Math.max(1, bottom.filter(visible).length)}, minmax(0, 1fr))` }}>
-          {bottom.filter(visible).map((b) => {
+      <nav className="home-bottom-nav glass fixed inset-x-0 bottom-0 z-40 rounded-none border-x-0 border-b-0" aria-label="Shortcuts">
+        <div className="mx-auto grid max-w-lg" style={{ gridTemplateColumns: `repeat(${Math.max(1, (path === "/" ? bottom : bottom.filter(visible)).length)}, minmax(0, 1fr))` }}>
+          {(path === "/" ? bottom : bottom.filter(visible)).map((b) => {
             const to = b.target_type === "internal_route" ? b.target_value : "";
             const active = to ? (to === "/" ? path === "/" : path.startsWith(to)) : false;
             return (
