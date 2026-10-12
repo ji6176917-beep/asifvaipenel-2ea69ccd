@@ -146,7 +146,7 @@ function ServicePage() {
                     <PlatformIcon slug={platform} logo={data?.platform?.logo_url} name={data?.platform?.name} className="mt-0.5 h-5 w-5 shrink-0" />
                     <span className="flex flex-col whitespace-normal">
                       <span className="font-medium">
-                        {s.service_no != null && <span className="mr-1 font-bold text-brand">#{s.service_no}</span>}
+                        {s.service_no != null && <span className="mr-1 font-bold text-primary">{s.service_no} -</span>}
                         {s.name}
                       </span>
                       <span className="text-xs text-muted-foreground">{money(s.rate)} per {s.rate_per}</span>
