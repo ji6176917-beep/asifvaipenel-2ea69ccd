@@ -775,6 +775,7 @@ export type Database = {
           rate: number
           rate_per: number
           refill_info: string | null
+          service_no: number | null
           sort: number
         }
         Insert: {
@@ -791,6 +792,7 @@ export type Database = {
           rate: number
           rate_per?: number
           refill_info?: string | null
+          service_no?: number | null
           sort?: number
         }
         Update: {
@@ -807,6 +809,7 @@ export type Database = {
           rate?: number
           rate_per?: number
           refill_info?: string | null
+          service_no?: number | null
           sort?: number
         }
         Relationships: [

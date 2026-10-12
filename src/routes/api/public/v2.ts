@@ -61,19 +61,21 @@ async function handle(request: Request) {
       return json({ balance: Number(prof.balance).toFixed(2), currency: "USD" });
     case "services": {
       const { data } = await db.from("services")
-        .select("id,name,description,rate,rate_per,min_qty,max_qty,avg_time,refill_info,categories!inner(name,active,deleted_at,platforms!inner(name,active,deleted_at))")
+        .select("service_no,name,description,rate,rate_per,min_qty,max_qty,avg_time,refill_info,categories!inner(name,active,deleted_at,platforms!inner(name,active,deleted_at))")
         .eq("active", true).is("deleted_at", null).eq("categories.active", true).is("categories.deleted_at", null)
         .eq("categories.platforms.active", true).is("categories.platforms.deleted_at", null).order("sort");
       return json((data ?? []).map((s) => ({
-        service: s.id, name: s.name, platform: s.categories.platforms.name, category: s.categories.name,
-        rate: Number(s.rate), rate_per: s.rate_per, min: s.min_qty, max: s.max_qty, avg_time: s.avg_time,
-        description: s.description ?? "", refill: s.refill_info ?? "",
+        service: s.service_no, name: s.name, type: "Default", platform: s.categories.platforms.name, category: s.categories.name,
+        rate: Number(s.rate).toString(), rate_per: s.rate_per, min: String(s.min_qty), max: String(s.max_qty), avg_time: s.avg_time,
+        refill: !!s.refill_info, cancel: false, description: s.description ?? "",
       })));
     }
     case "add": {
-      const v = z.object({ service: z.string().uuid(), link: z.string().min(5).max(500), quantity: z.coerce.number().int().positive() }).safeParse(p);
-      if (!v.success) return json({ error: "Missing or invalid parameters: service (id), link, quantity" }, 400);
-      const { data, error } = await db.rpc("api_place_order", { _uid: prof.id, _service_id: v.data.service, _link: v.data.link.trim(), _quantity: v.data.quantity });
+      const v = z.object({ service: z.coerce.number().int().positive(), link: z.string().min(5).max(500), quantity: z.coerce.number().int().positive() }).safeParse(p);
+      if (!v.success) return json({ error: "Missing or invalid parameters: service (number), link, quantity" }, 400);
+      const { data: svc } = await db.from("services").select("id").eq("service_no", v.data.service).is("deleted_at", null).maybeSingle();
+      if (!svc) return json({ error: "Service is inactive or does not exist." }, 400);
+      const { data, error } = await db.rpc("api_place_order", { _uid: prof.id, _service_id: svc.id, _link: v.data.link.trim(), _quantity: v.data.quantity });
       if (error) {
         const code = Object.keys(ERR).find((k) => error.message.includes(k));
         const e = code ? ERR[code] : undefined; if (e) return json({ error: e[0] }, e[1]);

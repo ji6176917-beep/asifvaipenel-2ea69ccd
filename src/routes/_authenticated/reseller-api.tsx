@@ -114,7 +114,7 @@ function ApiPage() {
           <TabsList className="flex-wrap"><TabsTrigger value="services">Services</TabsTrigger><TabsTrigger value="add">Add order</TabsTrigger><TabsTrigger value="status">Order status</TabsTrigger><TabsTrigger value="balance">Balance</TabsTrigger></TabsList>
           <TabsContent value="services" className="space-y-2">
             <p className="text-sm">Parameters: <code>key</code>, <code>action=services</code></p>
-            <Code>{`[\n  {\n    "service": "6f1c…-uuid",\n    "name": "Instagram Followers",\n    "platform": "Instagram",\n    "category": "Followers",\n    "rate": 1.2,\n    "rate_per": 1000,\n    "min": 100,\n    "max": 10000,\n    "avg_time": "24 hours"\n  }\n]`}</Code>
+            <Code>{`[\n  {\n    "service": 101,\n    "name": "Instagram Followers",\n    "platform": "Instagram",\n    "category": "Followers",\n    "rate": 1.2,\n    "rate_per": 1000,\n    "min": 100,\n    "max": 10000,\n    "avg_time": "24 hours"\n  }\n]`}</Code>
           </TabsContent>
           <TabsContent value="add" className="space-y-2">
             <p className="text-sm">Parameters: <code>key</code>, <code>action=add</code>, <code>service</code> (id from services), <code>link</code>, <code>quantity</code>. The charge is deducted from your balance immediately.</p>
