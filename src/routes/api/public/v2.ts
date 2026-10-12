@@ -73,7 +73,7 @@ async function handle(request: Request) {
       })));
     }
     case "add": {
-      const v = z.object({ service: z.coerce.number().int().positive(), link: z.string().min(5).max(500), quantity: z.coerce.number().int().positive() }).safeParse(p);
+      const v = z.object({ service: z.coerce.number().int().positive(), link: z.string().min(1).max(500), quantity: z.coerce.number().int().positive() }).safeParse(p);
       if (!v.success) {
         const miss = ["service", "link", "quantity"].find((k) => !p[k]);
         return json({ error: miss ? `Missing parameter: ${miss}` : "Incorrect request" });
