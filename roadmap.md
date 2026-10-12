@@ -40,3 +40,4 @@
 - [ ] Fix B: Full-site translation (dictionary for every page, save language to account)
 - [x] Home layout, footer toggles, home QnA, Site Identity, full-site translations (Oct 2026)
 - [x] New Order service dropdown shows numeric service ID before the name (Oct 12)
+- [x] Reseller API documentation: replace tabs with stacked action tables and visible code examples.
