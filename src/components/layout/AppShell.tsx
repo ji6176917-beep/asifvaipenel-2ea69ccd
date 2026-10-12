@@ -308,12 +308,14 @@ function Shell({ children }: { children: ReactNode }) {
         </div>
       </footer>}
 
-      {path !== "/" && wa && settings?.whatsapp_float !== false && (
-        <a href={wa} target="_blank" rel="noreferrer" aria-label="Chat on WhatsApp"
-          className="animate-pulse-ring fixed bottom-24 right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-success text-primary-foreground shadow-glow">
+      {/* Floating WhatsApp support button: fixed to the bottom-right corner on every page. */}
+      {wa && settings?.whatsapp_float !== false && (
+        <a href={wa} target="_blank" rel="noreferrer" aria-label={tr("Chat on WhatsApp")} title={tr("Chat on WhatsApp")}
+          className="animate-pulse-ring home-whatsapp-float fixed bottom-24 right-4 z-50 flex h-14 w-14 items-center justify-center overflow-visible rounded-full bg-success text-primary-foreground shadow-glow">
           <ContactIcon k="contact.whatsapp" className="h-7 w-7" fallback={<WhatsAppIcon className="h-7 w-7" />} />
         </a>
       )}
+
 
       {!cookieOk && settings?.cookie_notice !== false && (
         <div className="glass fixed bottom-24 left-4 right-20 z-40 flex items-center gap-3 rounded-2xl p-3 text-xs sm:right-auto sm:max-w-sm">
