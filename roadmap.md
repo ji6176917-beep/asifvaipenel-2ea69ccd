@@ -45,3 +45,4 @@
 - [x] New Order service dropdown shows numeric service ID before the name (Oct 12, live on apexsmmworld.com)
 - [x] Reseller API documentation: replace tabs with stacked action tables and visible code examples.
 - [x] WhatsApp: remove header icon, keep single fixed floating button bottom-right on every page with pulse animation (Oct 12).
+- [x] Mobile header: logo + brand name inline and vertically centered, tagline hidden on mobile; feature badge removed on all devices (Oct 12).
