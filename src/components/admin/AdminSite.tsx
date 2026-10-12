@@ -182,7 +182,7 @@ function HomeQna({ on }: { on: boolean }) {
   );
 }
 
-const HOME_TEXT_KEYS = ["home.badge", "home.hero_title", "home.hero_text", "home.services_title", "home.order_now", "home.qna_title", "footer.quick_links", "footer.info", "footer.rights"];
+const HOME_TEXT_KEYS = ["home.hero_title", "home.hero_text", "home.services_title", "home.order_now", "home.qna_title", "footer.quick_links", "footer.info", "footer.rights"];
 function HomeTexts() {
   const { data, isLoading } = useLabels();
   const rows = (data?.labels ?? []).filter((r) => HOME_TEXT_KEYS.includes(r.key)).sort((a, b) => HOME_TEXT_KEYS.indexOf(a.key) - HOME_TEXT_KEYS.indexOf(b.key));
