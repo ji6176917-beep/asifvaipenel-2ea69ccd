@@ -63,7 +63,7 @@ export function LiveStats({ layout }: { layout?: "strip" }) {
     setUsers(grownValue(50_000, 1000, 2000));
     setOrders(grownValue(100_000, 2000, 4000));
     const el = ref.current; if (!el) return;
-    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setRun(true); io.disconnect(); } }, { threshold: 0.3 });
+    const io = new IntersectionObserver(([e]) => { if (e?.isIntersecting) { setRun(true); io.disconnect(); } }, { threshold: 0.3 });
     io.observe(el);
     return () => io.disconnect();
   }, []);
