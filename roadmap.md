@@ -20,7 +20,7 @@
 - [x] ADMIN_MASTER_PASSWORD and ADMIN_PASSWORD secrets saved
 - [x] WhatsApp/Telegram links use separate settings, digits-only wa.me, hidden when empty
 - [x] Payment logos: uploaded-image support + coloured badge fallback
-- [ ] Waiting on user: official bKash/Nagad/Rocket/Binance/USDT logo files (upload to logos bucket)
+- [x] Add Funds: replace bKash, Nagad and Rocket badges with original brand images sourced online; preserve page layout and other payment methods.
 - [x] Profile photo upload/remove; shown in menu header
 - [x] Premium 3-dot button, bottom sheet on mobile, closes on route change
 - [x] Starter catalog seeded as inactive drafts

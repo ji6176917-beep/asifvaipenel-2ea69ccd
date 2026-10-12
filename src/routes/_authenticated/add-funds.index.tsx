@@ -14,6 +14,22 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import type { Tables } from "@/integrations/supabase/types";
 import { useTr } from "@/lib/i18n";
+import bkashLogo from "@/assets/payments/bkash.png.asset.json";
+import nagadLogo from "@/assets/payments/nagad.png.asset.json";
+import rocketLogo from "@/assets/payments/rocket.png.asset.json";
+
+const officialPaymentLogos = [
+  { pattern: /bkash|বিকাশ/i, url: bkashLogo.url },
+  { pattern: /nagad|নগদ/i, url: nagadLogo.url },
+  { pattern: /rocket|রকেট/i, url: rocketLogo.url },
+];
+
+function DepositMethodLogo(props: React.ComponentProps<typeof MethodLogo>) {
+  const officialLogo = props.kind === "p2p"
+    ? officialPaymentLogos.find(({ pattern }) => pattern.test(props.name))?.url
+    : undefined;
+  return <MethodLogo {...props} officialLogo={officialLogo} />;
+}
 
 export const Route = createFileRoute("/_authenticated/add-funds/")({
   head: () => ({
@@ -110,7 +126,7 @@ function AddFunds() {
           {groups.map((g) => (
             <button key={g} onClick={() => pickGroup(g)} className="glass tilt flex items-center gap-4 rounded-3xl p-4 text-left">
               {g === "p2p" ? (
-                <div className="flex -space-x-2">{p2p.slice(0, 3).map((x) => <MethodLogo key={x.id} name={x.name} kind="p2p" logo={x.logo_url} className="h-10 w-10" />)}</div>
+                <div className="flex -space-x-2">{p2p.slice(0, 3).map((x) => <DepositMethodLogo key={x.id} name={x.name} kind="p2p" logo={x.logo_url} className="h-10 w-10" />)}</div>
               ) : <MethodLogo name={g} kind={g} logo={methods?.find((x) => x.kind === g)?.logo_url} className="h-10 w-10" />}
               <div>
                 <div className="label-premium text-lg">{g === "p2p" ? "P2P" : g === "usdt" ? "USDT" : "Binance"}</div>
@@ -129,7 +145,7 @@ function AddFunds() {
             <div className="mb-5 grid grid-cols-3 gap-2">
               {methods!.filter((x) => x.kind === group).map((x) => (
                 <button key={x.id} onClick={() => setM(x)} className={`flex flex-col items-center gap-1.5 rounded-2xl border p-3 transition ${m?.id === x.id ? "border-primary bg-primary/10 shadow-glow" : "border-border"}`}>
-                  <MethodLogo name={x.name} kind={x.kind} logo={x.logo_url} className="h-10 w-12" />
+                  <DepositMethodLogo name={x.name} kind={x.kind} logo={x.logo_url} className="h-10 w-12" />
                   <span className="text-xs font-semibold">{x.name}</span>
                 </button>
               ))}
@@ -139,7 +155,7 @@ function AddFunds() {
           {m && (
             <form onSubmit={submit} className="space-y-4">
               <div className="flex items-center gap-3 rounded-2xl bg-muted/60 p-4">
-                <MethodLogo name={m.name} kind={m.kind} logo={m.logo_url} className="h-12 w-12" />
+                <DepositMethodLogo name={m.name} kind={m.kind} logo={m.logo_url} className="h-12 w-12" />
                 <div className="min-w-0">
                   <div className="label-premium">{m.name}{m.network ? ` • ${m.network}` : ""}</div>
                   <div className="text-xs text-muted-foreground">{m.kind === "binance" ? tr("Binance ID") : m.kind === "usdt" ? tr("Wallet address") : `${tr("Number")} (${m.account_type ?? tr("Personal")})`}</div>
