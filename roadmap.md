@@ -1,5 +1,5 @@
 # Roadmap
-- [ ] Remove global navigation spinner/loading UI and any artificial wait; keep immediate outgoing-page unmounting and at most 0.1s fade, verify navigation.
+- [x] Remove global navigation spinner/loading UI and artificial waiting; outgoing page unmounts immediately, intent preload has zero delay, incoming fade is 0.1s. Two regression tests pass; browser confirms no global spinner, no outgoing hero during held navigation, and search state resets.
 - [x] Global route navigation: outgoing content unmounts during delayed navigation, page-local state resets, lightweight loading and reduced-motion-aware fade; browser verified Home/New Order/About/QnA/Policy/Sign In/Sign Up, back/forward and auth redirects. Two new regression tests pass; two existing routing smoke tests still time out.
 - [ ] Signed-in navigation verification: blocked because preview is signed out and the requesting email has no matching customer account; requires user to sign in in preview.
 - [x] Match New Order desktop/mobile reference, add platform search and preserve other pages; browser checked filtering, empty results and sign-in redirect. Existing routing smoke tests still time out (same two failures).
