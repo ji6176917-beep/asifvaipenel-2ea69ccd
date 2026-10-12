@@ -62,7 +62,7 @@ export function LiveStats() {
       <Stat icon={UsersRound} target={users} suffix="+" label={tr("Happy Customers")} run={run} />
       <Stat icon={ClipboardCheck} target={orders} suffix="+" label={tr("Orders Completed")} run={run} />
       <Stat icon={ShieldCheck} target={99} suffix="%" label={tr("Success Rate")} run={run} />
-      <Stat icon={Headphones} target={24} label={tr("Support")} run={run} fixed={run ? undefined : "0/7"} {...{ suffix: "/7" }} />
+      <Stat icon={Headphones} target={24} suffix="/7" label={tr("Support")} run={run} />
     </section>
   );
 }
