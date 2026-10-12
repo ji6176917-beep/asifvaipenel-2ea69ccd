@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { submitCustomerDeposit } from "@/lib/customer-activity.functions";
 import { ArrowLeft, Clock, ImagePlus } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -57,6 +59,7 @@ async function compress(file: File): Promise<Blob> {
 }
 
 function AddFunds() {
+  const createDeposit = useServerFn(submitCustomerDeposit);
   const tr = useTr();
   const { user, verified } = useAuth();
   const { data: s } = useQuery(settingsQuery);
@@ -107,9 +110,18 @@ function AddFunds() {
       const { error } = await supabase.storage.from("payment-proofs").upload(path, blob, { contentType: "image/webp" });
       if (error) { setBusy(false); { toast.error(tr("Screenshot upload failed")); return; } }
     }
-    const { data, error } = await supabase.rpc("create_deposit", { _method_id: m.id, _amount: amt, _txn: txn.trim(), _screenshot: path as string, _idem: idem.current });
+    let response;
+    try {
+      response = await createDeposit({ data: { methodId: m.id, amount: amt, transactionId: txn.trim(), screenshotPath: path, idempotencyKey: idem.current } });
+    } catch {
+      setBusy(false);
+      toast.error(friendlyError());
+      return;
+    }
+    const { result: data, error } = response;
     setBusy(false);
-    if (error) { toast.error(friendlyError(error.message)); return; }
+    if (error) { toast.error(friendlyError(error)); return; }
+    if (!data) return;
     idem.current = newIdemKey();
     setDone((data as { code: string }).code);
   };

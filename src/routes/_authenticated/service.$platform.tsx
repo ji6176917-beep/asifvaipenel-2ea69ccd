@@ -1,6 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { submitCustomerOrder } from "@/lib/customer-activity.functions";
 import { ArrowLeft, Search, Clock, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -31,6 +33,7 @@ export const Route = createFileRoute("/_authenticated/service/$platform")({
 });
 
 function ServicePage() {
+  const placeOrder = useServerFn(submitCustomerOrder);
   const { platform } = Route.useParams();
   const { verified, refreshProfile } = useAuth();
   const navigate = useNavigate();
@@ -59,16 +62,25 @@ function ServicePage() {
     if (!qtyOk) { toast.error(`Quantity must be ${svc.min_qty}–${svc.max_qty}`); return; }
     if (!verified) { toast.error(t("toast.verify_first")); return; }
     setBusy(true);
-    const { data: r, error } = await supabase.rpc("place_order", { _service_id: svc.id, _link: link.trim(), _quantity: qn, _idem: idem.current });
+    let response;
+    try {
+      response = await placeOrder({ data: { serviceId: svc.id, link: link.trim(), quantity: qn, idempotencyKey: idem.current } });
+    } catch {
+      setBusy(false);
+      toast.error(friendlyError());
+      return;
+    }
+    const { result: r, error } = response;
     setBusy(false);
     if (error) {
-      if (error.message.includes("INSUFFICIENT_BALANCE")) {
+      if (error.includes("INSUFFICIENT_BALANCE")) {
         toast.error(t("toast.insufficient"));
         navigate({ to: "/add-funds" });
         return;
       }
-      { toast.error(friendlyError(error.message)); return; }
+      { toast.error(friendlyError(error)); return; }
     }
+    if (!r) return;
     idem.current = newIdemKey();
     refreshProfile();
     setDone((r as { order_code: string }).order_code);
