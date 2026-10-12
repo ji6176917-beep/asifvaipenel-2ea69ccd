@@ -52,9 +52,10 @@ export function friendlyError(msg?: string) {
   return key ? ERRORS[key] : msg;
 }
 
-/** WhatsApp link from the WhatsApp setting only (digits only); null when empty. */
+/** WhatsApp link from the admin-saved number; local Bangladesh numbers (01XXXXXXXXX) get the 880 country code. Null when empty. */
 export function whatsappUrl(n?: string | null) {
-  const d = (n ?? "").replace(/\D/g, "");
+  let d = (n ?? "").replace(/\D/g, "").replace(/^00/, "");
+  if (/^01\d{9}$/.test(d)) d = `88${d}`;
   return d ? `https://wa.me/${d}` : null;
 }
 /** Telegram link from the Telegram setting only; null when empty. */
