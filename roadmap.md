@@ -1,5 +1,6 @@
 # Roadmap
-- [ ] Global route navigation: hide outgoing content immediately, reset page-local state across paths/parameters, add accessible loading and reduced-motion-aware fade; verify delayed and signed-in navigation.
+- [x] Global route navigation: outgoing content unmounts during delayed navigation, page-local state resets, lightweight loading and reduced-motion-aware fade; browser verified Home/New Order/About/QnA/Policy/Sign In/Sign Up, back/forward and auth redirects. Two new regression tests pass; two existing routing smoke tests still time out.
+- [ ] Signed-in navigation verification: blocked because preview is signed out and the requesting email has no matching customer account; requires user to sign in in preview.
 - [x] Match New Order desktop/mobile reference, add platform search and preserve other pages; browser checked filtering, empty results and sign-in redirect. Existing routing smoke tests still time out (same two failures).
 - [x] Fix mobile illustration cropping, refine service-title typography, and share mobile count-up animation with the desktop statistics strip; browser-verified both sizes and matching final counts.
 - [x] Match the supplied homepage desktop/mobile design; browser-verified five service tiles, CTA navigation and no horizontal overflow. Existing routing smoke tests still time out (2 failures); browser flow and preview build pass.

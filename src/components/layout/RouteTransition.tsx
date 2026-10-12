@@ -11,9 +11,9 @@ export function RouteLoading() {
 
 /** Keep shared sessions/cache alive, but never paint an outgoing page during navigation. */
 export function RouteTransition({ children }: { children: ReactNode }) {
-  const { pending, pathname } = useRouterState({
+  const { pending, pageKey } = useRouterState({
     select: (state) => ({
-      pathname: state.location.pathname,
+      pageKey: state.location.pathname + state.location.searchStr,
       pending: state.status === "pending" && (
         state.location.pathname !== state.resolvedLocation?.pathname ||
         state.location.searchStr !== state.resolvedLocation?.searchStr
@@ -25,7 +25,7 @@ export function RouteTransition({ children }: { children: ReactNode }) {
 
   return (
     <Suspense fallback={<RouteLoading />}>
-      <div key={pathname} className="route-page-enter">
+      <div key={pageKey} className="route-page-enter">
         {children}
       </div>
     </Suspense>
