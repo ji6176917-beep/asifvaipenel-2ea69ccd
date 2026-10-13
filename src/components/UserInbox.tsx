@@ -35,7 +35,7 @@ async function showSystemNotification(title: string, body: string) {
   try { new Notification(title, opts); } catch { /* unsupported */ }
 }
 
-type Note = { id: string; title: string; body: string | null; created_at: string; read_at: string | null; kind: string; details?: NotificationDetails | null };
+type Note = { id: string; title: string; body: string | null; created_at: string; read_at: string | null; kind: string; details?: NotificationDetails | null | undefined };
 
 function NotificationCard({ n }: { n: Note }) {
   const tr = useTr();
