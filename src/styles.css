@@ -634,7 +634,7 @@
 .notification-header-icon { position: relative; display: grid; place-items: center; width: 46px; height: 46px; flex-shrink: 0; border-radius: 14px; background: var(--notification-active-gradient); color: var(--notification-white); box-shadow: var(--notification-active-shadow); }
 .notification-header-icon > svg { width: 25px; height: 25px; fill: currentColor; }
 .notification-header-icon > span { position: absolute; right: -2px; top: -2px; width: 17px; height: 17px; border-radius: 50%; background: var(--destructive); border: 3px solid var(--notification-surface); }
-.notification-panel-header h2 { font-family: var(--font-sans); font-size: 21px; line-height: 1.2; font-weight: 800; letter-spacing: 0; }
+.notification-panel-header h2 { color: var(--notification-ink); font-family: var(--font-sans); font-size: 21px; line-height: 1.2; font-weight: 800; letter-spacing: 0; }
 .notification-panel-header p { color: var(--notification-muted); font-size: 11px; margin-top: 3px; }
 .notification-close { margin-left: auto; flex-shrink: 0; background: var(--notification-blue-light); border-radius: 50%; color: var(--notification-muted); }
 .notification-search { display: flex; align-items: center; flex-shrink: 0; height: 42px; border: 1px solid var(--notification-border); border-radius: 14px; padding: 0 12px; gap: 12px; color: var(--notification-muted); }
@@ -699,8 +699,8 @@
 .notification-details dd { overflow-wrap: anywhere; white-space: pre-wrap; }
 .notification-view-all { height: 40px; min-height: 40px; flex-shrink: 0; color: var(--notification-blue); background: var(--notification-blue-light); border-radius: 18px; font-size: 12px; font-weight: 700; }
 
-.notification-meta { width: calc(100% + 108px); }
-.notification-meta > .notification-reference { flex: 1; min-width: 95px; }
+.notification-meta { width: calc(100% + 92px); }
+.notification-meta > .notification-reference { flex: 0 1 auto; min-width: 75px; max-width: 135px; }
 .notification-meta > .notification-chip { max-width: 115px; }
 .notification-meta .notification-reference { display: flex; flex-direction: column-reverse; }
 .notification-meta .notification-reference > span { text-transform: none; font-size: 9px; margin-top: 3px; margin-bottom: 0; }
@@ -713,8 +713,8 @@
   .notification-time { padding-left: 6px; gap: 3px; font-size: 9px; }
   .notification-time small { font-size: 8px; }
   .notification-time > svg { width: 12px; height: 12px; }
-  .notification-meta { width: calc(100% + 95px); }
-  .notification-meta > .notification-chip { max-width: 95px; }
+  .notification-meta { width: calc(100% + 76px); }
+  .notification-meta > .notification-chip { max-width: 110px; }
   .notification-period { padding: 0 5px; gap: 6px; }
   .notification-expand { width: 14px; }
 }
