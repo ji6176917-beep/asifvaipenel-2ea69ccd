@@ -605,6 +605,92 @@
   .route-page-enter { animation: none; }
 }
 
+/* Add Funds reference: isolated payment-page palette and layout. */
+:root {
+  --funds-ink: oklch(0.29 0.065 255);
+  --funds-muted: oklch(0.52 0.035 235);
+  --funds-white: oklch(1 0 0);
+  --funds-green: oklch(0.56 0.16 158);
+  --funds-bright: oklch(0.79 0.21 153);
+  --funds-blue: oklch(0.69 0.15 235);
+  --funds-pink: oklch(0.64 0.22 350);
+  --funds-crypto-dark: oklch(0.16 0.015 255);
+  --funds-crypto-gold: oklch(0.82 0.17 85);
+  --funds-mint-surface: oklch(0.975 0.025 160);
+  --funds-blue-surface: oklch(0.96 0.026 230);
+  --funds-pink-surface: oklch(0.965 0.026 350);
+  --funds-shadow: 0 4px 14px oklch(0.4 0.07 175 / .08);
+}
+.funds-reference { width: 100%; max-width: 1240px; margin: 0 auto; color: var(--funds-ink); letter-spacing: 0; }
+.funds-hero { position: relative; isolation: isolate; display: flex; align-items: center; gap: 24px; min-height: 132px; overflow: hidden; border-radius: 8px; color: var(--funds-white); padding: 20px 24px 20px 23%; }
+.funds-hero-image { position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; object-fit: cover; }
+.funds-hero-copy { flex: 1; min-width: 0; }
+.funds-hero h1 { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; font-family: var(--font-sans); font-size: 34px; font-weight: 850; letter-spacing: 0; line-height: 1.2; }
+.funds-hero h1 > svg { width: 33px; height: 33px; color: var(--funds-bright); margin-right: 3px; }
+.funds-hero h1 > span { color: var(--funds-bright); }
+.funds-hero p { font-size: 14px; line-height: 1.5; margin-top: 7px; max-width: 480px; }
+.funds-security { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border: 1px solid var(--funds-bright); background: color-mix(in oklch, var(--primary) 65%, transparent); border-radius: 40px; flex-shrink: 0; }
+.funds-security > svg { width: 34px; height: 34px; }
+.funds-security strong { display: block; font-size: 13px; }
+.funds-security span { display: block; font-size: 10px; margin-top: 4px; }
+.funds-section-heading { display: flex; align-items: center; gap: 16px; margin: 22px 0 20px; }
+.funds-section-heading > span { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; background: var(--funds-green); color: var(--funds-white); flex-shrink: 0; }
+.funds-section-heading svg { width: 26px; height: 26px; }
+.funds-section-heading h2 { font-size: 22px; font-weight: 800; font-family: var(--font-sans); letter-spacing: 0; }
+.funds-section-heading p { font-size: 13px; color: var(--funds-muted); margin-top: 2px; }
+.funds-method-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; }
+.funds-method { position: relative; display: flex; justify-content: flex-start; align-items: center; gap: 16px; width: 100%; height: 140px; min-width: 0; padding: 20px; border: 1px solid var(--border); border-radius: 8px; text-align: left; white-space: normal; color: var(--funds-ink); box-shadow: var(--funds-shadow); overflow: hidden; transition: transform .18s ease, box-shadow .18s ease; background: linear-gradient(130deg,var(--funds-white) 25%,var(--funds-mint-surface)); }
+.funds-method::after { content: ''; position: absolute; width: 120px; height: 220px; right: -55px; bottom: -115px; transform: rotate(40deg); background: color-mix(in oklch,var(--funds-green) 5%,transparent); pointer-events: none; }
+.funds-method--usdt { background: linear-gradient(130deg,var(--funds-white) 25%,var(--funds-blue-surface)); }
+.funds-method--usdt::after { background: color-mix(in oklch,var(--funds-blue) 7%,transparent); }
+.funds-method--p2p { background: linear-gradient(130deg,var(--funds-white) 25%,var(--funds-pink-surface)); display: grid; grid-template-columns: minmax(0,1fr) 34px; grid-template-rows: 24px 1fr; gap: 8px; }
+.funds-method--p2p::after { background: color-mix(in oklch,var(--funds-pink) 6%,transparent); }
+.funds-method:hover { transform: translateY(-2px); box-shadow: var(--shadow-card); }
+.funds-method[aria-pressed=true] { border-color: var(--funds-green); outline: 1px solid var(--funds-green); }
+.funds-crypto-logo { display: grid; place-items: center; width: 66px; height: 66px; border-radius: 50%; flex-shrink: 0; background: var(--funds-green); color: var(--funds-white); }
+.funds-crypto-logo--binance { background: var(--funds-crypto-dark); color: var(--funds-crypto-gold); }
+.funds-crypto-logo > svg { width: 42px; height: 42px; }
+.funds-method-copy { min-width: 0; flex: 1; }
+.funds-method-copy strong, .funds-p2p-title { display: block; font-size: 20px; font-weight: 850; line-height: 1.3; }
+.funds-method-copy > span { display: block; font-size: 12px; color: var(--funds-muted); margin-top: 4px; }
+.funds-method-arrow { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--funds-green); color: var(--funds-white); flex-shrink: 0; }
+.funds-method-arrow > svg { width: 21px; height: 21px; }
+.funds-method--usdt .funds-method-arrow { background: var(--funds-blue); }
+.funds-method--p2p .funds-method-arrow { background: var(--funds-pink); grid-column: 2; grid-row: 1 / 3; }
+.funds-local-logos { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.funds-local-logos > div { flex: 1; min-width: 0; display: grid; place-items: center; }
+.funds-local-logos > div + div { border-left: 1px solid var(--border); padding-left: 10px; }
+.funds-local-logo { width: 100%; max-width: 70px; height: 58px; object-fit: contain; }
+.funds-social-banner { display: block; width: 100%; height: auto; aspect-ratio: 7.2; object-fit: cover; object-position: center 45%; margin-top: 18px; border-radius: 8px; }
+.funds-form-section { max-width: 620px; margin: 24px auto 0; padding: 24px 0; border-top: 1px solid var(--border); }
+.funds-form-section input, .funds-form-section form > div, .funds-form-section form > label, .funds-form-section form > p { border-radius: 8px; }
+@media (max-width: 1100px) {
+  .funds-security { display: none; }
+  .funds-method { padding: 16px; gap: 12px; height: 126px; }
+  .funds-crypto-logo { width: 54px; height: 54px; }
+  .funds-crypto-logo > svg { width: 34px; height: 34px; }
+  .funds-method-copy strong { font-size: 18px; }
+  .funds-method-arrow { width: 30px; height: 30px; }
+}
+@media (max-width: 760px) {
+  .funds-hero { min-height: 130px; padding: 18px 18px 18px 27%; }
+  .funds-hero h1 { font-size: 25px; gap: 6px; }
+  .funds-hero h1 > svg { display: none; }
+  .funds-hero p { font-size: 11px; }
+  .funds-section-heading { gap: 10px; margin: 18px 0 14px; }
+  .funds-section-heading h2 { font-size: 18px; }
+  .funds-section-heading p { font-size: 11px; }
+  .funds-section-heading > span { width: 40px; height: 40px; }
+  .funds-method-grid { grid-template-columns: 1fr; gap: 10px; }
+  .funds-method { height: 108px; padding: 16px 20px; }
+  .funds-method-copy strong { font-size: 20px; }
+  .funds-method--p2p { height: 120px; }
+  .funds-local-logos { max-width: 245px; }
+  .funds-social-banner { aspect-ratio: 2.9; object-position: 44% center; }
+  .funds-form-section { padding: 18px 0; }
+}
+@media (prefers-reduced-motion: reduce) { .funds-method { transition: none; } .funds-method:hover { transform: none; } }
+
 /* Reference notification center: scoped tokens preserve the site theme. */
 :root {
   --notification-surface: oklch(0.975 0.014 240);
