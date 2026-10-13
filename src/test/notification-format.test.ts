@@ -1,7 +1,17 @@
 import { describe, it, expect } from "vitest";
-import { parseNotification, matchesNotification, notificationInPeriod } from "@/lib/notification-format";
+import { parseNotification, matchesNotification, notificationInPeriod, notificationDestination } from "@/lib/notification-format";
 
 describe("parseNotification", () => {
+  it("opens the matching funding history and reference", () => {
+    expect(notificationDestination("Add Fund #ADD-194871 approved")).toEqual({ to: "/add-funds/history", search: { q: "ADD-194871" } });
+  });
+  it("opens the matching order history and reference", () => {
+    expect(notificationDestination("Order #4406212323 completed")).toEqual({ to: "/orders", search: { q: "4406212323" } });
+  });
+  it("opens Balance for balance changes without inventing destinations for generic notices", () => {
+    expect(notificationDestination("Balance added")).toEqual({ to: "/balance", search: {} });
+    expect(notificationDestination("Site announcement")).toBeNull();
+  });
   it.each([3, 7, 30])("includes only notifications within the %i-day filter", (days) => {
     const now = Date.parse("2026-10-13T11:08:00Z");
     expect(notificationInPeriod(new Date(now - days * 86400000).toISOString(), days, now)).toBe(true);

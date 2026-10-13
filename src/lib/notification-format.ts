@@ -48,6 +48,15 @@ export type NotificationDetails = {
   quantity?: number; charge?: number; link?: string;
 };
 
+export function notificationDestination(title: string, body?: string | null) {
+  const parsed = parseNotification(title, body);
+  if (parsed.type === "deposit") return { to: "/add-funds/history" as const, search: { q: parsed.ref ?? "" } };
+  if (parsed.type === "order") return { to: "/orders" as const, search: { q: parsed.ref ?? "" } };
+  if (parsed.type === "balance") return { to: "/balance" as const, search: {} };
+  if (parsed.type === "security") return { to: "/profile" as const, search: {} };
+  return null;
+}
+
 export function matchesNotification(query: string, title: string, body: string | null, details?: NotificationDetails | null) {
   const words = query.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
   const text = [title, body, details?.service_name, details?.platform_name, details?.method_name, details?.txn_id].filter(Boolean).join(" ").toLocaleLowerCase();

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { ArrowRight, Banknote, Bell, CheckCircle2, ChevronRight, Clock, Copy, Link2, Search, StickyNote, Users, Wallet, X, CircleAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
@@ -6,7 +7,7 @@ import { Empty, ErrorState, Spinner } from "@/components/ui-kit";
 import { MethodLogo, PlatformIcon } from "@/lib/brand";
 import { useTr } from "@/lib/i18n";
 import { copy, money } from "@/lib/format";
-import { matchesNotification, notificationInPeriod, parseNotification, type NotificationDetails } from "@/lib/notification-format";
+import { matchesNotification, notificationInPeriod, notificationDestination, parseNotification, type NotificationDetails } from "@/lib/notification-format";
 import apexLogo from "@/assets/apex-logo.png.asset.json";
 import bkash from "@/assets/payments/bkash.png.asset.json";
 import nagad from "@/assets/payments/nagad.png.asset.json";
@@ -21,10 +22,11 @@ function ReferenceChip({ label, value }: { label: string; value: string }) {
   return <div className="notification-reference"><span>{label}</span><Button variant="ghost" size="sm" className="notification-chip" title={tr("Copy")} aria-label={`${tr("Copy")} ${value}`} onClick={() => void copy(value)}><Copy />{value}</Button></div>;
 }
 
-function NotificationItem({ note }: { note: InboxNote }) {
+function NotificationItem({ note, onNavigate }: { note: InboxNote; onNavigate: () => void }) {
   const tr = useTr();
   const [expanded, setExpanded] = useState(false);
   const p = parseNotification(note.title, note.body);
+  const destination = notificationDestination(note.title, note.body);
   const d = note.details;
   const isOrder = p.type === "order";
   const isDeposit = p.type === "deposit";
@@ -37,6 +39,8 @@ function NotificationItem({ note }: { note: InboxNote }) {
   const methodLogo = Object.entries(paymentLogos).find(([key]) => methodKey.includes(key))?.[1];
   const methodKind = methodKey.includes("usdt") || methodKey.includes("tether") ? "usdt" : methodKey.includes("binance") ? "binance" : "manual";
   return <article className={`notification-item notification-item--${isDeposit ? "deposit" : isOrder ? "order" : "website"}`}>
+    {destination && <Link {...destination} className="notification-card-link" aria-label={`${tr("Open")}: ${note.title}`} onClick={onNavigate} />}
+    {!destination && <Button variant="ghost" className="notification-card-link" aria-label={`${tr("Open")}: ${note.title}`} onClick={() => setExpanded(!expanded)} />}
     <div className="notification-identity">
       <div className={`notification-logo ${isDeposit ? "notification-logo--wallet" : ""}`}>
         {isDeposit ? <Wallet aria-hidden /> : isOrder && d?.platform_slug ? <PlatformIcon slug={d.platform_slug} name={d.platform_name} className="notification-platform" /> : <img src={apexLogo.url} alt="Apex SMM World" />}
@@ -95,7 +99,7 @@ export function NotificationPanel({ open, onOpenChange, notes, pending, error, r
         {periods.map(period => <Button key={period} variant="ghost" aria-pressed={days === period} className="notification-period" onClick={() => { setDays(period); setAllVisible(true); }}>{period === 0 ? tr("All") : `${period}D`}<span>{searched.filter(n => notificationInPeriod(n.created_at, period, now)).length}</span></Button>)}
       </div>
       <div className="notification-list">
-        {pending ? <div className="flex justify-center py-12"><Spinner /></div> : error ? <><ErrorState /><Button variant="outline" onClick={retry}>{tr("Retry")}</Button></> : filtered.length === 0 ? <Empty text={tr(search || days ? "No results found" : "No notifications yet")} /> : shown.map(note => <NotificationItem key={note.id} note={note} />)}
+        {pending ? <div className="flex justify-center py-12"><Spinner /></div> : error ? <><ErrorState /><Button variant="outline" onClick={retry}>{tr("Retry")}</Button></> : filtered.length === 0 ? <Empty text={tr(search || days ? "No results found" : "No notifications yet")} /> : shown.map(note => <NotificationItem key={note.id} note={note} onNavigate={() => onOpenChange(false)} />)}
       </div>
       <Button variant="ghost" className="notification-view-all" onClick={() => { setDays(0); setSearch(""); setAllVisible(!allVisible); }}>{tr(allVisible ? "Show recent notifications" : "View All Notifications")}<ArrowRight /></Button>
     </SheetContent>

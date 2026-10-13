@@ -10,7 +10,7 @@
 <!-- LOVABLE:END -->
 
 ## Project rules
-- Submission notifications use order/deposit INSERT triggers; inbox details use owner-scoped snapshots and retain event status. NotificationPanel uses the shared right-side Sheet with notification-scoped CSS tokens and MethodLogo for payment identity. Why: preserve compact drawer presentation and exactly-once alerts without ledger changes.
+- Submission notifications use INSERT triggers and owner-scoped snapshots. NotificationPanel uses a right Sheet and MethodLogo; central event destinations open validated reference searches in histories using HistoryCard. Why: consistent compact presentation, deep links and exactly-once alerts without ledger changes.
 - Website order/deposit submissions use authenticated customer-activity server functions around the existing ledger RPCs; the reseller API calls the same server-only admin alert helper after creation. Email recipient is fixed in registered templates and dedupe keys derive from event UUIDs; mail failures are audited without invalidating committed money operations. Why: cover every customer creation path without client-controlled recipients or duplicate ledger writes.
 - Add Funds resolves official local-payment logo CDN pointers through a page-scoped wrapper and an optional MethodLogo image override. Why: replace inaccurate payment marks without changing other pages or payment behavior.
 - Global navigation keys RouteTransition and AppShell styling to the resolved location, uses no global pending/Suspense fallback, intent preloading without delay, and parameter-keyed remounts. Why: keep committed content until an atomic replacement is ready, avoiding blank gaps and mismatched layouts while preserving auth guards and shared caches.
