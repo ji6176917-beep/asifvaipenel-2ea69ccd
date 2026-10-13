@@ -55,6 +55,7 @@
 - [x] Popular Services cards redesigned as brand-tinted cards showing only the platform logo and name; the "Followers • Likes • Views" / "Subscribers • Likes • Views" / "Members • Views • Shares" captions removed on all devices; hover adds lift, brand glow, sheen and a corner arrow. Desktop, mobile and dark mode browser-verified (Oct 12).
 
 ## Customer notifications (Oct 13)
+- [x] Reduce mobile right-side drawer to 64% screen width; preserve colors and compact cards, text and logos. Signed-in checks at 320/390/1280px confirm right alignment, no card overflow, 144–151px cards at 390px, payment logos, search and filters; 12 tests pass and preview build is clean.
 - [x] Restore right-side notification drawer, reduce card/text/logo sizes, align note/payment/transaction chips, and show local-payment plus crypto logos. Signed-in desktop/mobile checks confirm right-edge alignment, 199px desktop cards, visible payment logos, working search and filters; 12 tests pass.
 - [x] Match the new notification reference with actual brand/platform identities, real details, search, day filters and scrolling; authenticated desktop/mobile browser checks pass with real notifications, search and filters; 12 focused tests pass.
 - [x] Compact searchable notification cards with owner-scoped order/platform and funding details; search/read acknowledgement test and seven parser tests pass.
