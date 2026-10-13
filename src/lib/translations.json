@@ -126,7 +126,6 @@
     "Open menu": "মেনু খুলুন",
     "Open": "খুলুন",
     "Order History": "অর্ডার হিস্টরি",
-    "Order ID": "অর্ডার আইডি",
     "Order Now": "এখনই অর্ডার করুন",
     "Order Submitted": "অর্ডার জমা দেওয়া হয়েছে",
     "Order canceled and refunded": "অর্ডার বাতিল ও ফেরত দেওয়া হয়েছে",
@@ -228,7 +227,12 @@
     "unverified": "যাচাইবিহীন",
     "verified": "যাচাইকৃত",
     "or continue with": "অথবা চালিয়ে যান",
-    "Menu": "মেনু"
+    "Menu": "মেনু",
+    "Website": "ওয়েবসাইট",
+    "Details": "বিস্তারিত",
+    "View All Notifications": "সব নোটিফিকেশন দেখুন",
+    "Show recent notifications": "সাম্প্রতিক নোটিফিকেশন দেখুন",
+    "Unread": "অপঠিত"
   },
   "hi": {
     "API Policy": "API पॉलिसी",

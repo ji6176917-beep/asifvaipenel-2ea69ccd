@@ -10,7 +10,7 @@
 <!-- LOVABLE:END -->
 
 ## Project rules
-- Submission notifications use order/deposit INSERT triggers; inbox details use owner-scoped snapshots and retain event status. Why: exactly-once alerts across website/API without ledger changes.
+- Submission notifications use order/deposit INSERT triggers; inbox details use owner-scoped snapshots and retain event status. The reference inbox presentation lives in NotificationPanel with notification-scoped CSS tokens. Why: exactly-once alerts across website/API without ledger changes.
 - Website order/deposit submissions use authenticated customer-activity server functions around the existing ledger RPCs; the reseller API calls the same server-only admin alert helper after creation. Email recipient is fixed in registered templates and dedupe keys derive from event UUIDs; mail failures are audited without invalidating committed money operations. Why: cover every customer creation path without client-controlled recipients or duplicate ledger writes.
 - Add Funds resolves official local-payment logo CDN pointers through a page-scoped wrapper and an optional MethodLogo image override. Why: replace inaccurate payment marks without changing other pages or payment behavior.
 - Global navigation keys RouteTransition and AppShell styling to the resolved location, uses no global pending/Suspense fallback, intent preloading without delay, and parameter-keyed remounts. Why: keep committed content until an atomic replacement is ready, avoiding blank gaps and mismatched layouts while preserving auth guards and shared caches.
