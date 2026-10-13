@@ -702,6 +702,26 @@
 .notification-details > div { display: grid; grid-template-columns: minmax(70px,1fr) minmax(0,2fr); gap: 8px; padding: 4px 0; }
 .notification-details dt { color: var(--notification-muted); }
 .notification-details dd { overflow-wrap: anywhere; white-space: pre-wrap; }
+.notification-card-link { position: absolute; inset: 0; z-index: 1; border-radius: inherit; }
+.notification-card-link:focus-visible { outline: 2px solid var(--notification-blue); outline-offset: -2px; }
+.notification-item button { position: relative; z-index: 2; }
+.history-card { display: grid; grid-template-columns: 36px minmax(0,1fr); gap: 10px; padding: 12px; border: 1px solid var(--notification-border); border-radius: 8px; color: var(--notification-ink); }
+.history-identity { padding-top: 2px; }
+.history-platform-logo { width: 34px; height: 34px; }
+.history-main { min-width: 0; }
+.history-heading { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.history-heading h3 { font-size: 13px; font-weight: 750; margin-right: auto; }
+.history-heading > span { font-size: 10px; }
+.history-highlights { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 5px; }
+.history-reference { display: flex; align-items: center; gap: 5px; font-size: 10px; color: var(--notification-muted); }
+.history-body { margin-top: 7px; }
+.history-service { font-size: 12px; font-weight: 650; overflow-wrap: anywhere; }
+.history-chips { display: flex; align-items: center; flex-wrap: wrap; gap: 5px; margin-top: 5px; }
+.history-payment { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; }
+.history-payment-logo { width: 28px; height: 24px; object-fit: contain; }
+.history-note, .history-time { display: flex; align-items: start; gap: 4px; font-size: 10px; color: var(--notification-muted); margin-top: 6px; overflow-wrap: anywhere; }
+.history-note svg, .history-time svg { width: 12px; height: 12px; flex-shrink: 0; }
+.history-link { display: block; overflow-wrap: anywhere; font-size: 10px; color: var(--notification-blue); margin-top: 4px; }
 .notification-view-all { height: auto; min-height: 30px; padding: 6px; white-space: normal; flex-shrink: 0; color: var(--notification-blue); background: var(--notification-blue-light); border-radius: 8px; font-size: 10px; font-weight: 700; }
 
 .notification-meta { width: calc(100% + 71px); }

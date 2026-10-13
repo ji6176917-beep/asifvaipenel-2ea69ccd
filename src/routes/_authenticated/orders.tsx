@@ -1,13 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
-import { Search } from "lucide-react";
+import { Search, Users } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { PlatformIcon } from "@/lib/brand";
-import { fmtDate, friendlyError, money } from "@/lib/format";
-import { Card, Copyable, Empty, ErrorState, PageTitle, StatusBadge, inputCls } from "@/components/ui-kit";
+import { friendlyError, money } from "@/lib/format";
+import { Empty, ErrorState, PageTitle, inputCls } from "@/components/ui-kit";
+import { Button } from "@/components/ui/button";
+import { HistoryCard } from "@/components/HistoryCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTr } from "@/lib/i18n";
 
@@ -22,6 +24,7 @@ export const Route = createFileRoute("/_authenticated/orders")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
+  validateSearch: (search: Record<string, unknown>): { q?: string } => typeof search["q"] === "string" ? { q: search["q"] } : {},
   component: Orders,
 });
 
@@ -37,8 +40,10 @@ function Orders() {
   const { user, refreshProfile } = useAuth();
   const qc = useQueryClient();
   const [tab, setTab] = useState<string>("all");
-  const [q, setQ] = useState("");
-  const [term, setTerm] = useState("");
+  const reference = Route.useSearch().q ?? "";
+  const [q, setQ] = useState(reference);
+  const [term, setTerm] = useState(reference);
+  useEffect(() => { setQ(reference); setTerm(reference); setTab("all"); }, [reference]);
   useEffect(() => { const t = setTimeout(() => setTerm(q.trim()), 300); return () => clearTimeout(t); }, [q]);
 
   const query = useInfiniteQuery({
@@ -46,7 +51,8 @@ function Orders() {
     enabled: !!user,
     initialPageParam: 0,
     queryFn: async ({ pageParam }) => {
-      let r = supabase.from("orders").select("*").eq("user_id", user!.id).order("created_at", { ascending: false }).range(pageParam, pageParam + PAGE - 1);
+      if (!user) return [];
+      let r = supabase.from("orders").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).range(pageParam, pageParam + PAGE - 1);
       if (tab === "rejected") r = r.in("status", ["rejected", "canceled"]);
       else if (tab !== "all") r = r.eq("status", tab as "pending");
       if (term) {
@@ -82,9 +88,9 @@ function Orders() {
   return (
     <div className="space-y-4">
       <PageTitle>{tr("Order History")}</PageTitle>
-      <div className="relative"><Search className="absolute left-4 top-3.5 h-5 w-5 text-muted-foreground" /><input className={`${inputCls} pl-12`} placeholder={tr("Search by Order ID, service or link")} value={q} onChange={(e) => setQ(e.target.value)} /></div>
+      <div className="relative"><Search className="absolute left-4 top-3.5 h-5 w-5 text-muted-foreground" /><input className={`${inputCls} pl-12`} aria-label={tr("Search by Order ID, service or link")} placeholder={tr("Search by Order ID, service or link")} value={q} onChange={(e) => setQ(e.target.value)} /></div>
       <div className="flex gap-2 overflow-x-auto pb-1">
-        {TABS.map((t) => <button key={t.k} onClick={() => setTab(t.k)} className={`shrink-0 rounded-full border px-4 py-1.5 text-sm font-semibold ${tab === t.k ? "border-primary bg-primary text-primary-foreground" : "border-border"}`}>{tr(t.l)}</button>)}
+        {TABS.map((t) => <Button variant="ghost" key={t.k} onClick={() => setTab(t.k)} className={`shrink-0 rounded-full border px-4 py-1.5 text-sm font-semibold ${tab === t.k ? "border-primary bg-primary text-primary-foreground" : "border-border"}`}>{tr(t.l)}</Button>)}
       </div>
       {query.isError && <ErrorState />}
       {query.isLoading && <Skeleton className="h-40 rounded-3xl" />}
@@ -93,31 +99,20 @@ function Orders() {
         {list.map((o) => {
           const step = FLOW.indexOf(o.status);
           return (
-            <Card key={o.id} className="!p-4">
-              <div className="flex items-start gap-3">
-                <PlatformIcon slug={o.platform_slug} className="mt-1 h-9 w-9 shrink-0" />
-                <div className="min-w-0 flex-1 space-y-1 text-sm">
-                  <div className="flex items-center justify-between gap-2"><Copyable value={o.order_code} className="font-bold" /><StatusBadge status={o.status} /></div>
-                  <div className="text-xs text-muted-foreground">{o.category_name}</div>
-                  <div className="label-premium">{o.service_name}</div>
-                  <div className="flex flex-wrap gap-x-4 text-xs"><span>{tr("Qty")}: <b>{o.quantity}</b></span><span>{tr("Charge")}: <b>{money(o.charge)}</b></span><span>{fmtDate(o.created_at)}</span></div>
-                  <a href={o.link} target="_blank" rel="noreferrer" className="block truncate text-xs text-primary">{o.link}</a>
-                  {o.delivered_qty != null && <div className="text-xs">{tr("Delivered")}: <b>{o.delivered_qty}</b></div>}
-                  {Number(o.refunded) > 0 && <div className="text-xs text-success">{tr("Refunded")}: {money(o.refunded)}</div>}
-                  {o.admin_note && <div className="text-xs text-muted-foreground">{tr("Note")}: {o.admin_note}</div>}
-                  {step >= 0 && (
-                    <div className="flex items-center gap-1 pt-2">
-                      {FLOW.map((f, i) => <div key={f} className={`h-1.5 flex-1 rounded-full ${i <= step ? "bg-primary" : "bg-muted"}`} title={f} />)}
-                    </div>
-                  )}
-                  {o.status === "pending" && <button onClick={() => cancel(o.id)} className="pt-1 text-xs font-semibold text-destructive">{tr("Cancel order")}</button>}
-                </div>
+            <HistoryCard key={o.id} type="order" logo={<PlatformIcon slug={o.platform_slug} className="history-platform-logo" />} title={o.platform_name || tr("Order")} reference={o.order_code} status={o.status} amount={money(o.charge)} createdAt={o.created_at} note={o.admin_note}>
+              <div className="history-service">{o.service_name}</div>
+              <div className="history-chips"><span className="notification-chip"><Users />{tr("Quantity")}: {o.quantity}</span><span className="notification-chip">{o.category_name}</span>
+                {o.delivered_qty != null && <span className="notification-chip">{tr("Delivered")}: {o.delivered_qty}</span>}
+                {Number(o.refunded) > 0 && <span className="notification-chip">{tr("Refunded")}: {money(o.refunded)}</span>}
               </div>
-            </Card>
+              <a href={o.link} target="_blank" rel="noreferrer" className="history-link">{o.link}</a>
+              {step >= 0 && <div className="flex items-center gap-1 pt-1">{FLOW.map((f, i) => <div key={f} className={`h-1 flex-1 rounded-full ${i <= step ? "bg-primary" : "bg-muted"}`} title={tr(f)} />)}</div>}
+              {o.status === "pending" && <Button variant="ghost" size="sm" onClick={() => void cancel(o.id)} className="h-7 px-0 text-xs text-destructive">{tr("Cancel order")}</Button>}
+            </HistoryCard>
           );
         })}
       </div>
-      {query.hasNextPage && <button onClick={() => query.fetchNextPage()} disabled={query.isFetchingNextPage} className="btn-ghost-glow w-full">{tr("Load more")}</button>}
+      {query.hasNextPage && <Button variant="ghost" onClick={() => query.fetchNextPage()} disabled={query.isFetchingNextPage} className="btn-ghost-glow w-full">{tr("Load more")}</Button>}
       <div className="grid grid-cols-2 gap-3"><Link to="/add-funds" className="btn-glow">{tr("Add Funds")}</Link><Link to="/order" className="btn-ghost-glow">{tr("Buy Service")}</Link></div>
     </div>
   );

@@ -1,4 +1,6 @@
 # Roadmap
+- [ ] Open the relevant history from notification cards and match order/funding history cards to the compact notification design.
+- [ ] Review public and signed-in features plus admin settings; fix confirmed issues and report untestable privileged/destructive operations.
 - [x] Add branded order and deposit emails to the requested admin address, covering website and reseller orders. Authenticated website order and deposit submissions/history verified; both real email sends recorded, logo/template previews pass, three recipient/idempotency tests pass. Temporary zero-charge order and unpaid deposit cleaned; publication still required.
 - [x] Prevent blank navigation gaps: retain committed content until the destination is ready, then replace with fresh local state and no global loading screen. Two regression tests pass; first-visit browser navigation held for 1.5s stayed nonblank and replaced cleanly; search reset and no runtime errors verified.
 - [x] Remove global navigation spinner/loading UI and artificial waiting; outgoing page unmounts immediately, intent preload has zero delay, incoming fade is 0.1s. Two regression tests pass; browser confirms no global spinner, no outgoing hero during held navigation, and search state resets.

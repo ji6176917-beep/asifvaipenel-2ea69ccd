@@ -5,9 +5,11 @@ import { Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { useTr } from "@/lib/i18n";
-import { MethodLogo } from "@/lib/brand";
-import { fmtDate, money } from "@/lib/format";
-import { Card, Copyable, Empty, ErrorState, PageTitle, StatusBadge, inputCls } from "@/components/ui-kit";
+import { Wallet } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { HistoryCard, HistoryPaymentLogo } from "@/components/HistoryCard";
+import { money } from "@/lib/format";
+import { Card, Copyable, Empty, ErrorState, PageTitle, inputCls } from "@/components/ui-kit";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export const Route = createFileRoute("/_authenticated/add-funds/history")({
@@ -21,6 +23,7 @@ export const Route = createFileRoute("/_authenticated/add-funds/history")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
+  validateSearch: (search: Record<string, unknown>): { q?: string } => typeof search["q"] === "string" ? { q: search["q"] } : {},
   component: History,
 });
 
@@ -31,12 +34,15 @@ function History() {
   const tr = useTr();
   const qc = useQueryClient();
   const [tab, setTab] = useState<(typeof TABS)[number]>("all");
-  const [q, setQ] = useState("");
+  const reference = Route.useSearch().q ?? "";
+  const [q, setQ] = useState(reference);
+  useEffect(() => { setQ(reference); setTab("all"); }, [reference]);
   const { data, isLoading, isError } = useQuery({
     queryKey: ["deposits", user?.id],
     enabled: !!user,
     queryFn: async () => {
-      const { data, error } = await supabase.from("deposits").select("*, payment_methods(logo_url)").eq("user_id", user!.id).order("created_at", { ascending: false });
+      if (!user) return [];
+      const { data, error } = await supabase.from("deposits").select("*, payment_methods(logo_url)").eq("user_id", user.id).order("created_at", { ascending: false });
       if (error) throw error;
       return data;
     },
@@ -66,27 +72,22 @@ function History() {
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
         {stats.map((s) => <Card key={s.l} className="!p-4 text-center"><div className="text-xs text-muted-foreground">{s.l}</div><div className="font-display text-xl font-bold">{s.v}</div></Card>)}
       </div>
-      <div className="relative"><Search className="absolute left-4 top-3.5 h-5 w-5 text-muted-foreground" /><input className={`${inputCls} pl-12`} placeholder={tr("Search by Add Fund ID or transaction ID")} value={q} onChange={(e) => setQ(e.target.value)} /></div>
+      <div className="relative"><Search className="absolute left-4 top-3.5 h-5 w-5 text-muted-foreground" /><input className={`${inputCls} pl-12`} aria-label={tr("Search by Add Fund ID or transaction ID")} placeholder={tr("Search by Add Fund ID or transaction ID")} value={q} onChange={(e) => setQ(e.target.value)} /></div>
       <div className="flex gap-2 overflow-x-auto pb-1">
-        {TABS.map((t) => <button key={t} onClick={() => setTab(t)} className={`shrink-0 rounded-full border px-4 py-1.5 text-sm font-semibold ${tab === t ? "border-primary bg-primary text-primary-foreground" : "border-border"}`}>{tr(t === "all" ? "All" : t.charAt(0).toUpperCase() + t.slice(1))}</button>)}
+        {TABS.map((t) => <Button variant="ghost" key={t} onClick={() => setTab(t)} className={`shrink-0 rounded-full border px-4 py-1.5 text-sm font-semibold ${tab === t ? "border-primary bg-primary text-primary-foreground" : "border-border"}`}>{tr(t === "all" ? "All" : t.charAt(0).toUpperCase() + t.slice(1))}</Button>)}
       </div>
       {isError && <ErrorState />}
       {isLoading && <Skeleton className="h-32 rounded-3xl" />}
       {data && list.length === 0 && <Empty text={tr("No Add Funds requests yet.")} />}
       <div className="grid gap-3">
         {list.map((d) => (
-          <Card key={d.id} className="!p-4">
-            <div className="flex items-start gap-3">
-              <MethodLogo name={d.method_name} kind={d.method_kind} logo={(d as { payment_methods?: { logo_url: string | null } | null }).payment_methods?.logo_url} className="h-10 w-10" />
-              <div className="min-w-0 flex-1 space-y-1 text-sm">
-                <div className="flex items-center justify-between gap-2"><Copyable value={d.code} className="font-bold" /><StatusBadge status={d.status} /></div>
-                <div className="font-display text-lg font-bold">{money(d.amount)} {d.bdt_amount && <span className="text-sm text-muted-foreground">(৳{Number(d.bdt_amount).toFixed(2)})</span>}</div>
-                <div className="text-xs text-muted-foreground">{d.method_name} • {fmtDate(d.created_at)}</div>
-                <div className="text-xs">{tr("Txn")}: <Copyable value={d.txn_id} /></div>
-                {d.admin_note && <div className="text-xs text-muted-foreground">{tr("Note")}: {d.admin_note}</div>}
-              </div>
+          <HistoryCard key={d.id} type="deposit" logo={<div className="notification-logo notification-logo--wallet"><Wallet /></div>} title={tr("Add Fund")} reference={d.code} status={d.status} amount={money(d.amount)} createdAt={d.created_at} note={d.admin_note}>
+            <div className="history-chips">
+              <span className="history-payment"><HistoryPaymentLogo name={d.method_name} kind={d.method_kind} logo={d.payment_methods?.logo_url} />{d.method_name}</span>
+              <span className="notification-chip">{tr("Transaction ID")}: <Copyable value={d.txn_id} /></span>
+              {d.bdt_amount != null && <span className="notification-chip">৳{Number(d.bdt_amount).toFixed(2)}</span>}
             </div>
-          </Card>
+          </HistoryCard>
         ))}
       </div>
       <div className="grid grid-cols-2 gap-3"><Link to="/add-funds" className="btn-glow">{tr("Add Funds")}</Link><Link to="/order" className="btn-ghost-glow">{tr("Buy Service")}</Link></div>
