@@ -242,10 +242,15 @@ function Shell({ children }: { children: ReactNode }) {
             <span className="home-brand-copy min-w-0"><span className="home-brand-name block truncate font-display text-base font-bold sm:text-lg">{headerName}</span>{path === "/" && <span className="home-brand-tagline">{tr("Social Media Growth Partner")}</span>}</span>
           </Link>
           <div className="home-header-tools ml-auto flex shrink-0 items-center gap-1.5">
-            <Link to={user ? "/balance" : "/sign-in"} className="home-wallet btn-ghost-glow !px-3 !py-1.5 text-sm">
-              <Wallet className="h-4 w-4 text-primary" /> {money(profile?.balance ?? 0)}
-            </Link>
-            <UserInbox />
+            {user ? (<>
+              <Link to="/balance" className="home-wallet btn-ghost-glow !px-3 !py-1.5 text-sm">
+                <Wallet className="h-4 w-4 text-primary" /> {money(profile?.balance ?? 0)}
+              </Link>
+              <UserInbox />
+            </>) : (<>
+              <Link to="/sign-in" className="inline-flex h-8 items-center rounded-full border border-primary/40 px-3 text-xs font-semibold text-primary transition-colors hover:bg-primary/10 sm:h-9 sm:px-4 sm:text-sm">{tr("Sign In")}</Link>
+              <Link to="/sign-up" className="inline-flex h-8 items-center rounded-full bg-primary px-3 text-xs font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 sm:h-9 sm:px-4 sm:text-sm">{tr("Sign Up")}</Link>
+            </>)}
             <Button variant="ghost" size="icon" aria-label={t("header.open_menu")} aria-expanded={menuOpen} onClick={() => setMenuOpen(true)} className={`${path === "/" ? "home-menu-button" : "menu-btn"} ${menuOpen ? "is-open" : ""}`}>
               <span className="menu-dots" aria-hidden><i /><i /><i /></span>{path === "/" && <span className="home-menu-label">{tr("Menu")}</span>}
             </Button>
