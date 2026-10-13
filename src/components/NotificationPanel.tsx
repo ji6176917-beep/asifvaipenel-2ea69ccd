@@ -12,7 +12,7 @@ import bkash from "@/assets/payments/bkash.png.asset.json";
 import nagad from "@/assets/payments/nagad.png.asset.json";
 import rocket from "@/assets/payments/rocket.png.asset.json";
 
-export type InboxNote = { id: string; title: string; body: string | null; created_at: string; read_at: string | null; kind: string; details?: NotificationDetails | null };
+export type InboxNote = { id: string; title: string; body: string | null; created_at: string; read_at: string | null; kind: string; details?: NotificationDetails | null | undefined };
 const paymentLogos: Record<string, string> = { bkash: bkash.url, nagad: nagad.url, rocket: rocket.url };
 const periods = [0, 3, 7, 30];
 
