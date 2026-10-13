@@ -704,7 +704,8 @@
 .notification-details dd { overflow-wrap: anywhere; white-space: pre-wrap; }
 .notification-card-link { position: absolute; inset: 0; z-index: 1; border-radius: inherit; }
 .notification-card-link:focus-visible { outline: 2px solid var(--notification-blue); outline-offset: -2px; }
-.notification-item button { position: relative; z-index: 2; }
+.notification-item button:not(.notification-card-link) { position: relative; z-index: 2; }
+.notification-card-link:hover { background: transparent; }
 .history-card { display: grid; grid-template-columns: 36px minmax(0,1fr); gap: 10px; padding: 12px; border: 1px solid var(--notification-border); border-radius: 8px; color: var(--notification-ink); }
 .history-identity { padding-top: 2px; }
 .history-platform-logo { width: 34px; height: 34px; }

@@ -40,6 +40,7 @@ function NotificationItem({ note, onNavigate }: { note: InboxNote; onNavigate: (
   const methodKind = methodKey.includes("usdt") || methodKey.includes("tether") ? "usdt" : methodKey.includes("binance") ? "binance" : "manual";
   return <article className={`notification-item notification-item--${isDeposit ? "deposit" : isOrder ? "order" : "website"}`}>
     {destination && <Link {...destination} className="notification-card-link" aria-label={`${tr("Open")}: ${note.title}`} onClick={onNavigate} />}
+    {!destination && <Button variant="ghost" className="notification-card-link" aria-label={`${tr("Open")}: ${note.title}`} onClick={() => setExpanded(!expanded)} />}
     <div className="notification-identity">
       <div className={`notification-logo ${isDeposit ? "notification-logo--wallet" : ""}`}>
         {isDeposit ? <Wallet aria-hidden /> : isOrder && d?.platform_slug ? <PlatformIcon slug={d.platform_slug} name={d.platform_name} className="notification-platform" /> : <img src={apexLogo.url} alt="Apex SMM World" />}
