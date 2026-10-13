@@ -614,6 +614,7 @@
   --notification-blue-light: oklch(0.94 0.03 250);
   --notification-border: oklch(0.9 0.03 235);
   --notification-mint: oklch(0.93 0.055 165);
+  --notification-mint-surface: oklch(0.975 0.025 175);
   --notification-green: oklch(0.57 0.16 160);
   --notification-purple: oklch(0.53 0.2 290);
   --notification-lavender: oklch(0.95 0.03 290);
@@ -645,8 +646,8 @@
 .notification-period[aria-pressed=true] { background: var(--notification-active-gradient); color: var(--notification-white); box-shadow: var(--notification-active-shadow); }
 .notification-period[aria-pressed=true] > span { background: var(--notification-white); color: var(--notification-blue); }
 .notification-list { min-height: 0; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; gap: 16px; scrollbar-width: thin; scrollbar-color: var(--notification-border) transparent; }
-.notification-item { position: relative; display: grid; grid-template-columns: 86px minmax(0,1fr) 124px 22px; align-items: start; gap: 16px; padding: 20px; border: 1px solid var(--notification-border); border-radius: 20px; background: var(--notification-blue-light); }
-.notification-item--deposit { background: linear-gradient(125deg, color-mix(in oklch, var(--notification-mint) 64%, var(--notification-white)), var(--notification-surface)); }
+.notification-item { position: relative; display: grid; grid-template-columns: 80px minmax(0,1fr) 108px 18px; align-items: start; gap: 12px; padding: 20px; border: 1px solid var(--notification-border); border-radius: 20px; background: var(--notification-blue-light); }
+.notification-item--deposit { background: linear-gradient(125deg, var(--notification-mint-surface), var(--notification-surface)); }
 .notification-item--order { background: linear-gradient(125deg, var(--notification-blue-light), var(--notification-surface)); }
 .notification-item--website { background: linear-gradient(125deg, var(--notification-lavender), var(--notification-blue-light)); }
 .notification-identity { display: flex; flex-direction: column; align-items: center; padding-top: 5px; }
@@ -680,7 +681,7 @@
 .notification-payment > span { display: flex; align-items: center; gap: 6px; }
 .notification-payment img { width: 26px; height: 24px; object-fit: contain; }
 .notification-payment small, .notification-reference > span { display: block; margin-top: 3px; font-size: 10px; color: var(--notification-muted); }
-.notification-references { display: flex; gap: 15px; margin-top: 14px; }
+.notification-references { display: flex; gap: 15px; margin-top: 10px; }
 .notification-reference { min-width: 0; }
 .notification-reference > span { text-transform: uppercase; margin-bottom: 3px; }
 .notification-time { display: flex; align-items: start; gap: 7px; padding-left: 15px; min-height: 64px; border-left: 1px solid var(--notification-border); color: var(--notification-muted); font-size: 13px; }
