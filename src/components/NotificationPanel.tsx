@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { ArrowRight, Banknote, Bell, CheckCircle2, ChevronRight, Clock, Copy, Link2, Search, StickyNote, Users, Wallet, X, CircleAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
+import { Sheet, SheetClose, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
 import { Empty, ErrorState, Spinner } from "@/components/ui-kit";
-import { PlatformIcon } from "@/lib/brand";
+import { MethodLogo, PlatformIcon } from "@/lib/brand";
 import { useTr } from "@/lib/i18n";
 import { copy, money } from "@/lib/format";
 import { matchesNotification, notificationInPeriod, parseNotification, type NotificationDetails } from "@/lib/notification-format";
@@ -32,7 +32,10 @@ function NotificationItem({ note }: { note: InboxNote }) {
   const title = isDeposit ? tr("Add Fund") : isOrder ? d?.platform_name || tr("Order") : "Apex SMM World";
   const status = p.status ? tr(p.status.charAt(0).toUpperCase() + p.status.slice(1)) : null;
   const date = new Date(note.created_at);
-  const methodLogo = d?.method_name ? paymentLogos[d.method_name.toLowerCase()] : undefined;
+  const methodName = d?.method_name?.trim() ?? "";
+  const methodKey = methodName.toLowerCase();
+  const methodLogo = Object.entries(paymentLogos).find(([key]) => methodKey.includes(key))?.[1];
+  const methodKind = methodKey.includes("usdt") || methodKey.includes("tether") ? "usdt" : methodKey.includes("binance") ? "binance" : "manual";
   return <article className={`notification-item notification-item--${isDeposit ? "deposit" : isOrder ? "order" : "website"}`}>
     <div className="notification-identity">
       <div className={`notification-logo ${isDeposit ? "notification-logo--wallet" : ""}`}>
@@ -53,7 +56,7 @@ function NotificationItem({ note }: { note: InboxNote }) {
       {p.refund && <span className="notification-chip notification-refund"><Wallet />{tr("Refund")}: {p.refund}</span>}
       {isDeposit && <div className="notification-meta">
         <span className="notification-chip"><StickyNote />{tr("Note")}: {p.note || tr("No note")}</span>
-        {d?.method_name && <div className="notification-payment"><span>{methodLogo && <img src={methodLogo} alt="" />}{d.method_name}</span><small>{tr("Payment Method")}</small></div>}
+        {methodName && <div className="notification-payment"><span><MethodLogo name={methodName} kind={methodKind} officialLogo={methodLogo} className="notification-payment-logo" /><span>{methodName}</span></span><small>{tr("Payment Method")}</small></div>}
         {d?.txn_id && <ReferenceChip label={tr("Transaction ID")} value={d.txn_id} />}
       </div>}
       {p.ref && <div className="notification-references"><ReferenceChip label={tr(isDeposit ? "Add Fund ID" : "Order ID")} value={p.ref} /></div>}
@@ -80,12 +83,12 @@ export function NotificationPanel({ open, onOpenChange, notes, pending, error, r
   const searched = notes.filter(n => matchesNotification(search, n.title, n.body, n.details));
   const filtered = searched.filter(n => notificationInPeriod(n.created_at, days, now));
   const shown = allVisible ? filtered : filtered.slice(0, 3);
-  return <Dialog open={open} onOpenChange={(value) => { onOpenChange(value); if (!value) { setSearch(""); setDays(0); setAllVisible(false); } }}>
-    <DialogContent className="notification-panel">
+  return <Sheet open={open} onOpenChange={(value) => { onOpenChange(value); if (!value) { setSearch(""); setDays(0); setAllVisible(false); } }}>
+    <SheetContent side="right" className="notification-panel">
       <header className="notification-panel-header">
         <span className="notification-header-icon"><Bell /><span /></span>
-        <div><DialogTitle>{tr("Notifications")}</DialogTitle><DialogDescription>apexsmmworld.com</DialogDescription></div>
-        <DialogClose asChild><Button variant="ghost" size="icon" className="notification-close" aria-label={tr("Close")}><X /></Button></DialogClose>
+        <div><SheetTitle>{tr("Notifications")}</SheetTitle><SheetDescription>apexsmmworld.com</SheetDescription></div>
+        <SheetClose asChild><Button variant="ghost" size="icon" className="notification-close" aria-label={tr("Close")}><X /></Button></SheetClose>
       </header>
       <div className="notification-search"><Search /><input aria-label={tr("Search notifications")} placeholder={`${tr("Search notifications")}...`} value={search} onChange={e => { setSearch(e.target.value); setAllVisible(true); }} />{search && <Button variant="ghost" size="icon" aria-label={tr("Clear search")} onClick={() => setSearch("")}><X /></Button>}</div>
       <div className="notification-periods" role="group" aria-label={tr("Time")}>
@@ -95,6 +98,6 @@ export function NotificationPanel({ open, onOpenChange, notes, pending, error, r
         {pending ? <div className="flex justify-center py-12"><Spinner /></div> : error ? <><ErrorState /><Button variant="outline" onClick={retry}>{tr("Retry")}</Button></> : filtered.length === 0 ? <Empty text={tr(search || days ? "No results found" : "No notifications yet")} /> : shown.map(note => <NotificationItem key={note.id} note={note} />)}
       </div>
       <Button variant="ghost" className="notification-view-all" onClick={() => { setDays(0); setSearch(""); setAllVisible(!allVisible); }}>{tr(allVisible ? "Show recent notifications" : "View All Notifications")}<ArrowRight /></Button>
-    </DialogContent>
-  </Dialog>;
+    </SheetContent>
+  </Sheet>;
 }
