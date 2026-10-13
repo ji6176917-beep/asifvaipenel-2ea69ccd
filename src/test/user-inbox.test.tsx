@@ -11,7 +11,7 @@ const f = vi.hoisted(() => ({
 vi.mock("@/lib/auth", () => ({ useAuth: () => ({ user: f.user }) }));
 vi.mock("@/lib/i18n", () => ({ useTr: () => (s: string) => s }));
 vi.mock("@/lib/storage-url", () => ({ useStorageUrl: () => null }));
-vi.mock("@/lib/brand", () => ({ PlatformIcon: () => <span /> }));
+vi.mock("@/lib/brand", () => ({ PlatformIcon: () => <span />, MethodLogo: () => <span /> }));
 vi.mock("@tanstack/react-router", () => ({ Link: ({ children }: { children: React.ReactNode }) => <a href="/orders">{children}</a> }));
 vi.mock("@/integrations/supabase/client", () => ({ supabase: {
   from: (table: string) => {
