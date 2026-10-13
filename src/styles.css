@@ -661,7 +661,7 @@
 .funds-local-logos > div { flex: 1; min-width: 0; display: grid; place-items: center; }
 .funds-local-logos > div + div { border-left: 1px solid var(--border); padding-left: 10px; }
 .funds-local-logo { width: 100%; max-width: 70px; height: 58px; object-fit: contain; }
-.funds-social-banner { display: block; width: 100%; height: auto; aspect-ratio: 7.2; object-fit: cover; object-position: center 45%; margin-top: 18px; border-radius: 8px; }
+.funds-social-banner { display: block; width: 100%; height: auto; aspect-ratio: auto; object-fit: cover; object-position: center 45%; margin-top: 18px; border-radius: 8px; }
 .funds-form-section { max-width: 620px; margin: 24px auto 0; padding: 24px 0; border-top: 1px solid var(--border); }
 .funds-form-section input, .funds-form-section form > div, .funds-form-section form > label, .funds-form-section form > p { border-radius: 8px; }
 @media (max-width: 1100px) {
