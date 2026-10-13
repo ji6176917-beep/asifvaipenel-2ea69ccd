@@ -3,7 +3,11 @@ import { useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { submitCustomerDeposit } from "@/lib/customer-activity.functions";
-import { ArrowLeft, Clock, ImagePlus } from "lucide-react";
+import { ArrowLeft, ArrowRight, Clock, ImagePlus, ShieldCheck, Wallet } from "lucide-react";
+import { SiBinance, SiTether } from "react-icons/si";
+import { Button } from "@/components/ui/button";
+import fundsHeader from "@/assets/funds-header.jpg";
+import fundsSocialBanner from "@/assets/funds-social-banner.jpg";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
@@ -11,7 +15,7 @@ import { settingsQuery } from "@/lib/queries";
 import { MethodLogo, TelegramIcon } from "@/lib/brand";
 import { SupportAdminButton } from "@/components/SupportAdmin";
 import { friendlyError, money, newIdemKey } from "@/lib/format";
-import { Card, Copyable, Empty, ErrorState, PageTitle, Spinner, inputCls, labelCls } from "@/components/ui-kit";
+import { Copyable, Empty, ErrorState, Spinner, inputCls, labelCls } from "@/components/ui-kit";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import type { Tables } from "@/integrations/supabase/types";
@@ -54,7 +58,9 @@ async function compress(file: File): Promise<Blob> {
   const scale = Math.min(1, 1600 / Math.max(img.width, img.height));
   const c = document.createElement("canvas");
   c.width = img.width * scale; c.height = img.height * scale;
-  c.getContext("2d")!.drawImage(img, 0, 0, c.width, c.height);
+  const context = c.getContext("2d");
+  if (!context) return file;
+  context.drawImage(img, 0, 0, c.width, c.height);
   return new Promise((res) => c.toBlob((b) => res(b ?? file), "image/webp", 0.82));
 }
 
@@ -90,8 +96,8 @@ function AddFunds() {
 
   const pickGroup = (g: "binance" | "usdt" | "p2p") => {
     setGroup(g);
-    const list = methods!.filter((x) => x.kind === g);
-    setM(list.length === 1 ? list[0]! : null);
+    const list = methods?.filter((x) => x.kind === g) ?? [];
+    setM(list.length === 1 ? list[0] ?? null : null);
   };
 
   const submit = async (e: React.FormEvent) => {
@@ -127,39 +133,42 @@ function AddFunds() {
   };
 
   return (
-    <div className="mx-auto max-w-xl space-y-4">
-      <PageTitle sub={group ? undefined : tr("Select Payment Method")}>{tr("Add Funds")}</PageTitle>
+    <div className="funds-reference">
+      <section className="funds-hero">
+        <img src={fundsHeader} alt="" width={1920} height={640} className="funds-hero-image" />
+        <div className="funds-hero-copy">
+          <h1><Wallet aria-hidden /> {tr("Add")} <span>{tr("Funds")}</span></h1>
+          <p>{tr("Choose your preferred payment method and top up your account to continue using our services.")}</p>
+        </div>
+        <div className="funds-security"><ShieldCheck aria-hidden /><div><strong>{tr("Secure Payments")}</strong><span>{tr("Your transactions are safe with us.")}</span></div></div>
+      </section>
+      <div className="funds-section-heading"><span><Wallet aria-hidden /></span><div><h2>{tr("Select Payment Method")}</h2><p>{tr("Choose from the available payment options below")}</p></div></div>
       {isError && <ErrorState />}
-      {isLoading && <Skeleton className="h-40 rounded-3xl" />}
+      {isLoading && <Skeleton className="h-36 rounded-lg" />}
       {methods && groups.length === 0 && <Empty text={tr("No payment methods available right now.")} />}
 
-      {!group && (
-        <div className="grid gap-3">
+      <div className="funds-method-grid">
           {groups.map((g) => (
-            <button key={g} onClick={() => pickGroup(g)} className="glass tilt flex items-center gap-4 rounded-3xl p-4 text-left">
+            <Button variant="ghost" key={g} onClick={() => pickGroup(g)} aria-label={g === "p2p" ? "P2P" : g === "usdt" ? "USDT" : "Binance Pay"} aria-pressed={group === g} className={`funds-method funds-method--${g}`}>
               {g === "p2p" ? (
-                <div className="flex -space-x-2">{p2p.slice(0, 3).map((x) => <DepositMethodLogo key={x.id} name={x.name} kind="p2p" logo={x.logo_url} className="h-10 w-10" />)}</div>
-              ) : <MethodLogo name={g} kind={g} logo={methods?.find((x) => x.kind === g)?.logo_url} className="h-10 w-10" />}
-              <div>
-                <div className="label-premium text-lg">{g === "p2p" ? "P2P" : g === "usdt" ? "USDT" : "Binance"}</div>
-                <div className="text-xs text-muted-foreground">{g === "p2p" ? p2p.map((x) => x.name).join(" • ") : g === "usdt" ? tr("Crypto wallet transfer") : tr("Binance Pay")}</div>
-              </div>
-            </button>
+                <><strong className="funds-p2p-title">P2P</strong><div className="funds-local-logos">{p2p.slice(0, 3).map((x) => <div key={x.id}><DepositMethodLogo name={x.name} kind="p2p" logo={x.logo_url} className="funds-local-logo" /></div>)}</div></>
+              ) : <><span className={`funds-crypto-logo funds-crypto-logo--${g}`}>{g === "binance" ? <SiBinance aria-hidden /> : <SiTether aria-hidden />}</span><div className="funds-method-copy"><strong>{g === "usdt" ? "USDT" : tr("Binance Pay")}</strong><span>{g === "usdt" ? tr("Crypto Wallet Transfer") : tr("Instant & Secure")}</span></div></>}
+              <span className="funds-method-arrow"><ArrowRight aria-hidden /></span>
+            </Button>
           ))}
-        </div>
-      )}
+      </div>
 
       {group && (
-        <Card>
-          <button onClick={() => { setGroup(null); setM(null); }} className="mb-4 flex items-center gap-1 text-sm text-muted-foreground hover:text-primary"><ArrowLeft className="h-4 w-4" /> {tr("Change method")}</button>
+        <section className="funds-form-section">
+          <Button variant="ghost" onClick={() => { setGroup(null); setM(null); }} className="mb-4 gap-1 text-sm text-muted-foreground"><ArrowLeft className="h-4 w-4" /> {tr("Change method")}</Button>
 
           {(methods?.filter((x) => x.kind === group).length ?? 0) > 1 && (
             <div className="mb-5 grid grid-cols-3 gap-2">
-              {methods!.filter((x) => x.kind === group).map((x) => (
-                <button key={x.id} onClick={() => setM(x)} className={`flex flex-col items-center gap-1.5 rounded-2xl border p-3 transition ${m?.id === x.id ? "border-primary bg-primary/10 shadow-glow" : "border-border"}`}>
+              {methods?.filter((x) => x.kind === group).map((x) => (
+                <Button variant="outline" key={x.id} onClick={() => setM(x)} aria-pressed={m?.id === x.id} className={`h-auto flex-col gap-1.5 rounded-lg border p-3 transition ${m?.id === x.id ? "border-primary bg-primary/10 shadow-glow" : "border-border"}`}>
                   <DepositMethodLogo name={x.name} kind={x.kind} logo={x.logo_url} className="h-10 w-12" />
                   <span className="text-xs font-semibold">{x.name}</span>
-                </button>
+                </Button>
               ))}
             </div>
           )}
@@ -196,11 +205,13 @@ function AddFunds() {
                 {file ? file.name : `${tr("Upload payment screenshot")}${needShot ? ` (${tr("required")})` : ` (${tr("optional")})`}`}
                 <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
               </label>
-              <button disabled={busy} className="btn-glow w-full !py-4">{busy && <Spinner />} {m.kind === "p2p" ? tr("Confirm Add Funds") : tr("Add Funds")}</button>
+              <Button type="submit" disabled={busy} className="btn-glow h-auto w-full !py-4">{busy && <Spinner />} {m.kind === "p2p" ? tr("Confirm Add Funds") : tr("Add Funds")}</Button>
             </form>
           )}
-        </Card>
+        </section>
       )}
+
+      <img src={fundsSocialBanner} alt={tr("Social media growth services")} width={1920} height={640} loading="lazy" className="funds-social-banner" />
 
       <Dialog open={!!done} onOpenChange={(o) => !o && setDone(null)}>
         <DialogContent className="text-center">
