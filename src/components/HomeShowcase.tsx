@@ -20,8 +20,13 @@ export function HomeShowcase() {
           <h1 className="home-headline">{lang === "en" && parts.length === 2 ? <>{parts[0]}<span>{highlight}</span>{parts[1]}</> : title}</h1>
           <p className="home-description">{t("home.hero_text")}</p>
           <div className="home-actions">
-            <Button asChild className="home-primary-cta"><Link to={user ? "/order" : "/sign-up"}>{tr("Get Started")}<ArrowRight /></Link></Button>
-            <Button asChild variant="outline" className="home-secondary-cta"><a href="#popular-services">{tr("View Services")}</a></Button>
+            {user ? (<>
+              <Button asChild className="home-primary-cta"><Link to="/order">{tr("Get Started")}<ArrowRight /></Link></Button>
+              <Button asChild variant="outline" className="home-secondary-cta"><a href="#popular-services">{tr("View Services")}</a></Button>
+            </>) : (<>
+              <Button asChild className="home-primary-cta"><Link to="/sign-up">{tr("Sign Up")}<ArrowRight /></Link></Button>
+              <Button asChild variant="outline" className="home-secondary-cta"><Link to="/sign-in">{tr("Sign In")}</Link></Button>
+            </>)}
           </div>
         </div>
         <div className="home-growth-art"><img src={growthImage} alt={tr("Social media growth dashboard with Instagram, TikTok, Facebook, YouTube and Telegram")} width={1024} height={1024} fetchPriority="high" /></div>
