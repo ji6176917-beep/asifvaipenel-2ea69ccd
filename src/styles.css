@@ -685,7 +685,9 @@
 .notification-payment .notification-payment-logo { width: 30px; height: 26px; flex-shrink: 0; object-fit: contain; }
 .notification-payment > span > span { overflow-wrap: anywhere; min-width: 0; }
 .notification-payment small, .notification-reference > span { display: block; margin-top: 3px; font-size: 10px; color: var(--notification-muted); }
-.notification-references { display: flex; gap: 8px; margin-top: 5px; }
+.notification-references { display: flex; gap: 8px; margin-top: 4px; }
+.notification-references .notification-reference { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
+.notification-references .notification-reference > span { margin: 0; font-size: 8px; text-transform: none; }
 .notification-reference { min-width: 0; }
 .notification-reference > span { text-transform: uppercase; margin-bottom: 3px; }
 .notification-time { display: flex; align-items: start; gap: 3px; padding-left: 5px; min-height: 36px; border-left: 1px solid var(--notification-border); color: var(--notification-muted); font-size: 9px; }
@@ -705,8 +707,8 @@
 .notification-meta { width: calc(100% + 71px); }
 .notification-meta > .notification-reference { flex: 0 1 auto; min-width: 75px; max-width: 135px; }
 .notification-meta > .notification-chip { max-width: 115px; }
-.notification-meta .notification-reference { display: flex; flex-direction: column-reverse; }
-.notification-meta .notification-reference > span { text-transform: none; font-size: 9px; margin-top: 3px; margin-bottom: 0; }
+.notification-meta .notification-reference { display: flex; flex-direction: column; gap: 2px; }
+.notification-meta .notification-reference > span { text-transform: none; font-size: 8px; margin: 0; }
 @media (max-width: 540px) {
   .notification-panel { width: 64vw; max-width: 64vw; padding: 10px 7px; border-radius: 12px 0 0 12px; gap: 7px; }
   .notification-header-icon { display: none; }
@@ -727,12 +729,16 @@
   .notification-time time { flex-direction: row; flex-wrap: wrap; gap: 4px; }
   .notification-time small { font-size: 8px; }
   .notification-time > svg { width: 10px; height: 10px; }
-  .notification-meta { width: 100%; }
+  .notification-meta { width: calc(100% + 32px); margin-left: -32px; display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 4px; margin-top: 7px; }
   .notification-meta > .notification-chip { max-width: 100%; }
   .notification-meta > .notification-reference { min-width: 0; max-width: 100%; }
   .notification-payment { padding-left: 0; border: 0; font-size: 9px; }
   .notification-payment .notification-payment-logo { width: 24px; height: 20px; }
   .notification-payment small, .notification-reference > span { font-size: 8px; }
+  .notification-payment > span { gap: 3px; }
+  .notification-payment small { display: none; }
+  .notification-meta > .notification-reference { grid-column: 1 / -1; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 3px; }
+  .notification-references { margin-left: -32px; width: calc(100% + 32px); }
   .notification-period { gap: 2px; padding: 0 2px; font-size: 9px; }
   .notification-period > span { font-size: 8px; min-width: 14px; height: 14px; }
   .notification-expand { grid-column: 3; grid-row: 1; width: 10px; }
