@@ -97,6 +97,7 @@ export function UserInbox() {
       const t = setTimeout(() => setAskPush(true), 2500);
       return () => clearTimeout(t);
     }
+    return;
   }, [user?.id]);
 
   useEffect(() => {
