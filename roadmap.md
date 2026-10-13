@@ -55,6 +55,7 @@
 - [x] Popular Services cards redesigned as brand-tinted cards showing only the platform logo and name; the "Followers • Likes • Views" / "Subscribers • Likes • Views" / "Members • Views • Shares" captions removed on all devices; hover adds lift, brand glow, sheen and a corner arrow. Desktop, mobile and dark mode browser-verified (Oct 12).
 
 ## Customer notifications (Oct 13)
+- [x] Match the new notification reference with actual brand/platform identities, real details, search, day filters and scrolling; authenticated desktop/mobile browser checks pass with real notifications, search and filters; 12 focused tests pass.
 - [x] Compact searchable notification cards with owner-scoped order/platform and funding details; search/read acknowledgement test and seven parser tests pass.
 - [x] Exactly-once submission notifications across website and API creation paths; transaction-only trigger tests pass for order/deposit inserts and retries, all test rows rolled back.
-- [ ] Signed-in visual/end-to-end notification check: focused tests and public browser check pass; blocked because no account matches the requesting user and session mint failed. User must sign in in preview.
+- [x] Signed-in visual notification check: restored current user session; real notification cards, full list, search empty state, day filters and mobile layout verified without runtime errors.

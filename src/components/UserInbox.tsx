@@ -1,30 +1,17 @@
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Bell, BellRing, Wallet, Package, ShieldCheck, Info, Hash, Clock, StickyNote, CircleDot, X, Search, Users, Banknote, ArrowUpRight } from "lucide-react";
+import { Bell, BellRing, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { useStorageUrl } from "@/lib/storage-url";
-import { fmtDate, money } from "@/lib/format";
-import { parseNotification, matchesNotification, type NotificationDetails, type NoteTone } from "@/lib/notification-format";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { parseNotification, type NotificationDetails } from "@/lib/notification-format";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { Empty, ErrorState, Spinner } from "@/components/ui-kit";
 import { Button } from "@/components/ui/button";
-import { PlatformIcon } from "@/lib/brand";
-import { Link } from "@tanstack/react-router";
+import { NotificationPanel } from "@/components/NotificationPanel";
 import { useTr } from "@/lib/i18n";
 
 const LOGO = "/favicon-192.png";
-const TONE: Record<NoteTone, string> = {
-  success: "bg-success/15 text-success border-success/40",
-  danger: "bg-destructive/15 text-destructive border-destructive/40",
-  info: "bg-info/15 text-info border-info/40",
-  warning: "bg-warning/15 text-warning border-warning/40",
-  neutral: "bg-muted text-muted-foreground border-border",
-};
-const ICON = { deposit: Wallet, order: Package, balance: Wallet, security: ShieldCheck, info: Info };
-
 async function showSystemNotification(title: string, body: string) {
   if (typeof window === "undefined" || !("Notification" in window) || Notification.permission !== "granted") return;
   const opts: NotificationOptions = { body, icon: LOGO, badge: "/favicon-48.png", data: { url: "/" } };
@@ -37,60 +24,12 @@ async function showSystemNotification(title: string, body: string) {
 
 type Note = { id: string; title: string; body: string | null; created_at: string; read_at: string | null; kind: string; details?: NotificationDetails | null | undefined };
 
-function NotificationCard({ n }: { n: Note }) {
-  const tr = useTr();
-  const p = parseNotification(n.title, n.body);
-  const Icon = ICON[p.type];
-  const d = n.details;
-  const status = p.status ? tr(p.status.charAt(0).toUpperCase() + p.status.slice(1)) : null;
-  const rows: { icon: typeof Hash; label: string; value: React.ReactNode }[] = [];
-  if (d?.amount !== undefined || p.amount) rows.push({ icon: Banknote, label: tr("Amount"), value: <span className="text-lg font-bold text-foreground">{p.amount ?? money(d?.amount)}{d?.bdt_amount != null && <span className="ml-2 text-xs font-normal text-muted-foreground">৳{d.bdt_amount.toLocaleString()}</span>}</span> });
-  if (p.ref) rows.push({ icon: Hash, label: tr(p.type === "deposit" ? "Add Fund ID" : "Order ID"), value: <span className="font-mono text-xs">#{p.ref}</span> });
-  if (d?.quantity !== undefined) rows.push({ icon: Users, label: tr("Quantity"), value: d.quantity.toLocaleString() });
-  if (d?.charge !== undefined) rows.push({ icon: Banknote, label: tr("Charge"), value: <span className="font-bold">{money(d.charge)}</span> });
-  if (p.refund) rows.push({ icon: Wallet, label: tr("Refund"), value: <span className="font-semibold text-success">{p.refund}</span> });
-  if (d?.method_name) rows.push({ icon: Wallet, label: tr("Payment Method"), value: d.method_name });
-  if (status) rows.push({ icon: CircleDot, label: tr("Status"), value: <span className="font-medium">{status}</span> });
-  rows.push({ icon: StickyNote, label: tr("Note"), value: <span className="whitespace-pre-wrap">{p.note || tr("No note")}</span> });
-  rows.push({ icon: Clock, label: tr("Time"), value: <time dateTime={n.created_at} className="text-xs">{fmtDate(n.created_at)}</time> });
-  return (
-    <article className={`overflow-hidden rounded-lg border bg-card shadow-sm ${n.read_at ? "border-border" : "border-primary/40"}`}>
-      <div className="flex items-center gap-2 border-b border-border bg-primary/5 px-3 py-2 text-[10px] text-muted-foreground">
-        <img src={LOGO} alt="" className="h-4 w-4 shrink-0 object-contain" />
-        <span className="min-w-0 font-medium">{tr("Notification from")} <span className="text-primary">apexsmmworld.com</span></span>
-        {!n.read_at && <span className="ml-auto h-1.5 w-1.5 shrink-0 rounded-full bg-primary" aria-label={tr("Unread")} />}
-      </div>
-      <div className="px-3 py-3">
-        <div className="flex items-start gap-2.5 border-b border-border pb-3">
-          <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border ${TONE[p.tone]}`}>
-            {p.type === "order" && d?.platform_slug ? <PlatformIcon slug={d.platform_slug} name={d.platform_name} className="h-5 w-5" /> : <Icon className="h-4 w-4" />}
-          </span>
-          <div className="min-w-0 flex-1 self-center">
-            <h3 className="break-words text-sm font-semibold leading-snug">{p.type === "deposit" ? tr("Add Fund") : p.type === "order" ? d?.service_name || tr("Order") : n.title}</h3>
-            {d?.platform_name && <p className="mt-0.5 text-xs text-muted-foreground">{d.platform_name}</p>}
-          </div>
-          {status && <span className={`shrink-0 rounded-md border px-2 py-1 text-[10px] font-semibold ${TONE[p.tone]}`}>{status}</span>}
-        </div>
-        <dl className="mt-2 divide-y divide-border text-xs">
-          {rows.map((r) => <div key={r.label} className="grid grid-cols-[14px_90px_minmax(0,1fr)] items-start gap-2 py-1.5">
-            <r.icon className="mt-0.5 h-3.5 w-3.5 text-muted-foreground" />
-            <dt className="break-words text-muted-foreground">{r.label}</dt>
-            <dd className="min-w-0 break-words font-medium">{r.value}</dd>
-          </div>)}
-        </dl>
-        {p.ref && <Button asChild variant="link" size="sm" className="mt-1 h-7 px-0 text-xs"><Link to={p.type === "deposit" ? "/add-funds/history" : "/orders"}>{tr(p.type === "deposit" ? "Add Fund ID" : "Order ID")}<ArrowUpRight /></Link></Button>}
-      </div>
-    </article>
-  );
-}
-
 /** Bell with unread count + list, browser notifications, and show-once popups sent by support. */
 export function UserInbox() {
   const tr = useTr();
   const { user } = useAuth();
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState("");
   const [askPush, setAskPush] = useState(false);
   const key = ["notifications", user?.id];
   const { data = [], isPending, isError, refetch } = useQuery({
@@ -121,7 +60,7 @@ export function UserInbox() {
             if (error) throw error;
             rows.forEach((r) => details.set(`order:${r.order_code}`, r));
           } else {
-            const { data: rows, error } = await supabase.from("deposits").select("code,amount,bdt_amount,method_name").eq("user_id", user.id).in("code", unique.slice(i, i + 100));
+            const { data: rows, error } = await supabase.from("deposits").select("code,amount,bdt_amount,method_name,txn_id").eq("user_id", user.id).in("code", unique.slice(i, i + 100));
             if (error) throw error;
             rows.forEach((r) => details.set(`deposit:${r.code}`, r));
           }
@@ -171,7 +110,6 @@ export function UserInbox() {
 
   const now = Date.now();
   const live = data.filter((n) => !n.expires_at || Date.parse(n.expires_at) > now);
-  const filtered = live.filter((n) => matchesNotification(search, n.title, n.body, n.details));
   const unread = live.filter((n) => !n.read_at);
   const [dismissed, setDismissed] = useState<string[]>([]);
   // Show-once popups disappear after the first view; others show again each visit (session) until they expire.
@@ -193,7 +131,6 @@ export function UserInbox() {
 
   const openList = () => {
     if (!user) { toast(tr("Sign in to see notifications")); return; }
-    setSearch("");
     setOpen(true);
     mark(unread.filter((n) => n.kind !== "popup" || n.shown_at).map((n) => n.id), false);
   };
@@ -224,24 +161,7 @@ export function UserInbox() {
           </div>
         </div>
       )}
-      <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent className="flex h-dvh w-full flex-col gap-0 p-0 sm:max-w-[420px]">
-          <SheetHeader className="shrink-0 border-b border-border px-4 pb-4 pt-5 text-left">
-            <SheetTitle className="flex items-center gap-2"><img src={LOGO} alt="" className="h-6 w-6 rounded" />{tr("Notifications")}</SheetTitle>
-            <SheetDescription className="text-xs">apexsmmworld.com</SheetDescription>
-          </SheetHeader>
-          <div className="shrink-0 px-4 py-3">
-            <div className="relative">
-              <Search className="pointer-events-none absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-              <input aria-label={tr("Search notifications")} placeholder={tr("Search notifications")} value={search} onChange={(e) => setSearch(e.target.value)} className="h-10 w-full rounded-lg border border-input bg-background pl-9 pr-9 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring" />
-              {search && <Button variant="ghost" size="icon" aria-label={tr("Clear search")} className="absolute right-1 top-1 h-8 w-8" onClick={() => setSearch("")}><X /></Button>}
-            </div>
-          </div>
-          <div className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain px-4 pb-6 motion-safe:scroll-smooth">
-            {isPending ? <div className="flex justify-center py-12"><Spinner /></div> : isError ? <><ErrorState /><Button variant="outline" onClick={() => void refetch()}>{tr("Retry")}</Button></> : filtered.length === 0 ? <Empty text={tr(search ? "No results found" : "No notifications yet")} /> : filtered.map((n) => <NotificationCard key={n.id} n={n} />)}
-          </div>
-        </SheetContent>
-      </Sheet>
+      <NotificationPanel open={open} onOpenChange={setOpen} notes={live} pending={isPending} error={isError} retry={() => void refetch()} />
       <Dialog open={!!popup} onOpenChange={(o) => { if (!o) closePopup(); }}>
         <DialogContent>
           {popImg && <img src={popImg} alt="" className="mx-auto max-h-56 rounded-2xl object-contain" />}

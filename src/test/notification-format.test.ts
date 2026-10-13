@@ -1,7 +1,18 @@
 import { describe, it, expect } from "vitest";
-import { parseNotification, matchesNotification } from "@/lib/notification-format";
+import { parseNotification, matchesNotification, notificationInPeriod } from "@/lib/notification-format";
 
 describe("parseNotification", () => {
+  it.each([3, 7, 30])("includes only notifications within the %i-day filter", (days) => {
+    const now = Date.parse("2026-10-13T11:08:00Z");
+    expect(notificationInPeriod(new Date(now - days * 86400000).toISOString(), days, now)).toBe(true);
+    expect(notificationInPeriod(new Date(now - days * 86400000 - 1).toISOString(), days, now)).toBe(false);
+    expect(notificationInPeriod(new Date(now + 1).toISOString(), days, now)).toBe(false);
+  });
+  it("keeps all historical notifications in All and searches actual transaction IDs", () => {
+    expect(notificationInPeriod("2020-01-01T00:00:00Z", 0, Date.parse("2026-10-13T11:08:00Z"))).toBe(true);
+    expect(matchesNotification("TX-194871", "Add Fund #ADD-194871 approved", null, { txn_id: "TX-194871" })).toBe(true);
+    expect(matchesNotification("TX-OTHER", "Add Fund #ADD-194871 approved", null, { txn_id: "TX-194871" })).toBe(false);
+  });
   it("reads rejected deposits with note", () => {
     expect(parseNotification("Add Fund #ADD-194871 was rejected", "Fake")).toMatchObject({ type: "deposit", ref: "ADD-194871", status: "rejected", tone: "danger", note: "Fake" });
   });
