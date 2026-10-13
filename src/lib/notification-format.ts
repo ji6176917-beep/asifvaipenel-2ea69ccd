@@ -3,10 +3,10 @@ export type NoteTone = "success" | "danger" | "info" | "warning" | "neutral";
 export type ParsedNote = {
   type: NoteType;
   tone: NoteTone;
-  ref?: string;
-  amount?: string;
-  status?: string;
-  note?: string;
+  ref?: string | undefined;
+  amount?: string | undefined;
+  status?: string | undefined;
+  note?: string | undefined;
 };
 
 const STATUS_TONE: Record<string, NoteTone> = {
