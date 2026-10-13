@@ -43,13 +43,19 @@ export function parseNotification(title: string, body?: string | null): ParsedNo
 }
 
 export type NotificationDetails = {
-  amount?: number; bdt_amount?: number | null; method_name?: string;
+  amount?: number; bdt_amount?: number | null; method_name?: string; txn_id?: string;
   service_name?: string; platform_name?: string; platform_slug?: string;
   quantity?: number; charge?: number; link?: string;
 };
 
 export function matchesNotification(query: string, title: string, body: string | null, details?: NotificationDetails | null) {
   const words = query.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
-  const text = [title, body, details?.service_name, details?.platform_name, details?.method_name].filter(Boolean).join(" ").toLocaleLowerCase();
+  const text = [title, body, details?.service_name, details?.platform_name, details?.method_name, details?.txn_id].filter(Boolean).join(" ").toLocaleLowerCase();
   return words.every((word) => text.includes(word));
+}
+
+export function notificationInPeriod(createdAt: string, days: number, now: number) {
+  if (days === 0) return true;
+  const timestamp = Date.parse(createdAt);
+  return Number.isFinite(timestamp) && timestamp <= now && timestamp >= now - days * 86400000;
 }
