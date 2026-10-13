@@ -1,4 +1,6 @@
 # Roadmap
+- [ ] Show full lower Add Funds image on desktop only; preserve approved mobile and other styling.
+- [ ] Final read-only login/customer/admin review and tests; report any unverified protected settings or live operations.
 - [x] Match October 13 Add Funds reference with green wallet banner, three payment cards, official local-payment logos and social banner. Signed-in Binance/USDT/P2P selection and amount/transaction entry verified; images load, no overflow at 320/390px, no runtime errors, 17 related tests pass. No deposit submitted; payment rules unchanged.
 - [x] Open matching reference-filtered history from order/funding notifications; balance/security notices open Balance/Account, generic notices expand details. Compact HistoryCard preserves statuses, IDs, payment logos, notes and order actions. Real funding notification → matching history verified desktop/mobile without overflow.
 - [x] Review public and signed-in pages and admin sections: 15 customer/public routes and 19 authenticated admin sections opened without runtime errors; all 22 tests pass. Order history has no real orders for the current customer; money operations, outbound delivery and saving every live admin setting were intentionally not executed. Repeat admin login later hit an access wait; initial authenticated section review succeeded.
