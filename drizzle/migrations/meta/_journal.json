@@ -225,6 +225,13 @@
       "when": 1792070190846,
       "tag": "0031_price_follow_provider",
       "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "7",
+      "when": 1792086596318,
+      "tag": "0032_provider_currency",
+      "breakpoints": true
     }
   ]
 }

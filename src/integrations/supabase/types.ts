@@ -819,36 +819,42 @@ export type Database = {
           api_key: string
           api_url: string
           created_at: string
+          currency: string
           deleted_at: string | null
           id: string
           last_synced_at: string | null
           link_parameter: string
           markup: number
           name: string
+          usd_rate: number
         }
         Insert: {
           active?: boolean
           api_key: string
           api_url: string
           created_at?: string
+          currency?: string
           deleted_at?: string | null
           id?: string
           last_synced_at?: string | null
           link_parameter?: string
           markup?: number
           name: string
+          usd_rate?: number
         }
         Update: {
           active?: boolean
           api_key?: string
           api_url?: string
           created_at?: string
+          currency?: string
           deleted_at?: string | null
           id?: string
           last_synced_at?: string | null
           link_parameter?: string
           markup?: number
           name?: string
+          usd_rate?: number
         }
         Relationships: []
       }
