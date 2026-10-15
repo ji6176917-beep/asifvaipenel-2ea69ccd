@@ -34,3 +34,4 @@
 - Hard-coded customer UI text is wrapped in tr("English") (useTr) and translated via the central src/lib/translations.json dictionary (per language, English fallback); admin labels fall back to it too. Why: one dictionary, new languages need no code changes.
 - Reseller docs use one scrolling page and placeholder keys; never expose credentials.
 - Upstream keys stay admin-only; stable IDs/claims avoid duplicate spending. Preserve manual/custom prices. Import all types; block unsupported paid orders. Secret-gated hourly catalogs run only for active providers.
+- Per-category panel choice lives in categories.source_provider/manual_control (admin-sources.functions.ts); every change snapshots service on/off state into service_snapshots for undo, and manual_control keeps orders out of provider dispatch. Why: one panel per category with safe rollback.
