@@ -20,8 +20,10 @@ export const Route = createFileRoute('/api/public/provider-catalog-sync')({
       const { syncProvider } = await import('@/lib/providers.server')
       const result = await syncProvider(input.id)
       return Response.json({ count: result.count })
-    } catch {
-      await db.from('admin_log').insert({ action: 'provider_catalog_sync_failed', detail: { provider: input.id } })
+    } catch (e) {
+      const reason = e instanceof Error ? e.message.slice(0, 300) : 'unknown'
+      console.error('provider catalog sync failed', input.id, reason)
+      await db.from('admin_log').insert({ action: 'provider_catalog_sync_failed', detail: { provider: input.id, reason } })
       return Response.json({ error: 'Sync failed; existing catalog preserved' }, { status: 502 })
     }
   } } },

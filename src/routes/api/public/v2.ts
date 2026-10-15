@@ -63,7 +63,7 @@ async function handle(request: Request) {
       return json({ balance: Number(prof.balance).toFixed(2), currency: "USD" });
     case "services": {
       const fetchPage = (offset: number) => db.from("services")
-        .select("provider_id,provider_available,provider_type,service_no,name,description,rate,rate_per,min_qty,max_qty,avg_time,refill_info,categories!inner(name,active,deleted_at,platforms!inner(name,active,deleted_at))")
+        .select("provider_id,provider_available,provider_order_supported,provider_type,service_no,name,description,rate,rate_per,min_qty,max_qty,avg_time,refill_info,categories!inner(name,active,deleted_at,manual_control,platforms!inner(name,active,deleted_at))")
         .eq("active", true).is("deleted_at", null).eq("categories.active", true).is("categories.deleted_at", null)
         .eq("categories.platforms.active", true).is("categories.platforms.deleted_at", null).order("service_no").range(offset, offset + 999);
       const data: NonNullable<Awaited<ReturnType<typeof fetchPage>>['data']> = [];
@@ -79,7 +79,8 @@ async function handle(request: Request) {
         db.from("service_providers").select("id").eq("active", true).is("deleted_at", null),
       ]);
       const enabledProviders = new Set((providers ?? []).map((p) => p.id));
-      const live = (data ?? []).filter((s) => s.provider_available && (s.provider_id ? sources?.api_enabled !== false && enabledProviders.has(s.provider_id) : sources?.own_enabled !== false) && s.categories && s.categories.active && !s.categories.deleted_at
+      // Also hide upstream services that need special inputs (they can't be ordered with link+quantity) unless the category is manually handled.
+      const live = (data ?? []).filter((s) => s.provider_available && (!s.provider_id || s.provider_order_supported || s.categories?.manual_control) && (s.provider_id ? sources?.api_enabled !== false && enabledProviders.has(s.provider_id) : sources?.own_enabled !== false) && s.categories && s.categories.active && !s.categories.deleted_at
         && s.categories.platforms && s.categories.platforms.active && !s.categories.platforms.deleted_at);
       return json(live.map((s) => ({
         service: s.service_no, name: s.name, type: s.provider_id ? s.provider_type : "Default",
