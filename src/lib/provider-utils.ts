@@ -21,6 +21,21 @@ export function providerServiceAvailable(row: Record<string, unknown>) {
   return !flags.some((value) => value === false || value === 0 || ['0', 'false', 'disabled', 'inactive', 'off', 'removed', 'cancelled', 'canceled'].includes(String(value).toLowerCase()))
 }
 
+const PLATFORM_PATTERNS: [string, RegExp][] = [
+  ['instagram', /\b(instagram|insta|ig)\b/i], ['facebook', /\b(facebook|fb)\b/i], ['youtube', /\b(youtube|yt)\b/i],
+  ['tiktok', /\btik\s?tok\b/i], ['telegram', /\b(telegram|tg)\b/i], ['twitter', /\b(twitter|x\.com|tweets?)\b/i],
+  ['threads', /\bthreads\b/i], ['spotify', /\bspotify\b/i], ['linkedin', /\blinked\s?in\b/i], ['snapchat', /\bsnap\s?chat\b/i],
+  ['pinterest', /\bpinterest\b/i], ['discord', /\bdiscord\b/i], ['twitch', /\btwitch\b/i], ['whatsapp', /\bwhats\s?app\b/i],
+  ['soundcloud', /\bsound\s?cloud\b/i], ['reddit', /\breddit\b/i], ['kick', /\bkick\b/i], ['vk', /\b(vk|vkontakte)\b/i],
+  ['kwai', /\bkwai\b/i], ['shopee', /\bshopee\b/i], ['quora', /\bquora\b/i], ['tumblr', /\btumblr\b/i], ['vimeo', /\bvimeo\b/i],
+  ['dailymotion', /\bdailymotion\b/i], ['website', /\b(website|web traffic|traffic)\b/i],
+]
+const PLATFORM_NAMES: Record<string, string> = { tiktok: 'TikTok', youtube: 'YouTube', linkedin: 'LinkedIn', soundcloud: 'SoundCloud', whatsapp: 'WhatsApp', vk: 'VK', twitter: 'Twitter / X', website: 'Website Traffic', other: 'Other' }
+
+export function detectPlatform(title: string) {
+  return PLATFORM_PATTERNS.find(([, re]) => re.test(title))?.[0] ?? 'other'
+}
+
 export function normalizeProviderServices(input: unknown) {
   if (!Array.isArray(input)) throw new Error('সঠিক সার্ভিস তালিকা পাওয়া যায়নি')
   let skipped = 0
@@ -32,9 +47,8 @@ export function normalizeProviderServices(input: unknown) {
     if (seen.has(r.service)) return []
     seen.add(r.service)
     const title = `${r.category} ${r.name}`
-    const known = ['facebook', 'instagram', 'youtube', 'tiktok', 'telegram', 'twitter', 'spotify', 'linkedin', 'snapchat', 'pinterest', 'threads', 'discord', 'twitch']
-    const platform = known.find((p) => new RegExp(`\\b${p}\\b`, 'i').test(title)) ?? 'other'
-    return [{ service: r.service, name: r.name, type: r.type, rate: r.rate, min: r.min, max: r.max, available: providerServiceAvailable(r), category: r.category.slice(0, 120), platform, platform_name: platform === 'other' ? 'Other' : platform.charAt(0).toUpperCase() + platform.slice(1) }]
+    const platform = detectPlatform(title)
+    return [{ service: r.service, name: r.name, type: r.type, rate: r.rate, min: r.min, max: r.max, available: providerServiceAvailable(r), category: r.category.slice(0, 120), platform, platform_name: PLATFORM_NAMES[platform] ?? platform.charAt(0).toUpperCase() + platform.slice(1) }]
   })
   if (input.length && skipped > input.length * 0.2) throw new Error('অসম্পূর্ণ সার্ভিস তালিকা এসেছে; পুরনো তালিকা অপরিবর্তিত আছে')
   return { rows, skipped }
