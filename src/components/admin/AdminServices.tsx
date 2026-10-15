@@ -11,6 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { PlatformIcon } from "@/lib/brand";
 import { money } from "@/lib/format";
 import { AdminProviders } from "./AdminProviders";
+import { ProviderCompare } from "./ProviderCompare";
 import { adminListProviders, adminSetServiceSource } from "@/lib/admin-providers.functions";
 import { Button } from "@/components/ui/button";
 
@@ -18,7 +19,7 @@ type Level = "platforms" | "categories" | "services";
 type Nav = { platform?: { id: string; name: string } | undefined; category?: { id: string; name: string } | undefined };
 
 export function AdminServices() {
-  const [mode, setMode] = useState<"own" | "api">("own");
+  const [mode, setMode] = useState<"own" | "api" | "compare">("own");
   const get = useServerFn(adminListProviders), setSource = useServerFn(adminSetServiceSource);
   const qc = useQueryClient();
   const { data, isError, isLoading } = useQuery({ queryKey: ["admin-providers"], queryFn: () => get() });
@@ -31,7 +32,8 @@ export function AdminServices() {
   return <div className="space-y-4"><div className="flex flex-wrap gap-3 border-b border-border pb-3">
     <div className="flex items-center gap-2"><Button variant={mode === "own" ? "default" : "outline"} onClick={() => setMode("own")}>নিজের সার্ভিস</Button><Switch checked={data.sources.own_enabled} aria-label="নিজের সার্ভিস অন/অফ" onCheckedChange={(v) => void change("own_enabled", v)} /></div>
     <div className="flex items-center gap-2"><Button variant={mode === "api" ? "default" : "outline"} onClick={() => setMode("api")}>এপিআই সার্ভিস</Button><Switch checked={data.sources.api_enabled} aria-label="এপিআই সার্ভিস অন/অফ" onCheckedChange={(v) => void change("api_enabled", v)} /></div>
-  </div>{mode === "own" ? <OwnServices /> : <AdminProviders providers={data.providers} />}</div>;
+    <Button variant={mode === "compare" ? "default" : "outline"} onClick={() => setMode("compare")}>প্যানেল তুলনা</Button>
+  </div>{mode === "own" ? <OwnServices /> : mode === "compare" ? <ProviderCompare /> : <AdminProviders providers={data.providers} />}</div>;
 }
 function OwnServices() {
   const [nav, setNav] = useState<Nav>({});

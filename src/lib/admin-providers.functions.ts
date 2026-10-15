@@ -105,3 +105,32 @@ export const adminEditProviderService = createServerFn({ method: 'POST' })
     await admin.logAdmin('provider_service_edited', { id, ...values })
     return { ok: true }
   })
+/** Same-kind services from every connected provider, cheapest first, for side-by-side selection. */
+export const adminCompareServices = createServerFn({ method: 'POST' })
+  .inputValidator((input) => z.object({ q: z.string().trim().min(2).max(100) }).parse(input))
+  .handler(async ({ data }) => {
+    const { db } = await context()
+    const words = data.q.replace(/[%,()*]/g, ' ').split(/\s+/).filter(Boolean).slice(0, 5)
+    const { data: providers } = await db.from('service_providers').select('id,name').is('deleted_at', null)
+    let query = db.from('services').select('id,service_no,name,rate,rate_per,min_qty,max_qty,active,provider_available,provider_id,categories!inner(name,platforms!inner(name))').not('provider_id', 'is', null).is('deleted_at', null)
+    for (const w of words) query = query.ilike('name', `%${w}%`)
+    const { data: rows, error } = await query.order('rate').limit(200)
+    if (error) throw new Error('সার্ভিস পাওয়া যায়নি')
+    const names = new Map((providers ?? []).map((p) => [p.id, p.name]))
+    return (rows ?? []).map((r) => ({ id: r.id, service_no: r.service_no, name: r.name, rate: Number(r.rate), rate_per: r.rate_per, min: r.min_qty, max: r.max_qty, active: r.active, available: r.provider_available, provider: names.get(r.provider_id ?? '') ?? '—', category: r.categories.name, platform: r.categories.platforms.name }))
+  })
+
+/** Keep exactly one chosen service on and switch off the other compared alternatives. */
+export const adminPickService = createServerFn({ method: 'POST' })
+  .inputValidator((input) => z.object({ keep: z.string().uuid(), off: z.array(z.string().uuid()).max(200) }).parse(input))
+  .handler(async ({ data }) => {
+    const { admin, db } = await context()
+    const off = data.off.filter((id) => id !== data.keep)
+    const { error } = await db.from('services').update({ active: true }).eq('id', data.keep).not('provider_id', 'is', null)
+    if (error) throw new Error('পরিবর্তন করা যায়নি')
+    if (off.length) await db.from('services').update({ active: false }).in('id', off).not('provider_id', 'is', null)
+    const { data: settings } = await db.from('site_settings').select('content_version').eq('id', 1).single()
+    await db.from('site_settings').update({ content_version: (settings?.content_version ?? 0) + 1 }).eq('id', 1)
+    await admin.logAdmin('provider_service_picked', { keep: data.keep }, null, { off })
+    return { ok: true }
+  })
