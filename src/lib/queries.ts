@@ -29,9 +29,14 @@ export const catalogQuery = (platform: string) => queryOptions({
     if (!p) return null;
     const { data: cats } = await supabase.from("categories").select("id,name").eq("platform_id", p.id).eq("active", true).is("deleted_at", null).order("sort");
     const ids = (cats ?? []).map((c) => c.id);
-    const { data: svcs } = ids.length
-      ? await supabase.from("services").select("*").in("category_id", ids).eq("active", true).is("deleted_at", null).order("sort")
-      : { data: [] };
+    const fetchPage = (offset: number) => supabase.from("services").select("*").in("category_id", ids).eq("active", true).is("deleted_at", null).order("service_no").range(offset, offset + 999);
+    const svcs: NonNullable<Awaited<ReturnType<typeof fetchPage>>['data']> = [];
+    if (ids.length) for (let offset = 0; ; offset += 1000) {
+      const page = await fetchPage(offset);
+      if (page.error) throw page.error;
+      svcs.push(...(page.data ?? []));
+      if ((page.data?.length ?? 0) < 1000) break;
+    }
     return { platform: p, cats: cats ?? [], svcs: svcs ?? [] };
   },
   staleTime: 60_000,

@@ -14,6 +14,7 @@ const ERR: Record<string, [string, number]> = {
   INSUFFICIENT_BALANCE: ["Insufficient balance. Add funds to your account first.", 402],
   QUANTITY_OUT_OF_RANGE: ["Quantity is outside the allowed min/max for this service.", 400],
   SERVICE_UNAVAILABLE: ["Service is inactive or does not exist.", 400],
+  SPECIAL_INPUT_REQUIRED: ["This service requires special inputs and cannot be ordered using link and quantity only.", 400],
   INVALID_LINK: ["Invalid link. Use a full https:// URL.", 400],
   API_DISABLED: ["API access is disabled for this account.", 403],
   ACCOUNT_SUSPENDED: ["Account is suspended.", 403],
@@ -61,10 +62,17 @@ async function handle(request: Request) {
     case "balance":
       return json({ balance: Number(prof.balance).toFixed(2), currency: "USD" });
     case "services": {
-      const { data } = await db.from("services")
-        .select("provider_id,provider_available,service_no,name,description,rate,rate_per,min_qty,max_qty,avg_time,refill_info,categories!inner(name,active,deleted_at,platforms!inner(name,active,deleted_at))")
+      const fetchPage = (offset: number) => db.from("services")
+        .select("provider_id,provider_available,provider_type,service_no,name,description,rate,rate_per,min_qty,max_qty,avg_time,refill_info,categories!inner(name,active,deleted_at,platforms!inner(name,active,deleted_at))")
         .eq("active", true).is("deleted_at", null).eq("categories.active", true).is("categories.deleted_at", null)
-        .eq("categories.platforms.active", true).is("categories.platforms.deleted_at", null).order("sort");
+        .eq("categories.platforms.active", true).is("categories.platforms.deleted_at", null).order("service_no").range(offset, offset + 999);
+      const data: NonNullable<Awaited<ReturnType<typeof fetchPage>>['data']> = [];
+      for (let offset = 0; ; offset += 1000) {
+        const page = await fetchPage(offset);
+        if (page.error) return json({ error: "Could not load services" });
+        data.push(...(page.data ?? []));
+        if ((page.data?.length ?? 0) < 1000) break;
+      }
       // Only live services: hidden/deleted services, categories or platforms never reach reseller panels.
       const [{ data: sources }, { data: providers }] = await Promise.all([
         db.from("service_source_settings").select("own_enabled,api_enabled").eq("id", 1).maybeSingle(),
@@ -74,7 +82,7 @@ async function handle(request: Request) {
       const live = (data ?? []).filter((s) => s.provider_available && (s.provider_id ? sources?.api_enabled !== false && enabledProviders.has(s.provider_id) : sources?.own_enabled !== false) && s.categories && s.categories.active && !s.categories.deleted_at
         && s.categories.platforms && s.categories.platforms.active && !s.categories.platforms.deleted_at);
       return json(live.map((s) => ({
-        service: s.service_no, name: s.name, type: "Default",
+        service: s.service_no, name: s.name, type: s.provider_id ? s.provider_type : "Default",
         category: `${s.categories.platforms.name} - ${s.categories.name}`,
         rate: Number(s.rate).toString(), min: String(s.min_qty), max: String(s.max_qty),
         refill: !!s.refill_info, cancel: false,

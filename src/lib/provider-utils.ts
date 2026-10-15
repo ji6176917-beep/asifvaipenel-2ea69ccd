@@ -12,27 +12,30 @@ export const markedUpRate = (rate: number, percent: number) => Math.ceil(rate * 
 const remoteService = z.object({
   service: z.union([z.string(), z.number()]).transform(String), name: z.string().min(1),
   category: z.string().min(1), type: z.string().default('Default'),
-  rate: z.coerce.number().finite().positive(), min: z.coerce.number().int().positive(),
-  max: z.coerce.number().int().positive().max(2147483647),
-})
+  rate: z.coerce.number().finite().nonnegative(), min: z.coerce.number().int().nonnegative(),
+  max: z.coerce.number().int().nonnegative().max(2147483647),
+}).passthrough()
+
+export function providerServiceAvailable(row: Record<string, unknown>) {
+  const flags = [row.active, row.enabled, row.available, row.status]
+  return !flags.some((value) => value === false || value === 0 || ['0', 'false', 'disabled', 'inactive', 'off', 'removed', 'cancelled', 'canceled'].includes(String(value).toLowerCase()))
+}
 
 export function normalizeProviderServices(input: unknown) {
-  if (!Array.isArray(input) || input.length > 20000) throw new Error('সঠিক সার্ভিস তালিকা পাওয়া যায়নি')
+  if (!Array.isArray(input)) throw new Error('সঠিক সার্ভিস তালিকা পাওয়া যায়নি')
   let skipped = 0
   const seen = new Set<string>()
   const rows = input.flatMap((item) => {
     const parsed = remoteService.safeParse(item)
-    if (!parsed.success || !['default', 'package'].includes(parsed.data.type.toLowerCase()) || parsed.data.min > parsed.data.max) { skipped++; return [] }
+    if (!parsed.success || parsed.data.min > parsed.data.max) throw new Error('অসম্পূর্ণ সার্ভিস তালিকা এসেছে; পুরনো তালিকা অপরিবর্তিত আছে')
     const r = parsed.data
-    if (r.type.toLowerCase() === 'package') { skipped++; return [] }
     if (seen.has(r.service)) return []
     seen.add(r.service)
     const title = `${r.category} ${r.name}`
     const known = ['facebook', 'instagram', 'youtube', 'tiktok', 'telegram', 'twitter', 'spotify', 'linkedin', 'snapchat', 'pinterest', 'threads', 'discord', 'twitch']
     const platform = known.find((p) => new RegExp(`\\b${p}\\b`, 'i').test(title)) ?? 'other'
-    return [{ ...r, category: r.category.slice(0, 120), platform, platform_name: platform === 'other' ? 'Other' : platform.charAt(0).toUpperCase() + platform.slice(1) }]
+    return [{ service: r.service, name: r.name, type: r.type, rate: r.rate, min: r.min, max: r.max, available: providerServiceAvailable(r), category: r.category.slice(0, 120), platform, platform_name: platform === 'other' ? 'Other' : platform.charAt(0).toUpperCase() + platform.slice(1) }]
   })
-  if (!rows.length) throw new Error('আমাদের অর্ডার ফর্মের উপযোগী সার্ভিস পাওয়া যায়নি; পুরনো তালিকা অপরিবর্তিত আছে')
   return { rows, skipped }
 }
 
