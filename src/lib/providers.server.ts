@@ -32,6 +32,13 @@ export async function dispatchProviderOrder(code: string, userId: string) {
   }
   try {
     const result = await providerRequest(provider, { action: 'add', service: order.provider_service_id, [provider.link_parameter]: order.link, quantity: String(order.quantity) })
+    // Explicit rejection (e.g. provider balance empty, service off): nothing was spent upstream, so refund the customer automatically.
+    if (result && typeof result === 'object' && 'error' in result && !('order' in result)) {
+      const reason = String((result as { error: unknown }).error).slice(0, 200)
+      await db.from('orders').update({ dispatch_state: 'failed', provider_error: reason }).eq('id', order.id).eq('dispatch_state', 'sending')
+      await db.rpc('admin_update_order_status', { _order_id: order.id, _status: 'rejected', _delivered: 0, _note: 'Service temporarily unavailable. Full amount refunded.' })
+      return
+    }
     if (!result || typeof result !== 'object' || !('order' in result) || !/^[a-zA-Z0-9_-]{1,100}$/.test(String(result.order))) throw new Error('প্রোভাইডার অর্ডার নম্বর দেয়নি; ম্যানুয়াল যাচাই প্রয়োজন')
     const { error } = await db.from('orders').update({ provider_order_id: String(result.order), dispatch_state: 'sent', provider_error: null }).eq('id', order.id).eq('dispatch_state', 'sending')
     if (error) throw new Error('অর্ডার পাঠানো হয়েছে; সংরক্ষণ যাচাই প্রয়োজন')
