@@ -1,4 +1,6 @@
 # Roadmap
+- [ ] Connect both providers from the two newly supplied recordings; verify real catalog imports without paid orders.
+- [ ] Include all provider types in imports and implement automatic price/availability synchronization, preserving custom prices and existing customer design.
 - [x] Add multi-provider management with admin-only credentials, paginated service editing, preserved custom names/prices, percentage markup, independent source/provider switches, gated reseller/catalog reads, mapped dispatch claims and ledger-based status reconciliation. Customer fonts/styles unchanged. 23 focused tests pass and preview build is clean.
 - [ ] Connect Royal SMM World and verify live import; requires a real provider key (uploaded video shows documentation only).
 - [ ] Verify provider admin actions and real upstream order end-to-end; admin login did not establish a session, and no valid upstream key is available. No paid test order submitted. Automatic recurring catalog/status checks are not configured; current import runs on save/enable/sync and status updates use the admin button.
