@@ -166,17 +166,17 @@ export const adminCategoryServices = createServerFn({ method: 'POST' })
     const { db } = await context()
     const ids = await matchingCategories(db, data.category_id)
     const [{ data: rows, error }, { data: providers }] = await Promise.all([
-      db.from('services').select('id,service_no,name,rate,rate_per,provider_rate,min_qty,max_qty,active,provider_available,provider_id').in('category_id', ids).not('provider_id', 'is', null).is('deleted_at', null).order('rate').limit(1000),
+      db.from('services').select('id,service_no,name,rate,rate_per,provider_rate,price_mode,price_value,min_qty,max_qty,active,provider_available,provider_id').in('category_id', ids).not('provider_id', 'is', null).is('deleted_at', null).order('rate').limit(1000),
       db.from('service_providers').select('id,name').is('deleted_at', null),
     ])
     if (error) throw new Error('সার্ভিস পাওয়া যায়নি')
     const names = new Map((providers ?? []).map((p) => [p.id, p.name]))
-    return (rows ?? []).map((r) => ({ ...r, rate: Number(r.rate), provider_rate: r.provider_rate == null ? null : Number(r.provider_rate), provider: names.get(r.provider_id ?? '') ?? 'প্যানেল' }))
+    return (rows ?? []).map((r) => ({ ...r, rate: Number(r.rate), price_value: Number(r.price_value), provider_rate: r.provider_rate == null ? null : Number(r.provider_rate), provider: names.get(r.provider_id ?? '') ?? 'প্যানেল' }))
   })
 
 /** Set customer price = provider buy price + percent, for one provider's services in a platform or category. */
 export const adminSetScopeMarkup = createServerFn({ method: 'POST' })
-  .inputValidator((i) => z.object({ provider: z.string().uuid(), scope: z.enum(['platform', 'category']), id: z.string().uuid(), percent: z.number().finite().min(0).max(10000) }).parse(i))
+  .inputValidator((i) => z.object({ provider: z.string().uuid(), scope: z.enum(['platform', 'category']), id: z.string().uuid(), mode: z.enum(['percent', 'fixed', 'base']), value: z.number().finite().min(0).max(10000) }).parse(i))
   .handler(async ({ data }) => {
     const { admin, db } = await context()
     let catIds = [data.id]
@@ -185,16 +185,9 @@ export const adminSetScopeMarkup = createServerFn({ method: 'POST' })
       catIds = (cats ?? []).map((c) => c.id)
     }
     if (!catIds.length) return { count: 0 }
-    const { data: rows, error } = await db.from('services').select('id,provider_rate').eq('provider_id', data.provider).in('category_id', catIds).is('deleted_at', null).not('provider_rate', 'is', null).limit(5000)
-    if (error) throw new Error('সার্ভিস পাওয়া যায়নি')
-    let count = 0
-    for (const r of rows ?? []) {
-      const rate = Math.round(Number(r.provider_rate) * (1 + data.percent / 100) * 10000) / 10000
-      if (!(rate > 0)) continue
-      await db.from('services').update({ rate, custom_rate: true }).eq('id', r.id)
-      count++
-    }
+    const { data: rows, error } = await db.from('services').update({ price_mode: data.mode, price_value: data.mode === 'base' ? 0 : data.value }).eq('provider_id', data.provider).in('category_id', catIds).is('deleted_at', null).not('provider_rate', 'is', null).select('id')
+    if (error) throw new Error('দাম বসানো যায়নি')
     await bump(db)
-    await admin.logAdmin('provider_scope_markup', { ...data, count })
-    return { count }
+    await admin.logAdmin('provider_scope_markup', { ...data, count: rows?.length ?? 0 })
+    return { count: rows?.length ?? 0 }
   })

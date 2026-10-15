@@ -90,13 +90,18 @@ export const adminProviderServices = createServerFn({ method: 'POST' })
   })
 
 export const adminEditProviderService = createServerFn({ method: 'POST' })
-  .inputValidator((input) => z.object({ id: z.string().uuid(), name: z.string().trim().min(1).max(200).optional(), rate: z.number().finite().positive().max(1000000).optional(), active: z.boolean().optional() }).parse(input))
+  .inputValidator((input) => z.object({ id: z.string().uuid(), name: z.string().trim().min(1).max(200).optional(), rate: z.number().finite().positive().max(1000000).optional(), reset: z.boolean().optional(), active: z.boolean().optional() }).parse(input))
   .handler(async ({ data }) => {
     const { admin, db } = await context()
     const { id, ...values } = data
     const patch: Database['public']['Tables']['services']['Update'] = {}
     if (values.name !== undefined) { patch.name = values.name; patch.custom_name = true }
-    if (values.rate !== undefined) { patch.rate = values.rate; patch.custom_rate = true }
+    if (values.reset) { patch.price_mode = 'base'; patch.price_value = 0 }
+    else if (values.rate !== undefined) {
+      const { data: cur } = await db.from('services').select('provider_rate').eq('id', id).single()
+      if (cur?.provider_rate != null) { patch.price_mode = 'fixed'; patch.price_value = Math.round((values.rate - Number(cur.provider_rate)) * 10000) / 10000 }
+      else { patch.rate = values.rate; patch.custom_rate = true }
+    }
     if (values.active !== undefined) patch.active = values.active
     const { error } = await db.from('services').update(patch).eq('id', id).not('provider_id', 'is', null)
     if (error) throw new Error('সার্ভিস সংরক্ষণ করা যায়নি')
