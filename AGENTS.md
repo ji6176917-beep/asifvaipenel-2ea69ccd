@@ -15,10 +15,8 @@
 - Add Funds uses funds-reference scoped styling and dedicated banner assets, with official local-payment CDN pointers through its MethodLogo wrapper; preserve existing deposit submission logic. Why: isolate reference redesigns from other pages and money operations.
 - Global navigation keys RouteTransition and AppShell styling to the resolved location, uses no global pending/Suspense fallback, intent preloading without delay, and parameter-keyed remounts. Why: keep committed content until an atomic replacement is ready, avoiding blank gaps and mismatched layouts while preserving auth guards and shared caches.
 - New Order reference styling is scoped to /order with order-reference classes; preserve shared wallet, menus, authentication and service-order behavior. Why: page redesigns must not affect other screens.
-- The reference homepage uses a dedicated HomeShowcase and homepage-scoped CSS; keep shared auth, wallet, menu data and non-home styling intact so visual redesigns cannot alter business behavior.
-- Homepage statistics share LiveStats variants. Why: keep counts and timing consistent.
-- Use the uploaded brand logo CDN pointer directly in the shared desktop/mobile header; derive the public favicon from the same source asset. Why: stale admin logo overrides must not restore the retired mark.
-- Favicons use stable public files in the root head, never expiring URLs. Why: consistent browser/crawler branding.
+- Homepage uses HomeShowcase, homepage-scoped CSS and shared LiveStats variants; keep shared auth/wallet/menu behavior intact.
+- Use the uploaded brand logo CDN pointer directly in the shared desktop/mobile header; favicons are stable public files from the same source, in the root head. Why: stale overrides must not restore the retired mark.
 - All money changes go through SECURITY DEFINER Postgres functions (place_order, create_deposit, cancel_my_order) that write wallet_ledger; clients have SELECT-only grants on business tables. Why: balances must never be trusted from the client.
 - Sign-in by email/phone/User ID/username is resolved in a server function (src/lib/sign-in.functions.ts) so emails are never exposed to anonymous clients.
 - Signed-in pages live under src/routes/_authenticated/ (gate redirects to /sign-in?redirect=). Why: one place for auth guarding.
@@ -34,4 +32,4 @@
 - Hard-coded customer UI text is wrapped in tr("English") (useTr) and translated via the central src/lib/translations.json dictionary (per language, English fallback); admin labels fall back to it too. Why: one dictionary, new languages need no code changes.
 - Reseller docs use one scrolling page and placeholder keys; never expose credentials.
 - Upstream keys stay admin-only; stable IDs/claims avoid duplicate spending. Preserve manual/custom prices. Import all types; block unsupported paid orders. Secret-gated hourly catalogs run only for active providers.
-- Per-category panel choice lives in categories.source_provider/manual_control (admin-sources.functions.ts); every change snapshots service on/off state into service_snapshots for undo, and manual_control keeps orders out of provider dispatch. Why: one panel per category with safe rollback.
+- Per-category panel choice: categories.source_provider/manual_control; changes snapshot to service_snapshots for undo; manual_control skips provider dispatch. Why: one panel per category, safe rollback.
