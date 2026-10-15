@@ -521,6 +521,11 @@
 .order-search input::placeholder { color: var(--order-subtle); }
 .order-search .order-search-submit { width: 100px; height: 54px; flex-shrink: 0; border-radius: 999px; background: var(--order-green); color: var(--primary-foreground); box-shadow: none; }
 .order-search .order-search-submit svg { width: 28px; height: 28px; }
+.order-cat-grid { position: relative; z-index: 2; display: grid; grid-template-columns: repeat(6, minmax(0,1fr)); width: 88%; gap: 12px; margin: 0 auto 32px; }
+.order-cat-btn { display: flex; align-items: center; gap: 9px; min-width: 0; height: 42px; padding: 0 13px; background: var(--order-surface); border: 1px solid var(--order-line); border-radius: 8px; box-shadow: var(--order-shadow); font-size: 14px; font-weight: 500; transition: border-color .2s ease, box-shadow .2s ease; }
+.order-cat-btn .order-cat-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.order-cat-btn:hover { border-color: color-mix(in oklch, var(--order-green) 55%, var(--order-line)); box-shadow: 0 4px 14px color-mix(in oklch, var(--order-green) 14%, transparent); }
+.order-cat-btn:focus-visible { outline: 2px solid var(--order-green); outline-offset: 3px; }
 .order-platform-grid { display: grid; position: relative; z-index: 2; grid-template-columns: repeat(3, minmax(0,1fr)); width: 88%; gap: 14px 18px; }
 .order-platform-card { --platform-accent: var(--order-green); position: relative; overflow: hidden; display: flex; align-items: center; min-width: 0; gap: 14px; min-height: 116px; padding: 20px 13px; background: var(--order-surface); border: 1px solid var(--order-line); border-radius: 20px; box-shadow: var(--order-shadow); transition: transform .2s ease, border-color .2s ease; }
 .order-platform-card::after { content: ""; position: absolute; pointer-events: none; width: 85%; height: 65px; border-radius: 50%; right: -22%; bottom: -43px; background: color-mix(in oklch, var(--platform-accent) 10%, transparent); transform: rotate(-15deg); }

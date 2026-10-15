@@ -38,6 +38,25 @@ function OrderPage() {
     telegram: "Grow your Telegram channel",
   };
   const sequence = ["tiktok", "instagram", "facebook", "youtube", "telegram"];
+  // Category filter buttons — shown only for platforms that actually exist.
+  const CATS = [
+    { slug: "youtube", label: "YouTube" },
+    { slug: "facebook", label: "Facebook" },
+    { slug: "instagram", label: "Instagram" },
+    { slug: "tiktok", label: "TikTok" },
+    { slug: "telegram", label: "Telegram" },
+    { slug: "twitter", label: "X (Twitter)" },
+    { slug: "linkedin", label: "LinkedIn" },
+    { slug: "discord", label: "Discord" },
+    { slug: "spotify", label: "Spotify" },
+    { slug: "twitch", label: "Twitch" },
+    { slug: "soundcloud", label: "SoundCloud" },
+    { slug: "website", label: "Web Traffic" },
+  ];
+  const catButtons = CATS.flatMap((c) => {
+    const p = (data ?? []).find((p) => p.slug === c.slug);
+    return p ? [{ c, p }] : [];
+  });
   const platforms = [...(data ?? [])].sort((a, b) => {
     const rank = (slug: string) => sequence.includes(slug) ? sequence.indexOf(slug) : sequence.length;
     return rank(a.slug) - rank(b.slug);
@@ -60,6 +79,16 @@ function OrderPage() {
       {isError && <ErrorState />}
       {data && data.length === 0 && <Empty text={tr("No platforms available right now.")} />}
       {data && data.length > 0 && platforms.length === 0 && <Empty text={tr("No services found.")} />}
+      {catButtons.length > 0 && (
+        <nav className="order-cat-grid" aria-label={tr("Browse by platform")}>
+          {catButtons.map(({ c, p }) => (
+            <Link key={p.id} to="/service/$platform" params={{ platform: p.slug }} className="order-cat-btn">
+              <PlatformIcon slug={p.slug} logo={p.logo_url} name={p.name} className="h-[18px] w-[18px] shrink-0" />
+              <span className="order-cat-label">{tr(c.label)}</span>
+            </Link>
+          ))}
+        </nav>
+      )}
       <div className="order-platform-grid">
         {isLoading && Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-32 rounded-2xl" />)}
         {platforms.map((p) => (
