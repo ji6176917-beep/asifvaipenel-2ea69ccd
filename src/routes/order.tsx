@@ -72,14 +72,13 @@ function OrderPage() {
       </form>
       {isError && <ErrorState />}
       {data && data.length === 0 && <Empty text={tr("No platforms available right now.")} />}
-      {data && data.length > 0 && platforms.length === 0 && <Empty text={tr("No services found.")} />}
-      <div className="order-platform-grid">
-        {isLoading && Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-32 rounded-2xl" />)}
-        {platforms.map((p) => (
-          <Link key={p.id} to="/service/$platform" params={{ platform: p.slug }} className={`order-platform-card order-platform-${p.slug}`}>
-            <span className="order-platform-logo"><PlatformIcon slug={p.slug} logo={p.logo_url} name={p.name} className="h-full w-full" /></span>
-            <span className="order-platform-copy"><strong>{p.name} {tr("Service")}</strong></span>
-            <span className="order-platform-arrow"><ChevronRight aria-hidden /></span>
+      {data && data.length > 0 && buttons.length === 0 && <Empty text={tr("No services found.")} />}
+      <div className="order-cat-grid">
+        {isLoading && Array.from({ length: 12 }).map((_, i) => <Skeleton key={i} className="h-[42px] rounded-lg" />)}
+        {buttons.map(({ label, p }) => (
+          <Link key={p.id} to="/service/$platform" params={{ platform: p.slug }} className="order-cat-btn">
+            <PlatformIcon slug={p.slug} logo={p.logo_url} name={p.name} className="order-cat-icon" />
+            <span className="order-cat-label">{tr(label)}</span>
           </Link>
         ))}
       </div>
