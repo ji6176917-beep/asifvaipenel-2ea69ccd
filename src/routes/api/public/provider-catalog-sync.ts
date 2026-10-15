@@ -14,8 +14,9 @@ export const Route = createFileRoute('/api/public/provider-catalog-sync')({
     try { input = z.object({ id: z.string().uuid() }).parse(await request.json()) }
     catch { return new Response('Invalid request', { status: 400 }) }
     const { supabaseAdmin: db } = await import('@/integrations/supabase/client.server')
-    const { data: provider } = await db.from('service_providers').select('id,active').eq('id', input.id).is('deleted_at', null).maybeSingle()
-    if (!provider?.active) return Response.json({ skipped: true })
+    // Every connected provider syncs in the background, even when switched off for customers.
+    const { data: provider } = await db.from('service_providers').select('id').eq('id', input.id).is('deleted_at', null).maybeSingle()
+    if (!provider) return Response.json({ skipped: true })
     try {
       const { syncProvider } = await import('@/lib/providers.server')
       const result = await syncProvider(input.id)
