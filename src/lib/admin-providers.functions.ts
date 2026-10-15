@@ -25,8 +25,8 @@ export const adminSaveProvider = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     const { admin, db } = await context()
     const api_url = validateProviderUrl(data.api_url)
-    // Providers are always on; customer visibility is controlled per platform/category/service.
-    const values = { name: data.name, api_url, markup: data.markup, link_parameter: data.link_parameter, active: true, ...(data.api_key ? { api_key: data.api_key } : {}) }
+    // Editing keeps the admin's on/off choice; new providers start on.
+    const values = { name: data.name, api_url, markup: data.markup, link_parameter: data.link_parameter, ...(data.api_key ? { api_key: data.api_key } : {}) }
     let id = data.id
     if (id) {
       const { data: before } = await db.from('service_providers').select('markup').eq('id', id).single()
@@ -38,7 +38,7 @@ export const adminSaveProvider = createServerFn({ method: 'POST' })
       }
     } else {
       if (!data.api_key) throw new Error('প্রোভাইডারের গোপন কী দিন')
-      const { data: saved, error } = await db.from('service_providers').insert({ ...values, api_key: data.api_key }).select('id').single()
+      const { data: saved, error } = await db.from('service_providers').insert({ ...values, active: true, api_key: data.api_key }).select('id').single()
       if (error || !saved) throw new Error('প্রোভাইডার সংরক্ষণ করা যায়নি')
       id = saved.id
     }
@@ -55,7 +55,7 @@ export const adminProviderAction = createServerFn({ method: 'POST' })
     const worker = await import('./providers.server')
     if (data.action === 'sync') return worker.syncProvider(data.id)
     if (data.action === 'status') return worker.refreshProviderOrders(data.id)
-    if (data.action === 'on') await worker.syncProvider(data.id)
+    // On/off is instant; background catalog sync keeps every provider fresh regardless.
     const { error } = await db.from('service_providers').update({ active: data.action === 'on' }).eq('id', data.id).is('deleted_at', null)
     if (error) throw new Error('পরিবর্তন করা যায়নি')
     const { data: settings } = await db.from('site_settings').select('content_version').eq('id', 1).single()

@@ -39,7 +39,7 @@ export const adminSourceOverview = createServerFn({ method: 'POST' }).handler(as
     allApiServices(db),
     db.from('categories').select('id,name,platform_id,source_provider,manual_control').is('deleted_at', null).order('sort'),
     db.from('platforms').select('id,name,slug,logo_url').is('deleted_at', null).order('sort'),
-    db.from('service_providers').select('id,name,active').is('deleted_at', null).order('created_at'),
+    db.from('service_providers').select('id,name,active').is('deleted_at', null).eq('active', true).order('created_at'),
     db.from('service_snapshots').select('id,label,created_at').order('id', { ascending: false }).limit(20),
   ])
   const stats = new Map<string, Record<string, { total: number; on: number; min: number }>>()
