@@ -27,7 +27,7 @@ export function normalizeProviderServices(input: unknown) {
   const seen = new Set<string>()
   const rows = input.flatMap((item) => {
     const parsed = remoteService.safeParse(item)
-    if (!parsed.success || parsed.data.min > parsed.data.max) throw new Error('অসম্পূর্ণ সার্ভিস তালিকা এসেছে; পুরনো তালিকা অপরিবর্তিত আছে')
+    if (!parsed.success || parsed.data.min > parsed.data.max) { skipped++; return [] }
     const r = parsed.data
     if (seen.has(r.service)) return []
     seen.add(r.service)
@@ -36,6 +36,7 @@ export function normalizeProviderServices(input: unknown) {
     const platform = known.find((p) => new RegExp(`\\b${p}\\b`, 'i').test(title)) ?? 'other'
     return [{ service: r.service, name: r.name, type: r.type, rate: r.rate, min: r.min, max: r.max, available: providerServiceAvailable(r), category: r.category.slice(0, 120), platform, platform_name: platform === 'other' ? 'Other' : platform.charAt(0).toUpperCase() + platform.slice(1) }]
   })
+  if (input.length && skipped > input.length * 0.2) throw new Error('অসম্পূর্ণ সার্ভিস তালিকা এসেছে; পুরনো তালিকা অপরিবর্তিত আছে')
   return { rows, skipped }
 }
 
