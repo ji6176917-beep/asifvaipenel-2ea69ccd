@@ -47,7 +47,7 @@ function ProviderForm({ provider, onClose, onSaved }: { provider?: Provider | un
   const [url, setUrl] = useState(provider?.api_url ?? 'https://royalsmmworld.com/api/v2')
   const [key, setKey] = useState('')
   const [markup, setMarkup] = useState(String(provider?.markup ?? 0))
-  const [parameter, setParameter] = useState<'link' | 'url'>(provider?.link_parameter === 'link' ? 'link' : 'url')
+  const [parameter, setParameter] = useState<'link' | 'url'>(provider?.link_parameter === 'url' ? 'url' : 'link')
   const [busy, setBusy] = useState(false)
   return <form className="space-y-3 border-y border-border py-4" onSubmit={async (event) => {
     event.preventDefault(); setBusy(true)
@@ -64,7 +64,7 @@ function ProviderForm({ provider, onClose, onSaved }: { provider?: Provider | un
     <label className={labelCls}>প্রোভাইডারের নাম<input className={inputCls} required value={name} onChange={(e) => setName(e.target.value)} /></label>
     <label className={labelCls}>এপিআই ঠিকানা<input className={inputCls} type="url" required value={url} onChange={(e) => setUrl(e.target.value)} /></label>
     <label className={labelCls}>গোপন এপিআই কী{provider && ' (কী সংরক্ষিত আছে — বদলাতে চাইলে নতুন কী লিখুন)'}<input className={inputCls} type="password" autoComplete="new-password" placeholder={provider ? '•••••••• (কী সংরক্ষিত আছে)' : ''} required={!provider} value={key} onChange={(e) => setKey(e.target.value)} /></label>
-    <div className="grid gap-3 sm:grid-cols-2"><label className={labelCls}>সব সার্ভিসের দাম বৃদ্ধি (%)<input className={inputCls} type="number" min="0" max="10000" step="0.01" required value={markup} onChange={(e) => setMarkup(e.target.value)} /></label><label className={labelCls}>প্রোভাইডারের লিংক ঘর<select className={inputCls} value={parameter} onChange={(e) => setParameter(e.target.value === 'url' ? 'url' : 'link')}><option value="url">url (Royal SMM World)</option><option value="link">link (অন্যান্য প্যানেল)</option></select></label></div>
+    <div className="grid gap-3 sm:grid-cols-2"><label className={labelCls}>সব সার্ভিসের দাম বৃদ্ধি (%)<input className={inputCls} type="number" min="0" max="10000" step="0.01" required value={markup} onChange={(e) => setMarkup(e.target.value)} /></label><label className={labelCls}>প্রোভাইডারের লিংক ঘর<select className={inputCls} value={parameter} onChange={(e) => setParameter(e.target.value === 'url' ? 'url' : 'link')}><option value="link">link (সাধারণ — বেশিরভাগ প্যানেল)</option><option value="url">url (কিছু বিশেষ প্যানেল)</select></label></div>
     <Button disabled={busy} type="submit"><Save />{busy ? 'সংরক্ষণ হচ্ছে…' : 'সংরক্ষণ ও সার্ভিস আনুন'}</Button>
   </form>
 }
