@@ -17,7 +17,7 @@ const remoteService = z.object({
 }).passthrough()
 
 export function providerServiceAvailable(row: Record<string, unknown>) {
-  const flags = [row.active, row.enabled, row.available, row.status]
+  const flags = [row['active'], row['enabled'], row['available'], row['status']]
   return !flags.some((value) => value === false || value === 0 || ['0', 'false', 'disabled', 'inactive', 'off', 'removed', 'cancelled', 'canceled'].includes(String(value).toLowerCase()))
 }
 
