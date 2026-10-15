@@ -1,4 +1,6 @@
 # Roadmap
+- [ ] Add multi-provider service management, protected credentials, catalog import/markup, independent switches and mapped order dispatch without changing customer design.
+- [ ] Connect Royal SMM World and verify live import; requires a real provider key (uploaded video shows documentation only).
 - [x] Show full lower Add Funds image on desktop only; verified full 1920:640 image at 992×331 and unchanged 2.9 mobile ratio. Other styling untouched.
 - [x] Final read-only customer/login review: 11 signed-in/public pages and 4 guest auth pages open; invalid customer login rejected, session survives reload, no overflow/runtime errors, all 22 tests pass. Signup/email delivery and live money/settings writes not executed.
 - [ ] Final authenticated admin retest blocked: current admin password attempt did not establish a session. All 19 sections were verified in the previous audit; this pass only inspected source and signed-out access guard. Requires a working admin session to retest protected actions; no further password attempts made.
