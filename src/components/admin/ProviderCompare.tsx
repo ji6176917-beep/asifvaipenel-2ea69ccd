@@ -56,6 +56,11 @@ export function ProviderCompare() {
     <div className="flex flex-wrap gap-2">{data.providers.map((p, i) => <Button key={p.id} variant={p.id === pid ? 'default' : 'outline'} onClick={() => { setProvider(p.id); setPlatform(null) }}>প্রোভাইডার {i + 1}: {p.name}{!p.active && ' (বন্ধ)'}</Button>)}</div>
     {!plats.length ? <Card>এই প্যানেলে কোনো সার্ভিস নেই।</Card> : <>
       <div className="flex flex-wrap gap-2">{plats.map((p) => <Button key={p.id} variant={p.id === plat ? 'default' : 'outline'} size="sm" onClick={() => setPlatform(p.id)}><PlatformIcon slug={p.slug} logo={p.logo_url} name={p.name} className="h-4 w-4" />{p.name}</Button>)}</div>
+      {shown.length > 0 && <Card className="!p-3 flex flex-wrap items-center gap-2">
+        <span className="flex-1 text-sm">এক ক্লিকে পুরো {plats.find((p) => p.id === plat)?.name} ({shown.length}টি ক্যাটাগরি) এই প্যানেলে দিন, বা একটা একটা করে নিচে থেকে বাছুন।</span>
+        <Button size="sm" disabled={busy} onClick={() => confirm('এই প্ল্যাটফর্মের সব ক্যাটাগরি এই প্যানেলে চালু হবে, অন্য প্যানেলেরগুলো বন্ধ হবে। করবেন?') && void run(async () => { for (const c of shown) await setCat({ data: { provider: pid, category_id: c.id, on: true } }) }, 'সব ক্যাটাগরি এই প্যানেলে চালু হয়েছে')}>সব এই প্যানেলে চালু</Button>
+        <Button size="sm" variant="outline" disabled={busy} onClick={() => void run(() => setSource({ data: { ids: shown.map((c) => c.id), manual: true } }), 'সবগুলো এখন নিজে কন্ট্রোলে')}>সব নিজে কন্ট্রোল</Button>
+      </Card>}
       <div className="space-y-2">{shown.map((c) => {
         const mine = c.providers[pid] ?? { total: 0, on: 0, min: 0 }
         const on = mine.on > 0
