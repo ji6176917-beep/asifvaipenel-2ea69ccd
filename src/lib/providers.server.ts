@@ -10,11 +10,34 @@ export async function providerRequest(provider: { api_url: string; api_key: stri
   try { return await response.json() as unknown } catch { throw new Error('প্রোভাইডারের উত্তর সঠিক নয়') }
 }
 
+/** Detects the provider's account currency and returns provider-currency units per 1 USD (with a small safety margin). */
+async function providerUsdRate(provider: { api_url: string; api_key: string; currency: string; usd_rate: number | string }) {
+  let currency = provider.currency || 'USD'
+  try {
+    const bal = await providerRequest(provider, { action: 'balance' })
+    if (bal && typeof bal === 'object' && 'currency' in bal && /^[A-Za-z]{3}$/.test(String(bal.currency))) currency = String(bal.currency).toUpperCase()
+  } catch { /* keep stored currency */ }
+  if (currency === 'USD' || currency === 'USDT') return { currency, rate: 1 }
+  try {
+    const fx = await fetch('https://open.er-api.com/v6/latest/USD', { signal: AbortSignal.timeout(10000) })
+    const json = await fx.json() as { rates?: Record<string, number> }
+    const live = Number(json.rates?.[currency])
+    // 2% fewer units per USD => USD cost rounds up, never a loss.
+    if (live > 0) return { currency, rate: Math.round(live * 0.98 * 10000) / 10000 }
+  } catch { /* fall through */ }
+  const stored = Number(provider.usd_rate)
+  if (provider.currency === currency && stored > 0 && stored !== 1) return { currency, rate: stored }
+  throw new Error(`${currency} থেকে ডলার রেট পাওয়া যায়নি; পুরনো দাম অপরিবর্তিত আছে`)
+}
+
 export async function syncProvider(id: string) {
   const { supabaseAdmin: db } = await import('@/integrations/supabase/client.server')
   const { data: provider, error } = await db.from('service_providers').select('*').eq('id', id).is('deleted_at', null).single()
   if (error || !provider) throw new Error('প্রোভাইডার পাওয়া যায়নি')
-  const { rows, skipped } = normalizeProviderServices(await providerRequest(provider, { action: 'services' }))
+  const { rows: rawRows, skipped } = normalizeProviderServices(await providerRequest(provider, { action: 'services' }))
+  const fx = await providerUsdRate(provider)
+  const rows = fx.rate === 1 ? rawRows : rawRows.map((r) => ({ ...r, rate: Math.ceil((r.rate / fx.rate) * 10000) / 10000 }))
+  await db.from('service_providers').update({ currency: fx.currency, usd_rate: fx.rate }).eq('id', id)
   const { data: count, error: syncError } = await db.rpc('sync_provider_catalog', { _provider: id, _rows: rows })
   if (syncError) throw new Error('সার্ভিস সংরক্ষণ করা যায়নি')
   return { count: count ?? 0, skipped }
