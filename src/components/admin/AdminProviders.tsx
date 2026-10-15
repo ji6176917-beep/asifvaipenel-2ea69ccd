@@ -22,7 +22,7 @@ export function AdminProviders({ providers }: { providers: Provider[] }) {
     setBusy(id)
     try {
       const result = await action({ data: { id, action: mode } })
-      toast.success('count' in result ? `${result.count}টি সার্ভিস এসেছে; ${result.skipped}টি বিশেষ ধরনের সার্ভিস বাদ` : 'updated' in result ? `${result.updated}টি অর্ডার আপডেট হয়েছে` : 'পরিবর্তন সংরক্ষিত')
+      toast.success('count' in result ? `${result.count}টি সার্ভিস এসেছে` : 'updated' in result ? `${result.updated}টি অর্ডার আপডেট হয়েছে` : 'পরিবর্তন সংরক্ষিত')
       refresh()
     } catch (e) { toast.error(e instanceof Error ? e.message : 'অনুরোধ ব্যর্থ হয়েছে') }
     finally { setBusy(null) }
@@ -54,7 +54,7 @@ function ProviderForm({ provider, onClose, onSaved }: { provider?: Provider | un
       const result = await save({ data: { id: provider?.id, name, api_url: url, api_key: key || undefined, markup: Number(markup), link_parameter: parameter } })
       setKey(''); onSaved()
       if (result.syncError) toast.warning(result.syncError)
-      else toast.success(`${result.count}টি সার্ভিস এসেছে; ${result.skipped}টি বিশেষ ধরনের সার্ভিস বাদ`)
+      else toast.success(`${result.count}টি সার্ভিস এসেছে`)
       onClose()
     } catch (e) { toast.error(e instanceof Error ? e.message : 'সংরক্ষণ করা যায়নি') }
     finally { setBusy(false) }

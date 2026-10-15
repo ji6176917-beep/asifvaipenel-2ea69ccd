@@ -169,6 +169,20 @@
       "when": 1792053681737,
       "tag": "0023_provider_service_management",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1792054643050,
+      "tag": "0024_provider_complete_catalog_sync",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1792054776784,
+      "tag": "0025_provider_catalog_schedule_lifecycle",
+      "breakpoints": true
     }
   ]
 }
