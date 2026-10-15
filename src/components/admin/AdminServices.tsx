@@ -32,7 +32,7 @@ export function AdminServices() {
   return <div className="space-y-4"><div className="flex flex-wrap gap-3 border-b border-border pb-3">
     <div className="flex items-center gap-2"><Button variant={mode === "own" ? "default" : "outline"} onClick={() => setMode("own")}>নিজের সার্ভিস</Button><Switch checked={data.sources.own_enabled} aria-label="নিজের সার্ভিস অন/অফ" onCheckedChange={(v) => void change("own_enabled", v)} /></div>
     <div className="flex items-center gap-2"><Button variant={mode === "api" ? "default" : "outline"} onClick={() => setMode("api")}>এপিআই সার্ভিস</Button><Switch checked={data.sources.api_enabled} aria-label="এপিআই সার্ভিস অন/অফ" onCheckedChange={(v) => void change("api_enabled", v)} /></div>
-    <Button variant={mode === "compare" ? "default" : "outline"} onClick={() => setMode("compare")}>প্যানেল তুলনা</Button>
+    <Button variant={mode === "compare" ? "default" : "outline"} onClick={() => setMode("compare")}>প্যানেল বাছাই</Button>
   </div>{mode === "own" ? <OwnServices /> : mode === "compare" ? <ProviderCompare /> : <AdminProviders providers={data.providers} />}</div>;
 }
 function OwnServices() {
