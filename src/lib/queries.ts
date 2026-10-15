@@ -37,7 +37,8 @@ export const catalogQuery = (platform: string) => queryOptions({
       svcs.push(...(page.data ?? []));
       if ((page.data?.length ?? 0) < 1000) break;
     }
-    return { platform: p, cats: cats ?? [], svcs: svcs ?? [] };
+    const used = new Set(svcs.map((s) => s.category_id));
+    return { platform: p, cats: (cats ?? []).filter((c) => used.has(c.id)), svcs };
   },
   staleTime: 60_000,
 });

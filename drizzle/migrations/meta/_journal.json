@@ -183,6 +183,13 @@
       "when": 1792054776784,
       "tag": "0025_provider_catalog_schedule_lifecycle",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1792056083491,
+      "tag": "0026_provider_sync_five_platforms_manual",
+      "breakpoints": true
     }
   ]
 }
