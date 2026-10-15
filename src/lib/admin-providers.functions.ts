@@ -13,7 +13,7 @@ async function context() {
 export const adminListProviders = createServerFn({ method: 'POST' }).handler(async () => {
   const { db } = await context()
   const [{ data: providers, error }, { data: sources }] = await Promise.all([
-    db.from('service_providers').select('id,name,api_url,active,markup,link_parameter,last_synced_at').is('deleted_at', null).order('created_at'),
+    db.from('service_providers').select('id,name,api_url,active,markup,link_parameter,last_synced_at,currency,usd_rate').is('deleted_at', null).order('created_at'),
     db.from('service_source_settings').select('own_enabled,api_enabled').eq('id', 1).maybeSingle(),
   ])
   if (error) throw new Error('প্রোভাইডার তালিকা পাওয়া যায়নি')

@@ -1,0 +1,1 @@
+ALTER TABLE public.service_providers ADD COLUMN IF NOT EXISTS currency text NOT NULL DEFAULT 'USD', ADD COLUMN IF NOT EXISTS usd_rate numeric NOT NULL DEFAULT 1;
