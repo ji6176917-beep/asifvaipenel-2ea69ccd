@@ -81,7 +81,7 @@ export function ProviderCompare() {
         const mine = c.providers[pid] ?? { total: 0, on: 0, min: 0 }
         return <Card key={c.id} className="!p-3">
           <div className="flex flex-wrap items-center gap-3">
-            <button className="flex min-w-0 flex-1 items-center gap-1 text-left font-semibold hover:underline" onClick={() => setOpenCat({ id: c.id, name: c.name })}>
+            <button className="flex w-full min-w-0 items-center gap-1 text-left font-semibold hover:underline sm:w-auto sm:flex-1" onClick={() => setOpenCat({ id: c.id, name: c.name })}>
               <span className="break-words">{c.name}</span><ChevronRight className="h-4 w-4 shrink-0" />
             </button>
             {status(mine)}
@@ -122,7 +122,7 @@ function CategoryServices({ cat, provider, onBack }: { cat: { id: string; name: 
           return <div key={s.id} className="space-y-2 border-t border-border pt-2">
             {editing === s.id ? <EditRow s={s} busy={busy} onCancel={() => setEditing(null)} onSave={(name, rate) => void run(async () => { await edit({ data: { id: s.id, name, rate } }); setEditing(null) }, 'সংরক্ষিত')} /> :
               <div className="flex flex-wrap items-center gap-2 text-sm">
-                <span className="min-w-0 flex-1 break-words">#{s.service_no ?? '—'} {s.name}{!s.provider_available && <span className="text-destructive"> (প্যানেলে নেই)</span>}</span>
+                <span className="w-full min-w-0 break-words sm:w-auto sm:flex-1">#{s.service_no ?? '—'} {s.name}{!s.provider_available && <span className="text-destructive"> (প্যানেলে নেই)</span>}</span>
                 <span className="font-semibold">{money(s.rate)}/{s.rate_per}</span>
                 {s.provider_rate != null && <span className="text-xs text-muted-foreground">আসল এপিআই দাম {money(s.provider_rate)} · {ruleText(s)}</span>}
                 {s.provider_rate != null && s.price_mode !== 'base' && <Button size="sm" variant="ghost" disabled={busy} onClick={() => confirm('এই সার্ভিসের দাম আসল এপিআই দামে রিসেট করবেন?') && void run(() => edit({ data: { id: s.id, reset: true } }), 'দাম রিসেট হয়েছে')}>দাম রিসেট</Button>}
@@ -168,7 +168,7 @@ export function MarkupBox({ label, busy, onApply }: { label: string; busy: boole
   const [p, setP] = useState(''), [mode, setMode] = useState<'percent' | 'fixed'>('percent')
   const n = Number(p)
   return <div className="flex flex-wrap items-center gap-2 text-sm">
-    <span>{label}</span>
+    <span className="w-full sm:w-auto">{label}</span>
     <Input className="w-24" type="number" min="0" step="0.01" placeholder="যেমন 20" value={p} onChange={(e) => setP(e.target.value)} />
     <select className="h-9 rounded-md border border-input bg-background px-2" value={mode} onChange={(e) => setMode(e.target.value as 'percent' | 'fixed')}>
       <option value="percent">% বেশি</option>
