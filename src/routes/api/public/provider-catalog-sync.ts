@@ -10,7 +10,7 @@ export const Route = createFileRoute('/api/public/provider-catalog-sync')({
     const a = new TextEncoder().encode(expected)
     const b = new TextEncoder().encode(supplied)
     if (a.byteLength !== b.byteLength || !timingSafeEqual(a, b)) return new Response('Unauthorized', { status: 401 })
-    let input: { id?: string; all?: boolean }
+    let input: { id?: string | undefined; all?: boolean | undefined }
     try { input = z.object({ id: z.string().uuid().optional(), all: z.boolean().optional() }).refine((v) => v.id || v.all).parse(await request.json()) }
     catch { return new Response('Invalid request', { status: 400 }) }
     const { supabaseAdmin: db } = await import('@/integrations/supabase/client.server')
