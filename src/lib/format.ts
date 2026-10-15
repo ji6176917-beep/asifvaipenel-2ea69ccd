@@ -63,3 +63,10 @@ export function telegramUrl(u?: string | null) {
   const v = (u ?? "").trim().replace(/^@/, "").replace(/^https?:\/\/t\.me\//, "");
   return v ? `https://t.me/${v}` : null;
 }
+
+/** Per-unit service rates keep up to 4 decimals so cheap services never look like $0.00. */
+export function rateMoney(n: number | string | null | undefined) {
+  const v = Number(n ?? 0);
+  if (v === 0 || Math.abs(v) >= 0.01) return `$${v.toFixed(2)}`;
+  return `$${Number(v.toFixed(4))}`;
+}
