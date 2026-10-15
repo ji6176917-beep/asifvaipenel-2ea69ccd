@@ -8,7 +8,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Card, Empty, inputCls, labelCls, ErrorState } from '@/components/ui-kit'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
-import { fmtDate, money, rateMoney } from "@/lib/format'
+import { fmtDate, money, rateMoney } from "@/lib/format"
 
 type Provider = Awaited<ReturnType<typeof adminListProviders>>['providers'][number]
 export function AdminProviders({ providers }: { providers: Provider[] }) {

@@ -11,7 +11,7 @@ import { Switch } from '@/components/ui/switch'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { PlatformIcon } from '@/lib/brand'
-import { fmtDate, money, rateMoney } from "@/lib/format'
+import { fmtDate, money, rateMoney } from "@/lib/format"
 
 type Svc = Awaited<ReturnType<typeof adminCategoryServices>>[number]
 
