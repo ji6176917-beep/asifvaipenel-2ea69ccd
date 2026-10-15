@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Search, ChevronRight, Rocket } from "lucide-react";
+import { Search, Rocket } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { catalogQuery, platformsQuery } from "@/lib/queries";
 import { PlatformIcon } from "@/lib/brand";
@@ -25,6 +25,23 @@ export const Route = createFileRoute("/order")({
   component: OrderPage,
 });
 
+// Filter buttons shown on the New Order page: curated order first, any extra
+// platforms from the database are appended after these.
+const CAT_BUTTONS: { slug: string; label: string }[] = [
+  { slug: "youtube", label: "YouTube" },
+  { slug: "facebook", label: "Facebook" },
+  { slug: "instagram", label: "Instagram" },
+  { slug: "tiktok", label: "TikTok" },
+  { slug: "telegram", label: "Telegram" },
+  { slug: "twitter", label: "X (Twitter)" },
+  { slug: "linkedin", label: "LinkedIn" },
+  { slug: "discord", label: "Discord" },
+  { slug: "spotify", label: "Spotify" },
+  { slug: "twitch", label: "Twitch" },
+  { slug: "soundcloud", label: "SoundCloud" },
+  { slug: "website", label: "Web Traffic" },
+];
+
 function OrderPage() {
   const tr = useTr();
   const [search, setSearch] = useState("");
@@ -32,16 +49,12 @@ function OrderPage() {
   const qc = useQueryClient();
   // Warm every platform's order form so the first tap opens it fully populated.
   useEffect(() => { (data ?? []).forEach((p) => { qc.prefetchQuery(catalogQuery(p.slug)); }); }, [data, qc]);
-  const descriptions: Record<string, string> = {
-    tiktok: "Grow your TikTok presence", instagram: "Boost your Instagram",
-    facebook: "Get more Facebook engagement", youtube: "Increase your YouTube growth",
-    telegram: "Grow your Telegram channel",
-  };
-  const sequence = ["tiktok", "instagram", "facebook", "youtube", "telegram"];
-  const platforms = [...(data ?? [])].sort((a, b) => {
-    const rank = (slug: string) => sequence.includes(slug) ? sequence.indexOf(slug) : sequence.length;
-    return rank(a.slug) - rank(b.slug);
-  }).filter((p) => `${p.name} ${descriptions[p.slug] ?? ""}`.toLowerCase().includes(search.trim().toLowerCase()));
+  const bySlug = new Map((data ?? []).map((p) => [p.slug, p] as const));
+  const catSlugs = new Set(CAT_BUTTONS.map((c) => c.slug));
+  const buttons = [
+    ...CAT_BUTTONS.flatMap((c) => { const p = bySlug.get(c.slug); return p ? [{ label: c.label, p }] : []; }),
+    ...(data ?? []).filter((p) => !catSlugs.has(p.slug)).map((p) => ({ label: p.name, p })),
+  ].filter((b) => b.label.toLowerCase().includes(search.trim().toLowerCase()));
   return (
     <div className="order-reference-page">
       <section className="order-welcome">
