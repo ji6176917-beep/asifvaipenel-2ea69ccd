@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import { ArrowLeft, ChevronRight, History, Pencil, Power, Save } from 'lucide-react'
 import { toast } from 'sonner'
-import { adminCategoryServices, adminRestoreSnapshot, adminSetCategorySource, adminSetProviderCategory, adminSourceBulk, adminSourceOverview } from '@/lib/admin-sources.functions'
+import { adminCategoryServices, adminRestoreSnapshot, adminSetCategorySource, adminSetProviderScope, adminSourceBulk, adminSourceOverview } from '@/lib/admin-sources.functions'
 import { adminEditProviderService, adminPickService } from '@/lib/admin-providers.functions'
 import { Card, ErrorState } from '@/components/ui-kit'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -17,7 +17,7 @@ type Svc = Awaited<ReturnType<typeof adminCategoryServices>>[number]
 
 /** Provider 1 / 2 / 3 tabs → platform → category ON/OFF (other panels auto-off) → services with edit and panel switch. */
 export function ProviderCompare() {
-  const load = useServerFn(adminSourceOverview), setCat = useServerFn(adminSetProviderCategory), setSource = useServerFn(adminSetCategorySource)
+  const load = useServerFn(adminSourceOverview), setScope = useServerFn(adminSetProviderScope), setSource = useServerFn(adminSetCategorySource)
   const bulk = useServerFn(adminSourceBulk), restore = useServerFn(adminRestoreSnapshot)
   const qc = useQueryClient()
   const { data, isError, isLoading } = useQuery({ queryKey: ['source-overview'], queryFn: () => load() })
