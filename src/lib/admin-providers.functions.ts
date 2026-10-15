@@ -111,11 +111,8 @@ export const adminCompareServices = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     const { db } = await context()
     const words = data.q.replace(/[%,()*]/g, ' ').split(/\s+/).filter(Boolean).slice(0, 5)
-    const [{ data: providers }, base] = await Promise.all([
-      db.from('service_providers').select('id,name').is('deleted_at', null),
-      Promise.resolve(db.from('services').select('id,service_no,name,rate,rate_per,min_qty,max_qty,active,provider_available,provider_id,categories!inner(name,platforms!inner(name))').not('provider_id', 'is', null).is('deleted_at', null)),
-    ])
-    let query = base
+    const { data: providers } = await db.from('service_providers').select('id,name').is('deleted_at', null)
+    let query = db.from('services').select('id,service_no,name,rate,rate_per,min_qty,max_qty,active,provider_available,provider_id,categories!inner(name,platforms!inner(name))').not('provider_id', 'is', null).is('deleted_at', null)
     for (const w of words) query = query.ilike('name', `%${w}%`)
     const { data: rows, error } = await query.order('rate').limit(200)
     if (error) throw new Error('সার্ভিস পাওয়া যায়নি')
