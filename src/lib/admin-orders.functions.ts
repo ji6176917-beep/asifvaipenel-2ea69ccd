@@ -91,7 +91,8 @@ export const adminUpdateOrder = createServerFn({ method: "POST" })
   }).parse(d))
   .handler(async ({ data }) => {
     const { s, db } = await ctx();
-    const { data: before } = await db.from("orders").select("order_code, status, refunded, delivered_qty").eq("id", data.id).maybeSingle();
+    const { data: before } = await db.from("orders").select("order_code, status, refunded, delivered_qty, provider_id").eq("id", data.id).maybeSingle();
+    if (before?.provider_id) throw new Error("এই অর্ডার প্রোভাইডার পরিচালনা করছে; এপিআই সার্ভিস থেকে অর্ডার আপডেট করুন");
     const { data: r, error } = await db.rpc("admin_update_order_status", {
       _order_id: data.id, _status: data.status, _delivered: data.delivered ?? null as never, _note: data.note ?? "",
     });
@@ -108,6 +109,8 @@ export const adminBulkUpdateOrders = createServerFn({ method: "POST" })
     const { s, db } = await ctx();
     let ok = 0, failed = 0, refunded = 0;
     for (const id of data.ids) {
+      const { data: order } = await db.from("orders").select("provider_id").eq("id", id).single();
+      if (order?.provider_id) { failed++; continue; }
       const { data: r, error } = await db.rpc("admin_update_order_status", { _order_id: id, _status: data.status, _delivered: null as never, _note: data.note ?? "" });
       if (error) failed++; else { ok++; refunded += Number((r as { refund: number }).refund ?? 0); }
     }

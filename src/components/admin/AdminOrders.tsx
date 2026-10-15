@@ -71,7 +71,7 @@ export function PlatformOrders({ platform, source, onBack }: { platform?: { slug
       const a = document.createElement("a"); a.href = url; a.download = `orders-${platform?.slug ?? source ?? "all"}-${tab}.csv`; a.click(); URL.revokeObjectURL(url);
     } catch (e) { toast.error((e as Error).message); }
   };
-  const bulkable = (data ?? []).filter((o) => o.status === "pending");
+  const bulkable = (data ?? []).filter((o) => o.status === "pending" && !o.provider_id);
 
   return (
     <div className="space-y-4">
@@ -117,17 +117,19 @@ export function PlatformOrders({ platform, source, onBack }: { platform?: { slug
 
 function OrderCard({ o, selected, onSelect, onAct }: { o: Order; selected: boolean; onSelect: (v: boolean) => void; onAct: (a: Act) => void }) {
   const [hist, setHist] = useState(false);
-  const acts: Act[] = o.status === "pending" ? ["processing", "rejected"] : o.status === "processing" ? ["completed", "partial", "rejected"] : [];
+  const acts: Act[] = o.provider_id ? [] : o.status === "pending" ? ["processing", "rejected"] : o.status === "processing" ? ["completed", "partial", "rejected"] : [];
   return (
     <Card className="!p-4 space-y-2 text-sm">
       <div className="flex flex-wrap items-center gap-2">
-        {o.status === "pending" && <input type="checkbox" aria-label="Select order" checked={selected} onChange={(e) => onSelect(e.target.checked)} />}
+        {o.status === "pending" && !o.provider_id && <input type="checkbox" aria-label="Select order" checked={selected} onChange={(e) => onSelect(e.target.checked)} />}
         <Copyable value={o.order_code} className="font-semibold" />
         <StatusBadge status={o.status} />
+        {o.provider_id && <span className="text-xs text-muted-foreground">প্রোভাইডার অর্ডার: {o.provider_order_id ?? o.dispatch_state}</span>}
         {o.source === "api" && <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-bold uppercase text-primary">API · {o.user?.username ?? "user"}</span>}
         <span className="ml-auto text-xs text-muted-foreground">{fmtDate(o.created_at)}</span>
       </div>
       <div className="grid gap-1 sm:grid-cols-2">
+        {o.provider_error && <div className="text-sm text-destructive sm:col-span-2">{o.provider_error}</div>}
         <div><span className="text-muted-foreground">User: </span>{o.user?.full_name || o.user?.username || "—"} {o.user && <Copyable value={o.user.public_id} className="text-xs" />}</div>
         <div><span className="text-muted-foreground">Category: </span>{o.platform_name} · {o.category_name}</div>
         <div className="sm:col-span-2"><span className="text-muted-foreground">Service: </span>{o.service_name}</div>
