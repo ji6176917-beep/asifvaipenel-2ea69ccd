@@ -21,6 +21,21 @@ export function providerServiceAvailable(row: Record<string, unknown>) {
   return !flags.some((value) => value === false || value === 0 || ['0', 'false', 'disabled', 'inactive', 'off', 'removed', 'cancelled', 'canceled'].includes(String(value).toLowerCase()))
 }
 
+const PLATFORM_PATTERNS: [string, RegExp][] = [
+  ['instagram', /\b(instagram|insta|ig)\b/i], ['facebook', /\b(facebook|fb)\b/i], ['youtube', /\b(youtube|yt)\b/i],
+  ['tiktok', /\btik\s?tok\b/i], ['telegram', /\b(telegram|tg)\b/i], ['twitter', /\b(twitter|x\.com|tweets?)\b/i],
+  ['threads', /\bthreads\b/i], ['spotify', /\bspotify\b/i], ['linkedin', /\blinked\s?in\b/i], ['snapchat', /\bsnap\s?chat\b/i],
+  ['pinterest', /\bpinterest\b/i], ['discord', /\bdiscord\b/i], ['twitch', /\btwitch\b/i], ['whatsapp', /\bwhats\s?app\b/i],
+  ['soundcloud', /\bsound\s?cloud\b/i], ['reddit', /\breddit\b/i], ['kick', /\bkick\b/i], ['vk', /\b(vk|vkontakte)\b/i],
+  ['kwai', /\bkwai\b/i], ['shopee', /\bshopee\b/i], ['quora', /\bquora\b/i], ['tumblr', /\btumblr\b/i], ['vimeo', /\bvimeo\b/i],
+  ['dailymotion', /\bdailymotion\b/i], ['website', /\b(website|web traffic|traffic)\b/i],
+]
+const PLATFORM_NAMES: Record<string, string> = { tiktok: 'TikTok', youtube: 'YouTube', linkedin: 'LinkedIn', soundcloud: 'SoundCloud', whatsapp: 'WhatsApp', vk: 'VK', twitter: 'Twitter / X', website: 'Website Traffic', other: 'Other' }
+
+export function detectPlatform(title: string) {
+  return PLATFORM_PATTERNS.find(([, re]) => re.test(title))?.[0] ?? 'other'
+}
+
 export function normalizeProviderServices(input: unknown) {
   if (!Array.isArray(input)) throw new Error('সঠিক সার্ভিস তালিকা পাওয়া যায়নি')
   let skipped = 0
