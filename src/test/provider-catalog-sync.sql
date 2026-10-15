@@ -6,7 +6,7 @@ BEGIN
   PERFORM public.sync_provider_catalog(p,'[{"service":"1","name":"Test likes","category":"Test","platform":"facebook","platform_name":"Facebook","type":"Default","rate":10,"min":1,"max":100,"available":true},{"service":"2","name":"Comments","category":"Test","platform":"facebook","platform_name":"Facebook","type":"Custom Comments","rate":2,"min":1,"max":100,"available":true}]'::jsonb);
   SELECT count(*) INTO n FROM public.services WHERE provider_id=p;
   IF n<>2 THEN RAISE EXCEPTION 'All service types must import'; END IF;
-  IF EXISTS(SELECT 1 FROM public.services WHERE provider_id=p AND active) THEN RAISE EXCEPTION 'Imported services must start OFF'; END IF;
+  IF EXISTS(SELECT 1 FROM public.services WHERE provider_id=p AND NOT active) THEN RAISE EXCEPTION 'Imported services must start ON'; END IF;
   PERFORM public.sync_provider_catalog(p,'[{"service":"9","name":"X","category":"T","platform":"other","platform_name":"Other","type":"Default","rate":1,"min":1,"max":10,"available":true}]'::jsonb);
   IF EXISTS(SELECT 1 FROM public.services WHERE provider_id=p AND provider_service_id='9') THEN RAISE EXCEPTION 'Only five platforms import'; END IF;
   SELECT id,rate INTO s,r FROM public.services WHERE provider_id=p AND provider_service_id='1';
