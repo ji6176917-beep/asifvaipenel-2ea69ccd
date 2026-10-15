@@ -12,7 +12,7 @@ async function ctx() {
 const BACKUP_TABLES = [
   "profiles", "user_roles", "platforms", "categories", "services", "orders", "order_status_history",
   "deposits", "payment_methods", "wallet_ledger", "notifications", "broadcasts", "menu_items", "pages",
-  "page_versions", "qna", "songs", "site_settings", "ui_labels", "ui_icons", "sign_ins", "admin_log",
+  "page_versions", "qna", "songs", "site_settings", "ui_labels", "ui_icons", "sign_ins", "admin_log", "service_providers", "service_source_settings",
 ] as const;
 
 const TRASH_TABLES = {
@@ -30,7 +30,8 @@ const trashEnum = z.enum(Object.keys(TRASH_TABLES) as [TrashTable, ...TrashTable
 async function fetchAll(db: any, table: string) {
   const out: any[] = [];
   for (let from = 0; ; from += 1000) {
-    const { data, error } = await db.from(table).select("*").range(from, from + 999);
+    const columns = table === "service_providers" ? "id,name,api_url,active,markup,link_parameter,last_synced_at,created_at,deleted_at" : "*";
+    const { data, error } = await db.from(table).select(columns).range(from, from + 999);
     if (error) throw new Error(`${table}: ${error.message}`);
     out.push(...(data ?? []));
     if (!data || data.length < 1000) break;
