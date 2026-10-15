@@ -57,7 +57,7 @@ export function ProviderCompare() {
     {!plats.length ? <Card>এই প্যানেলে কোনো সার্ভিস নেই।</Card> : <>
       <div className="flex flex-wrap gap-2">{plats.map((p) => <Button key={p.id} variant={p.id === plat ? 'default' : 'outline'} size="sm" onClick={() => setPlatform(p.id)}><PlatformIcon slug={p.slug} logo={p.logo_url} name={p.name} className="h-4 w-4" />{p.name}</Button>)}</div>
       <div className="space-y-2">{shown.map((c) => {
-        const mine = c.providers[pid]
+        const mine = c.providers[pid] ?? { total: 0, on: 0, min: 0 }
         const on = mine.on > 0
         const others = Object.entries(c.providers).filter(([k, v]) => k !== pid && v.on > 0).map(([k]) => names.get(k) ?? 'অন্য প্যানেল')
         return <Card key={c.id} className="!p-3">
