@@ -68,11 +68,14 @@ export function ProviderCompare() {
         <Button size="sm" variant="outline" disabled={busy} onClick={() => confirm('এই প্রোভাইডারের সব সার্ভিস বন্ধ করবেন?') && scope('all', null, false, 'পুরো এপিআই বন্ধ')}>পুরো এপিআই বন্ধ</Button>
       </Card>
       <div className="flex flex-wrap gap-2">{plats.map((p) => <Button key={p.id} variant={p.id === plat ? 'default' : 'outline'} size="sm" onClick={() => setPlatform(p.id)}><PlatformIcon slug={p.slug} logo={p.logo_url} name={p.name} className="h-4 w-4" />{p.name}</Button>)}</div>
-      {shown.length > 0 && <Card className="!p-3 flex flex-wrap items-center gap-2">
-        <span className="flex-1 text-sm font-semibold">{plats.find((p) => p.id === plat)?.name} (এই প্রোভাইডারে): {status(platSum)}</span>
-        <Button size="sm" disabled={busy} onClick={() => scope('platform', plat!, true, 'চালু হয়েছে')}>সব চালু</Button>
-        <Button size="sm" variant="outline" disabled={busy} onClick={() => scope('platform', plat!, false, 'বন্ধ হয়েছে')}>সব বন্ধ</Button>
-        <Button size="sm" variant="outline" disabled={busy} onClick={() => void run(() => setSource({ data: { ids: shown.map((c) => c.id), manual: true } }), 'সবগুলো এখন নিজে কন্ট্রোলে')}>সব নিজে কন্ট্রোল</Button>
+      {shown.length > 0 && <Card className="!p-3 space-y-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="flex-1 text-sm font-semibold">{plats.find((p) => p.id === plat)?.name} (এই প্রোভাইডারে): {status(platSum)}</span>
+          <Button size="sm" disabled={busy} onClick={() => scope('platform', plat!, true, 'চালু হয়েছে')}>সব চালু</Button>
+          <Button size="sm" variant="outline" disabled={busy} onClick={() => scope('platform', plat!, false, 'বন্ধ হয়েছে')}>সব বন্ধ</Button>
+          <Button size="sm" variant="outline" disabled={busy} onClick={() => void run(() => setSource({ data: { ids: shown.map((c) => c.id), manual: true } }), 'সবগুলো এখন নিজে কন্ট্রোলে')}>সব নিজে কন্ট্রোল</Button>
+        </div>
+        <MarkupBox label={`পুরো ${plats.find((p) => p.id === plat)?.name ?? ''}-এর দাম: কেনা দাম +`} busy={busy} onApply={(percent) => void run(() => markup({ data: { provider: pid, scope: 'platform', id: plat!, percent } }), 'দাম বসানো হয়েছে')} />
       </Card>}
       <div className="space-y-2">{shown.map((c) => {
         const mine = c.providers[pid] ?? { total: 0, on: 0, min: 0 }
@@ -133,10 +136,31 @@ function CategoryServices({ cat, onBack }: { cat: { id: string; name: string }; 
 function EditRow({ s, busy, onSave, onCancel }: { s: Svc; busy: boolean; onSave: (name: string, rate: number) => void; onCancel: () => void }) {
   const [name, setName] = useState(s.name), [rate, setRate] = useState(String(s.rate))
   const r = Number(rate)
-  return <div className="flex flex-wrap items-center gap-2">
-    <Input className="min-w-48 flex-1" value={name} onChange={(e) => setName(e.target.value)} aria-label="সার্ভিসের নাম" />
-    <Input className="w-28" type="number" step="0.0001" value={rate} onChange={(e) => setRate(e.target.value)} aria-label={`দাম প্রতি ${s.rate_per}`} />
-    <Button size="sm" disabled={busy || !name.trim() || !(r > 0)} onClick={() => onSave(name.trim(), r)}>সংরক্ষণ</Button>
-    <Button size="sm" variant="ghost" onClick={onCancel}>বাতিল</Button>
+  return <div className="space-y-2 rounded-lg border border-border p-3">
+    <label className="block text-sm font-semibold">সার্ভিসের নাম (কাস্টমার যা দেখবে)
+      <Input className="mt-1" value={name} onChange={(e) => setName(e.target.value)} />
+    </label>
+    <label className="block text-sm font-semibold">বিক্রয় দাম ($) — প্রতি {s.rate_per}টির জন্য
+      <Input className="mt-1 w-40" type="number" step="0.0001" min="0" value={rate} onChange={(e) => setRate(e.target.value)} />
+    </label>
+    <p className="text-xs text-muted-foreground">
+      {s.provider_rate != null && <>প্রোভাইডারের কেনা দাম: {money(s.provider_rate)} প্রতি {s.rate_per}টি{r > 0 && <> · আপনার লাভ: {money(r - s.provider_rate)}</>} · </>}
+      সর্বনিম্ন {s.min_qty} · সর্বোচ্চ {s.max_qty} (প্রোভাইডার অনুযায়ী, বদলাবে না)
+    </p>
+    <div className="flex gap-2">
+      <Button size="sm" disabled={busy || !name.trim() || !(r > 0)} onClick={() => onSave(name.trim(), r)}>সংরক্ষণ</Button>
+      <Button size="sm" variant="ghost" onClick={onCancel}>বাতিল</Button>
+    </div>
+  </div>
+}
+
+export function MarkupBox({ label, busy, onApply }: { label: string; busy: boolean; onApply: (percent: number) => void }) {
+  const [p, setP] = useState('')
+  const n = Number(p)
+  return <div className="flex flex-wrap items-center gap-2 text-sm">
+    <span>{label}</span>
+    <Input className="w-24" type="number" min="0" step="0.1" placeholder="যেমন 30" value={p} onChange={(e) => setP(e.target.value)} />
+    <span>%</span>
+    <Button size="sm" variant="outline" disabled={busy || p === '' || !(n >= 0)} onClick={() => confirm(`কেনা দামের উপর ${n}% লাভ যোগ করে সব দাম বসাবেন? (পরে চাইলে আলাদা করে এডিট করতে পারবেন)`) && onApply(n)}>দাম বসান</Button>
   </div>
 }
