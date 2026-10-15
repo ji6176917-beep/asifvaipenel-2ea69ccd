@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { ArrowRight, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import ReactMarkdown from "react-markdown";
 import { useI18n, pickLang } from "@/lib/i18n";
@@ -85,11 +85,10 @@ function Home() {
             : shown.map(({ c, p }) => (
                 <Link key={p.id} to="/service/$platform" params={{ platform: p.slug }} className={`home-service-tile home-service-${p.slug}`}>
                   <span className={`home-platform-icon home-platform-${p.slug}`}>
-                  {c.logo ? <PlatformLogo path={c.logo} className="h-10 w-10" />
-                    : <PlatformIcon slug={p.slug} logo={p.logo_url} name={p.name} className="h-10 w-10" />}
+                  {c.logo ? <PlatformLogo path={c.logo} className="h-full w-full" />
+                    : <PlatformIcon slug={p.slug} logo={p.logo_url} name={p.name} className="h-full w-full" />}
                   </span>
-                  <strong>{c.name?.trim() || p.name}</strong>
-                  <span className="home-service-arrow" aria-hidden="true"><ArrowRight /></span>
+                  <span className="home-service-copy"><strong>{c.name?.trim() || p.name}</strong></span>
                 </Link>
               ))}
         </div>
