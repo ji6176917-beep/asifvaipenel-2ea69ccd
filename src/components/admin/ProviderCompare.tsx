@@ -11,7 +11,7 @@ import { Switch } from '@/components/ui/switch'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { PlatformIcon } from '@/lib/brand'
-import { fmtDate, money } from '@/lib/format'
+import { fmtDate, money, rateMoney } from "@/lib/format"
 
 type Svc = Awaited<ReturnType<typeof adminCategoryServices>>[number]
 
@@ -85,7 +85,7 @@ export function ProviderCompare() {
               <span className="break-words">{c.name}</span><ChevronRight className="h-4 w-4 shrink-0" />
             </button>
             {status(mine)}
-            <span className="text-xs text-muted-foreground">শুরু {money(mine.min)}</span>
+            <span className="text-xs text-muted-foreground">শুরু {rateMoney(mine.min)}</span>
             <label className="flex items-center gap-2 text-sm"><Switch checked={mine.on > 0} disabled={busy} onCheckedChange={(v) => scope('category', c.id, v, v ? 'চালু হয়েছে' : 'বন্ধ হয়েছে')} />এপিআই</label>
             <label className="flex items-center gap-2 text-sm"><Switch checked={c.manual_control} disabled={busy} onCheckedChange={(v) => void run(() => setSource({ data: { ids: [c.id], manual: v } }), v ? 'এই ক্যাটাগরির অর্ডার আপনি নিজে সামলাবেন' : 'অর্ডার প্যানেলে যাবে')} />নিজে কন্ট্রোল</label>
           </div>
@@ -123,8 +123,8 @@ function CategoryServices({ cat, provider, onBack }: { cat: { id: string; name: 
             {editing === s.id ? <EditRow s={s} busy={busy} onCancel={() => setEditing(null)} onSave={(name, rate) => void run(async () => { await edit({ data: { id: s.id, name, rate } }); setEditing(null) }, 'সংরক্ষিত')} /> :
               <div className="flex flex-wrap items-center gap-2 text-sm">
                 <span className="w-full min-w-0 break-words sm:w-auto sm:flex-1">#{s.service_no ?? '—'} {s.name}{!s.provider_available && <span className="text-destructive"> (প্যানেলে নেই)</span>}</span>
-                <span className="font-semibold">{money(s.rate)}/{s.rate_per}</span>
-                {s.provider_rate != null && <span className="text-xs text-muted-foreground">আসল এপিআই দাম {money(s.provider_rate)} · {ruleText(s)}</span>}
+                <span className="font-semibold">{rateMoney(s.rate)}/{s.rate_per}</span>
+                {s.provider_rate != null && <span className="text-xs text-muted-foreground">আসল এপিআই দাম {rateMoney(s.provider_rate)} · {ruleText(s)}</span>}
                 {s.provider_rate != null && s.price_mode !== 'base' && <Button size="sm" variant="ghost" disabled={busy} onClick={() => confirm('এই সার্ভিসের দাম আসল এপিআই দামে রিসেট করবেন?') && void run(() => edit({ data: { id: s.id, reset: true } }), 'দাম রিসেট হয়েছে')}>দাম রিসেট</Button>}
                 <Button size="sm" variant="ghost" onClick={() => setEditing(s.id)}><Pencil />নাম/দাম এডিট</Button>
                 <Switch checked={s.active} disabled={busy} onCheckedChange={(v) => void run(() => edit({ data: { id: s.id, active: v } }), v ? 'চালু' : 'বন্ধ')} />
@@ -147,7 +147,7 @@ function EditRow({ s, busy, onSave, onCancel }: { s: Svc; busy: boolean; onSave:
       <Input className="mt-1 w-40" type="number" step="0.0001" min="0" value={rate} onChange={(e) => setRate(e.target.value)} />
     </label>
     <p className="text-xs text-muted-foreground">
-      {s.provider_rate != null && <>প্রোভাইডারের কেনা দাম: {money(s.provider_rate)} প্রতি {s.rate_per}টি{r > 0 && <> · আপনার লাভ: {money(r - s.provider_rate)}</>} · </>}
+      {s.provider_rate != null && <>প্রোভাইডারের কেনা দাম: {rateMoney(s.provider_rate)} প্রতি {s.rate_per}টি{r > 0 && <> · আপনার লাভ: {rateMoney(r - s.provider_rate)}</>} · </>}
       সর্বনিম্ন {s.min_qty} · সর্বোচ্চ {s.max_qty} (প্রোভাইডার অনুযায়ী, বদলাবে না)<br />যে লাভ বসাবেন, এপিআই দাম বদলালেও সেই পরিমাণ লাভ অটো যোগ থাকবে।
     </p>
     <div className="flex gap-2">
@@ -159,7 +159,7 @@ function EditRow({ s, busy, onSave, onCancel }: { s: Svc; busy: boolean; onSave:
 
 function ruleText(s: Svc) {
   if (s.price_mode === 'percent') return `অটো: +${s.price_value}%`
-  if (s.price_mode === 'fixed') return `অটো: ${s.price_value >= 0 ? '+' : ''}${money(s.price_value)}`
+  if (s.price_mode === 'fixed') return `অটো: ${s.price_value >= 0 ? '+' : ''}${rateMoney(s.price_value)}`
   if (s.price_mode === 'base') return 'আসল দামে'
   return 'পুরোনো নিয়ম'
 }

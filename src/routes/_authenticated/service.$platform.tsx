@@ -10,7 +10,7 @@ import { useAuth } from "@/lib/auth";
 import { useT } from "@/lib/i18n";
 import { PlatformIcon } from "@/lib/brand";
 import { catalogQuery } from "@/lib/queries";
-import { computeCharge, friendlyError, money, newIdemKey } from "@/lib/format";
+import { computeCharge, friendlyError, money, rateMoney, newIdemKey } from "@/lib/format";
 import { Card, Copyable, Empty, ErrorState, Spinner, inputCls, labelCls } from "@/components/ui-kit";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -151,7 +151,7 @@ function ServicePage() {
                         {s.service_no != null && <span className="font-bold text-primary">{s.service_no} - </span>}
                         {s.name}
                       </span>
-                      <span className="text-xs text-muted-foreground">{money(s.rate)} per {s.rate_per}</span>
+                      <span className="text-xs text-muted-foreground">{rateMoney(s.rate)} per {s.rate_per}</span>
                     </span>
                   </span>
                 </SelectItem>

@@ -8,7 +8,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Card, Empty, inputCls, labelCls, ErrorState } from '@/components/ui-kit'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
-import { fmtDate, money } from '@/lib/format'
+import { fmtDate, money, rateMoney } from "@/lib/format"
 
 type Provider = Awaited<ReturnType<typeof adminListProviders>>['providers'][number]
 export function AdminProviders({ providers }: { providers: Provider[] }) {
@@ -83,7 +83,7 @@ function ProviderServices({ id }: { id: string }) {
     {isError && <ErrorState />}
     {data?.map((s) => <div key={s.id} className="flex flex-wrap items-center gap-2 border-b border-border py-2">
       {edit?.id === s.id ? <form className="flex w-full flex-wrap gap-2" onSubmit={(e) => { e.preventDefault(); void update({ id: s.id, name: edit.name, rate: Number(edit.rate) }) }}><input aria-label="সার্ভিসের নাম" className={`${inputCls} min-w-0 flex-1`} value={edit.name} onChange={(e) => setEdit({ ...edit, name: e.target.value })} /><input aria-label="দাম" className={`${inputCls} !w-28`} type="number" min="0.0001" step="0.0001" value={edit.rate} onChange={(e) => setEdit({ ...edit, rate: e.target.value })} /><Button type="submit" size="icon" title="সংরক্ষণ" aria-label="সংরক্ষণ"><Save /></Button><Button type="button" variant="ghost" size="icon" aria-label="বন্ধ" onClick={() => setEdit(null)}><X /></Button></form>
-      : <><div className="min-w-0 flex-1"><div className="break-words font-semibold">#{s.service_no} {s.name}</div><div className="text-xs text-muted-foreground">{money(s.rate)} প্রতি {s.rate_per} · প্রোভাইডারের দাম {money(s.provider_rate ?? 0)}{!s.provider_available && ' · প্রোভাইডারে বন্ধ'}</div></div><Switch checked={s.active} aria-label={`${s.name} অন/অফ`} onCheckedChange={(active) => void update({ id: s.id, active })} /><Button variant="ghost" size="icon" aria-label="নাম ও দাম সম্পাদনা" title="নাম ও দাম সম্পাদনা" onClick={() => setEdit({ id: s.id, name: s.name, rate: String(s.rate) })}><Pencil /></Button></>}
+      : <><div className="min-w-0 flex-1"><div className="break-words font-semibold">#{s.service_no} {s.name}</div><div className="text-xs text-muted-foreground">{rateMoney(s.rate)} প্রতি {s.rate_per} · প্রোভাইডারের দাম {rateMoney(s.provider_rate ?? 0)}{!s.provider_available && ' · প্রোভাইডারে বন্ধ'}</div></div><Switch checked={s.active} aria-label={`${s.name} অন/অফ`} onCheckedChange={(active) => void update({ id: s.id, active })} /><Button variant="ghost" size="icon" aria-label="নাম ও দাম সম্পাদনা" title="নাম ও দাম সম্পাদনা" onClick={() => setEdit({ id: s.id, name: s.name, rate: String(s.rate) })}><Pencil /></Button></>}
     </div>)}
     <div className="flex justify-between"><Button variant="ghost" disabled={page === 0} onClick={() => setPage(page - 1)}>আগের</Button><Button variant="ghost" disabled={(data?.length ?? 0) < 50} onClick={() => setPage(page + 1)}>পরের</Button></div>
   </div>

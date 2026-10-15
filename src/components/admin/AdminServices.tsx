@@ -9,7 +9,7 @@ import { Card, Empty, ErrorState, PageTitle, Spinner, inputCls, labelCls } from 
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import { PlatformIcon } from "@/lib/brand";
-import { money } from "@/lib/format";
+import { money, rateMoney } from "@/lib/format";
 import { AdminProviders } from "./AdminProviders";
 import { ProviderCompare } from "./ProviderCompare";
 import { adminListProviders, adminSetServiceSource } from "@/lib/admin-providers.functions";
@@ -97,7 +97,7 @@ function LevelView({ level, parentId, title, sub, onBack, onOpen }: {
                     <div className={`font-semibold ${level === "platforms" ? "text-lg" : ""} break-words`}>{level === "services" && r.service_no != null && <span className="mr-1 text-brand">#{r.service_no}</span>}{r.name}</div>
                     {level === "services" && (
                       <div className="text-xs text-muted-foreground">
-                        {money(Number(r.rate))} per {r.rate_per} · min {r.min_qty} · max {r.max_qty} · {r.avg_time}
+                        {rateMoney(Number(r.rate))} per {r.rate_per} · min {r.min_qty} · max {r.max_qty} · {r.avg_time}
                       </div>
                     )}
                     <div className={`text-xs ${r.active ? "text-brand" : "text-muted-foreground"}`}>{r.active ? "ON" : "OFF"}</div>
