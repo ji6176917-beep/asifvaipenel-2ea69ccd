@@ -25,7 +25,8 @@ export const adminSaveProvider = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     const { admin, db } = await context()
     const api_url = validateProviderUrl(data.api_url)
-    const values = { name: data.name, api_url, markup: data.markup, link_parameter: data.link_parameter, ...(data.api_key ? { api_key: data.api_key } : {}) }
+    // Providers are always on; customer visibility is controlled per platform/category/service.
+    const values = { name: data.name, api_url, markup: data.markup, link_parameter: data.link_parameter, active: true, ...(data.api_key ? { api_key: data.api_key } : {}) }
     let id = data.id
     if (id) {
       const { data: before } = await db.from('service_providers').select('markup').eq('id', id).single()
