@@ -282,7 +282,7 @@
 .home-section-eyebrow::before, .home-section-eyebrow::after { content: ""; height: 1px; width: 40px; background: var(--home-line); }
 .home-services h2 { margin: 8px 0; font-size: 31px; font-weight: 800; }
 .home-services-description { max-width: 520px; margin: auto; font-size: 14px; line-height: 1.65; color: var(--home-subtle); }
-.home-service-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin: 22px 0 0; }
+.home-service-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin: 22px 0 0; }
 /* Popular Services cards follow the New Order platform cards: logo at the left, name at the right. */
 .home-service-tile {
   --tile-brand: var(--home-green);
