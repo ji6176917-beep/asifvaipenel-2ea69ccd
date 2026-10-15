@@ -746,6 +746,24 @@ export type Database = {
         }
         Relationships: []
       }
+      provider_sync_settings: {
+        Row: {
+          callback_secret: string
+          callback_url: string
+          id: number
+        }
+        Insert: {
+          callback_secret: string
+          callback_url: string
+          id?: number
+        }
+        Update: {
+          callback_secret?: string
+          callback_url?: string
+          id?: number
+        }
+        Relationships: []
+      }
       qna: {
         Row: {
           active: boolean
@@ -855,8 +873,10 @@ export type Database = {
           name: string
           provider_available: boolean
           provider_id: string | null
+          provider_order_supported: boolean
           provider_rate: number | null
           provider_service_id: string | null
+          provider_type: string
           rate: number
           rate_per: number
           refill_info: string | null
@@ -878,8 +898,10 @@ export type Database = {
           name: string
           provider_available?: boolean
           provider_id?: string | null
+          provider_order_supported?: boolean
           provider_rate?: number | null
           provider_service_id?: string | null
+          provider_type?: string
           rate: number
           rate_per?: number
           refill_info?: string | null
@@ -901,8 +923,10 @@ export type Database = {
           name?: string
           provider_available?: boolean
           provider_id?: string | null
+          provider_order_supported?: boolean
           provider_rate?: number | null
           provider_service_id?: string | null
+          provider_type?: string
           rate?: number
           rate_per?: number
           refill_info?: string | null
