@@ -521,12 +521,6 @@
 .order-search input::placeholder { color: var(--order-subtle); }
 .order-search .order-search-submit { width: 100px; height: 54px; flex-shrink: 0; border-radius: 999px; background: var(--order-green); color: var(--primary-foreground); box-shadow: none; }
 .order-search .order-search-submit svg { width: 28px; height: 28px; }
-.order-cat-grid { position: relative; z-index: 2; display: grid; grid-template-columns: repeat(6, minmax(0,1fr)); width: 88%; margin: 0 auto; gap: 10px 12px; }
-.order-cat-btn { display: flex; align-items: center; gap: 8px; min-width: 0; height: 42px; padding: 0 12px; background: var(--order-surface); border: 1px solid var(--order-line); border-radius: 8px; box-shadow: var(--order-shadow); font-size: 14px; font-weight: 500; color: var(--order-ink); transition: border-color .18s ease, box-shadow .18s ease; }
-.order-cat-icon { width: 18px; height: 18px; flex-shrink: 0; }
-.order-cat-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.order-cat-btn:hover { border-color: color-mix(in oklch, var(--order-green) 60%, var(--order-line)); box-shadow: 0 0 0 3px color-mix(in oklch, var(--order-green) 9%, transparent); }
-.order-cat-btn:focus-visible { outline: 2px solid var(--order-green); outline-offset: 3px; }
 .order-platform-grid { display: grid; position: relative; z-index: 2; grid-template-columns: repeat(3, minmax(0,1fr)); width: 88%; gap: 14px 18px; }
 .order-platform-card { --platform-accent: var(--order-green); position: relative; overflow: hidden; display: flex; align-items: center; min-width: 0; gap: 14px; min-height: 116px; padding: 20px 13px; background: var(--order-surface); border: 1px solid var(--order-line); border-radius: 20px; box-shadow: var(--order-shadow); transition: transform .2s ease, border-color .2s ease; }
 .order-platform-card::after { content: ""; position: absolute; pointer-events: none; width: 85%; height: 65px; border-radius: 50%; right: -22%; bottom: -43px; background: color-mix(in oklch, var(--platform-accent) 10%, transparent); transform: rotate(-15deg); }
@@ -556,7 +550,6 @@
 .order-reference-shell .home-bottom-nav svg { width: 23px; height: 23px; filter: none; }
 .order-reference-shell .home-whatsapp-float { background: var(--order-green); bottom: 25px; right: 25px; }
 @media (max-width: 900px) {
-  .order-cat-grid { grid-template-columns: repeat(3, minmax(0,1fr)); width: 100%; }
   .order-platform-grid { width: 100%; }
   .order-platform-card { gap: 10px; padding: 15px 10px; }
   .order-platform-logo { width: 44px; height: 44px; }
@@ -586,8 +579,6 @@
   .order-search input { font-size: 13px; }
   .order-search .order-search-submit { width: 60px; height: 42px; }
   .order-search .order-search-submit svg { width: 22px; height: 22px; }
-  .order-cat-grid { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; }
-  .order-cat-btn { padding: 0 9px; gap: 7px; }
   .order-platform-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px 10px; }
   .order-platform-card { min-height: 132px; border-left: 3px solid var(--platform-accent); border-radius: 20px; align-items: flex-start; padding: 16px 12px 32px; gap: 10px; }
   .order-platform-logo { width: 44px; height: 44px; }
