@@ -116,6 +116,26 @@ async function matchingCategories(db: Db, categoryId: string) {
   return (all ?? []).filter((c) => c.name.trim().toLowerCase() === key).map((c) => c.id)
 }
 
+/** Independent ON/OFF for one provider only: whole API, one platform, or one category. Other providers are never touched. */
+export const adminSetProviderScope = createServerFn({ method: 'POST' })
+  .inputValidator((i) => z.object({ provider: z.string().uuid(), scope: z.enum(['all', 'platform', 'category']), id: z.string().uuid().nullable(), on: z.boolean() }).parse(i))
+  .handler(async ({ data }) => {
+    const { admin, db } = await context()
+    if (data.scope !== 'all' && !data.id) throw new Error('missing id')
+    await snapshot(db, 'পরিবর্তনের আগে')
+    let catIds: Set<string> | null = null
+    if (data.scope === 'category') catIds = new Set([data.id!])
+    if (data.scope === 'platform') {
+      const { data: cats } = await db.from('categories').select('id').eq('platform_id', data.id!)
+      catIds = new Set((cats ?? []).map((c) => c.id))
+    }
+    const ids = (await allApiServices(db)).filter((s) => s.provider_id === data.provider && (!catIds || catIds.has(s.category_id))).map((s) => s.id)
+    await setActive(db, ids, data.on)
+    await bump(db)
+    await admin.logAdmin('provider_scope_set', { ...data, count: ids.length })
+    return { count: ids.length }
+  })
+
 /** Turn a provider's category on (other panels' same category switch off) or off. */
 export const adminSetProviderCategory = createServerFn({ method: 'POST' })
   .inputValidator((i) => z.object({ provider: z.string().uuid(), category_id: z.string().uuid(), on: z.boolean() }).parse(i))

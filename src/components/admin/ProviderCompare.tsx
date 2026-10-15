@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import { ArrowLeft, ChevronRight, History, Pencil, Power, Save } from 'lucide-react'
 import { toast } from 'sonner'
-import { adminCategoryServices, adminRestoreSnapshot, adminSetCategorySource, adminSetProviderCategory, adminSourceBulk, adminSourceOverview } from '@/lib/admin-sources.functions'
+import { adminCategoryServices, adminRestoreSnapshot, adminSetCategorySource, adminSetProviderScope, adminSourceBulk, adminSourceOverview } from '@/lib/admin-sources.functions'
 import { adminEditProviderService, adminPickService } from '@/lib/admin-providers.functions'
 import { Card, ErrorState } from '@/components/ui-kit'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -17,7 +17,7 @@ type Svc = Awaited<ReturnType<typeof adminCategoryServices>>[number]
 
 /** Provider 1 / 2 / 3 tabs → platform → category ON/OFF (other panels auto-off) → services with edit and panel switch. */
 export function ProviderCompare() {
-  const load = useServerFn(adminSourceOverview), setCat = useServerFn(adminSetProviderCategory), setSource = useServerFn(adminSetCategorySource)
+  const load = useServerFn(adminSourceOverview), setScope = useServerFn(adminSetProviderScope), setSource = useServerFn(adminSetCategorySource)
   const bulk = useServerFn(adminSourceBulk), restore = useServerFn(adminRestoreSnapshot)
   const qc = useQueryClient()
   const { data, isError, isLoading } = useQuery({ queryKey: ['source-overview'], queryFn: () => load() })
@@ -38,14 +38,21 @@ export function ProviderCompare() {
   const plats = data.platforms.filter((p) => cats.some((c) => c.platform_id === p.id))
   const plat = platform && plats.some((p) => p.id === platform) ? platform : plats[0]?.id
   const shown = cats.filter((c) => c.platform_id === plat)
+  const sum = (list: typeof cats) => list.reduce((a, c) => { const m = c.providers[pid]!; return { on: a.on + m.on, total: a.total + m.total } }, { on: 0, total: 0 })
+  const apiSum = sum(cats), platSum = sum(shown)
+  const status = (s: { on: number; total: number }) => s.on === 0 ? <span className="rounded-full bg-destructive/10 px-2 py-0.5 text-xs font-semibold text-destructive">বন্ধ</span>
+    : s.on === s.total ? <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">চালু</span>
+    : <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-semibold">কিছু চালু ({s.on}/{s.total})</span>
+  const scope = (sc: 'all' | 'platform' | 'category', id: string | null, on: boolean, ok: string) => void run(() => setScope({ data: { provider: pid, scope: sc, id, on } }), ok)
+  const pName = data.providers.findIndex((p) => p.id === pid) + 1
 
   if (openCat) return <CategoryServices cat={openCat} onBack={() => setOpenCat(null)} />
 
   return <div className="space-y-4">
     <Card className="!p-4 space-y-3">
-      <p className="text-sm text-muted-foreground">উপরে প্যানেল বাছুন, তারপর ক্যাটাগরি চালু করুন। একটা প্যানেলে কোনো ক্যাটাগরি চালু করলে অন্য প্যানেলের একই ক্যাটাগরি নিজে থেকেই বন্ধ হবে। ক্যাটাগরির নামে চাপলে ভিতরের সার্ভিস দেখবেন — নাম, দাম বদলানো ও প্যানেল বদলানো যাবে।</p>
+      <p className="text-sm text-muted-foreground">প্রতিটা প্রোভাইডার আলাদাভাবে চলে। একটায় কিছু চালু/বন্ধ করলে অন্য প্রোভাইডারে কিছুই বদলাবে না। ক্যাটাগরির নামে চাপলে ভিতরের সার্ভিস দেখবেন — নাম, দাম বদলানো যাবে।</p>
       <div className="flex flex-wrap gap-2">
-        <Button variant="outline" disabled={busy} onClick={() => confirm('সব এপিআই সার্ভিস বন্ধ করবেন? (নিজের সার্ভিস বদলাবে না)') && void run(() => bulk({ data: { action: 'all_off' } }), 'সব বন্ধ হয়েছে')}><Power />সব এপিআই সার্ভিস বন্ধ</Button>
+        <Button variant="outline" disabled={busy} onClick={() => confirm('সব প্রোভাইডারের সব এপিআই সার্ভিস বন্ধ করবেন? (নিজের সার্ভিস বদলাবে না)') && void run(() => bulk({ data: { action: 'all_off' } }), 'সব বন্ধ হয়েছে')}><Power />সব প্রোভাইডার বন্ধ</Button>
         <Button variant="outline" disabled={busy} onClick={() => void run(() => bulk({ data: { action: 'save' } }), 'এখনকার অবস্থা সংরক্ষিত')}><Save />এখনকার অবস্থা সংরক্ষণ</Button>
       </div>
       {data.snapshots.length > 0 && <details><summary className="flex cursor-pointer items-center gap-2 text-sm font-semibold"><History className="h-4 w-4" />আগের অবস্থায় ফিরে যান (প্রতিটা পরিবর্তনের আগে নিজে থেকেই সংরক্ষণ হয়)</summary>
@@ -55,26 +62,30 @@ export function ProviderCompare() {
 
     <div className="flex flex-wrap gap-2">{data.providers.map((p, i) => <Button key={p.id} variant={p.id === pid ? 'default' : 'outline'} onClick={() => { setProvider(p.id); setPlatform(null) }}>প্রোভাইডার {i + 1}: {p.name}{!p.active && ' (বন্ধ)'}</Button>)}</div>
     {!plats.length ? <Card>এই প্যানেলে কোনো সার্ভিস নেই।</Card> : <>
+      <Card className="!p-3 flex flex-wrap items-center gap-2">
+        <span className="flex-1 text-sm font-semibold">পুরো প্রোভাইডার {pName} এপিআই: {status(apiSum)}</span>
+        <Button size="sm" disabled={busy} onClick={() => confirm('এই প্রোভাইডারের সব সার্ভিস চালু করবেন?') && scope('all', null, true, 'পুরো এপিআই চালু')}>পুরো এপিআই চালু</Button>
+        <Button size="sm" variant="outline" disabled={busy} onClick={() => confirm('এই প্রোভাইডারের সব সার্ভিস বন্ধ করবেন?') && scope('all', null, false, 'পুরো এপিআই বন্ধ')}>পুরো এপিআই বন্ধ</Button>
+      </Card>
       <div className="flex flex-wrap gap-2">{plats.map((p) => <Button key={p.id} variant={p.id === plat ? 'default' : 'outline'} size="sm" onClick={() => setPlatform(p.id)}><PlatformIcon slug={p.slug} logo={p.logo_url} name={p.name} className="h-4 w-4" />{p.name}</Button>)}</div>
       {shown.length > 0 && <Card className="!p-3 flex flex-wrap items-center gap-2">
-        <span className="flex-1 text-sm">এক ক্লিকে পুরো {plats.find((p) => p.id === plat)?.name} ({shown.length}টি ক্যাটাগরি) এই প্যানেলে দিন, বা একটা একটা করে নিচে থেকে বাছুন।</span>
-        <Button size="sm" disabled={busy} onClick={() => confirm('এই প্ল্যাটফর্মের সব ক্যাটাগরি এই প্যানেলে চালু হবে, অন্য প্যানেলেরগুলো বন্ধ হবে। করবেন?') && void run(async () => { for (const c of shown) await setCat({ data: { provider: pid, category_id: c.id, on: true } }) }, 'সব ক্যাটাগরি এই প্যানেলে চালু হয়েছে')}>সব এই প্যানেলে চালু</Button>
+        <span className="flex-1 text-sm font-semibold">{plats.find((p) => p.id === plat)?.name} (এই প্রোভাইডারে): {status(platSum)}</span>
+        <Button size="sm" disabled={busy} onClick={() => scope('platform', plat!, true, 'চালু হয়েছে')}>সব চালু</Button>
+        <Button size="sm" variant="outline" disabled={busy} onClick={() => scope('platform', plat!, false, 'বন্ধ হয়েছে')}>সব বন্ধ</Button>
         <Button size="sm" variant="outline" disabled={busy} onClick={() => void run(() => setSource({ data: { ids: shown.map((c) => c.id), manual: true } }), 'সবগুলো এখন নিজে কন্ট্রোলে')}>সব নিজে কন্ট্রোল</Button>
       </Card>}
       <div className="space-y-2">{shown.map((c) => {
         const mine = c.providers[pid] ?? { total: 0, on: 0, min: 0 }
-        const on = mine.on > 0
-        const others = Object.entries(c.providers).filter(([k, v]) => k !== pid && v.on > 0).map(([k]) => names.get(k) ?? 'অন্য প্যানেল')
         return <Card key={c.id} className="!p-3">
           <div className="flex flex-wrap items-center gap-3">
             <button className="flex min-w-0 flex-1 items-center gap-1 text-left font-semibold hover:underline" onClick={() => setOpenCat({ id: c.id, name: c.name })}>
               <span className="break-words">{c.name}</span><ChevronRight className="h-4 w-4 shrink-0" />
             </button>
-            <span className="text-xs text-muted-foreground">{mine.on}/{mine.total} চালু · শুরু {money(mine.min)}</span>
-            <label className="flex items-center gap-2 text-sm"><Switch checked={on} disabled={busy} onCheckedChange={(v) => void run(() => setCat({ data: { provider: pid, category_id: c.id, on: v } }), v ? 'চালু হয়েছে, অন্য প্যানেলেরটা বন্ধ' : 'বন্ধ হয়েছে')} />{on ? 'চালু' : 'বন্ধ'}</label>
+            {status(mine)}
+            <span className="text-xs text-muted-foreground">শুরু {money(mine.min)}</span>
+            <label className="flex items-center gap-2 text-sm"><Switch checked={mine.on > 0} disabled={busy} onCheckedChange={(v) => scope('category', c.id, v, v ? 'চালু হয়েছে' : 'বন্ধ হয়েছে')} />এপিআই</label>
             <label className="flex items-center gap-2 text-sm"><Switch checked={c.manual_control} disabled={busy} onCheckedChange={(v) => void run(() => setSource({ data: { ids: [c.id], manual: v } }), v ? 'এই ক্যাটাগরির অর্ডার আপনি নিজে সামলাবেন' : 'অর্ডার প্যানেলে যাবে')} />নিজে কন্ট্রোল</label>
           </div>
-          {others.length > 0 && <p className="mt-1 text-xs text-muted-foreground">এখন চালু আছে: {others.join(', ')}</p>}
         </Card>
       })}</div>
     </>}
