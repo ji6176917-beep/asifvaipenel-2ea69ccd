@@ -1,4 +1,5 @@
-import { SiFacebook, SiInstagram, SiYoutube, SiTiktok, SiTelegram, SiWhatsapp, SiBinance, SiTether } from "react-icons/si";
+import { SiFacebook, SiInstagram, SiYoutube, SiTiktok, SiTelegram, SiWhatsapp, SiBinance, SiTether, SiX, SiSpotify, SiDiscord, SiSnapchat, SiThreads, SiPinterest, SiTwitch, SiSoundcloud, SiReddit, SiKick, SiVk, SiKuaishou, SiShopee, SiQuora, SiTumblr, SiVimeo, SiDailymotion } from "react-icons/si";
+import { FaLinkedin, FaGlobe } from "react-icons/fa";
 import { useState } from "react";
 import { useStorageUrl } from "@/lib/storage-url";
 import type { IconType } from "react-icons";
@@ -11,6 +12,27 @@ export const PLATFORM_META: Record<string, { Icon: IconType; color: string }> = 
   youtube: { Icon: SiYoutube, color: "#FF0000" },
   tiktok: { Icon: SiTiktok, color: "currentColor" },
   telegram: { Icon: SiTelegram, color: "#26A5E4" },
+  twitter: { Icon: SiX, color: "currentColor" },
+  spotify: { Icon: SiSpotify, color: "#1DB954" },
+  discord: { Icon: SiDiscord, color: "#5865F2" },
+  linkedin: { Icon: FaLinkedin, color: "#0A66C2" },
+  snapchat: { Icon: SiSnapchat, color: "#F7C600" },
+  threads: { Icon: SiThreads, color: "currentColor" },
+  pinterest: { Icon: SiPinterest, color: "#BD081C" },
+  twitch: { Icon: SiTwitch, color: "#9146FF" },
+  whatsapp: { Icon: SiWhatsapp, color: "#25D366" },
+  soundcloud: { Icon: SiSoundcloud, color: "#FF5500" },
+  reddit: { Icon: SiReddit, color: "#FF4500" },
+  kick: { Icon: SiKick, color: "#53FC18" },
+  vk: { Icon: SiVk, color: "#0077FF" },
+  kwai: { Icon: SiKuaishou, color: "#FF7E00" },
+  shopee: { Icon: SiShopee, color: "#EE4D2D" },
+  quora: { Icon: SiQuora, color: "#B92B27" },
+  tumblr: { Icon: SiTumblr, color: "#36465D" },
+  vimeo: { Icon: SiVimeo, color: "#1AB7EA" },
+  dailymotion: { Icon: SiDailymotion, color: "#0D0D0D" },
+  website: { Icon: FaGlobe, color: "#16A34A" },
+  other: { Icon: FaGlobe, color: "#16A34A" },
 };
 
 /** Platform logo: uploaded image → built-in brand icon → first-letter badge. */
