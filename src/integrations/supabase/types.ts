@@ -905,6 +905,8 @@ export type Database = {
           max_qty: number
           min_qty: number
           name: string
+          price_mode: string | null
+          price_value: number
           provider_available: boolean
           provider_id: string | null
           provider_order_supported: boolean
@@ -930,6 +932,8 @@ export type Database = {
           max_qty?: number
           min_qty?: number
           name: string
+          price_mode?: string | null
+          price_value?: number
           provider_available?: boolean
           provider_id?: string | null
           provider_order_supported?: boolean
@@ -955,6 +959,8 @@ export type Database = {
           max_qty?: number
           min_qty?: number
           name?: string
+          price_mode?: string | null
+          price_value?: number
           provider_available?: boolean
           provider_id?: string | null
           provider_order_supported?: boolean
