@@ -1,6 +1,7 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import { validateProviderUrl } from './provider-utils'
+import type { Database } from '@/integrations/supabase/types'
 
 async function context() {
   const admin = await import('./admin.server')
@@ -27,10 +28,13 @@ export const adminSaveProvider = createServerFn({ method: 'POST' })
     const values = { name: data.name, api_url, markup: data.markup, link_parameter: data.link_parameter, ...(data.api_key ? { api_key: data.api_key } : {}) }
     let id = data.id
     if (id) {
+      const { data: before } = await db.from('service_providers').select('markup').eq('id', id).single()
       const { error } = await db.from('service_providers').update(values).eq('id', id).is('deleted_at', null)
       if (error) throw new Error('প্রোভাইডার সংরক্ষণ করা যায়নি')
-      const { error: markupError } = await db.rpc('set_provider_markup', { _provider: id, _markup: data.markup })
-      if (markupError) throw new Error('দাম পরিবর্তন করা যায়নি')
+      if (before?.markup !== data.markup) {
+        const { error: markupError } = await db.rpc('set_provider_markup', { _provider: id, _markup: data.markup })
+        if (markupError) throw new Error('দাম পরিবর্তন করা যায়নি')
+      }
     } else {
       if (!data.api_key) throw new Error('প্রোভাইডারের গোপন কী দিন')
       const { data: saved, error } = await db.from('service_providers').insert({ ...values, api_key: data.api_key }).select('id').single()
@@ -53,7 +57,8 @@ export const adminProviderAction = createServerFn({ method: 'POST' })
     if (data.action === 'on') await worker.syncProvider(data.id)
     const { error } = await db.from('service_providers').update({ active: data.action === 'on' }).eq('id', data.id).is('deleted_at', null)
     if (error) throw new Error('পরিবর্তন করা যায়নি')
-    await db.rpc('set_provider_markup', { _provider: data.id, _markup: (await db.from('service_providers').select('markup').eq('id', data.id).single()).data?.markup ?? 0 })
+    const { data: settings } = await db.from('site_settings').select('content_version').eq('id', 1).single()
+    await db.from('site_settings').update({ content_version: (settings?.content_version ?? 0) + 1 }).eq('id', 1)
     await admin.logAdmin(`provider_${data.action}`, { id: data.id })
     return { ok: true }
   })
@@ -62,7 +67,8 @@ export const adminSetServiceSource = createServerFn({ method: 'POST' })
   .inputValidator((input) => z.object({ source: z.enum(['own_enabled', 'api_enabled']), enabled: z.boolean() }).parse(input))
   .handler(async ({ data }) => {
     const { admin, db } = await context()
-    const patch = data.source === 'own_enabled' ? { id: 1, own_enabled: data.enabled } : { id: 1, api_enabled: data.enabled }
+    const patch: Database['public']['Tables']['service_source_settings']['Insert'] = { id: 1 }
+    patch[data.source] = data.enabled
     const { error } = await db.from('service_source_settings').upsert(patch)
     if (error) throw new Error('পরিবর্তন করা যায়নি')
     const { data: settings } = await db.from('site_settings').select('content_version').eq('id', 1).single()
@@ -88,7 +94,11 @@ export const adminEditProviderService = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     const { admin, db } = await context()
     const { id, ...values } = data
-    const { error } = await db.from('services').update({ ...values, ...(values.name !== undefined ? { custom_name: true } : {}), ...(values.rate !== undefined ? { custom_rate: true } : {}) }).eq('id', id).not('provider_id', 'is', null)
+    const patch: Database['public']['Tables']['services']['Update'] = {}
+    if (values.name !== undefined) { patch.name = values.name; patch.custom_name = true }
+    if (values.rate !== undefined) { patch.rate = values.rate; patch.custom_rate = true }
+    if (values.active !== undefined) patch.active = values.active
+    const { error } = await db.from('services').update(patch).eq('id', id).not('provider_id', 'is', null)
     if (error) throw new Error('সার্ভিস সংরক্ষণ করা যায়নি')
     const { data: settings } = await db.from('site_settings').select('content_version').eq('id', 1).single()
     await db.from('site_settings').update({ content_version: (settings?.content_version ?? 0) + 1 }).eq('id', 1)

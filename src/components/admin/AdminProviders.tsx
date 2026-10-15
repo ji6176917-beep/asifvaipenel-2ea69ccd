@@ -40,7 +40,7 @@ export function AdminProviders({ providers }: { providers: Provider[] }) {
     </Card>)}
   </div>
 }
-function ProviderForm({ provider, onClose, onSaved }: { provider?: Provider; onClose: () => void; onSaved: () => void }) {
+function ProviderForm({ provider, onClose, onSaved }: { provider?: Provider | undefined; onClose: () => void; onSaved: () => void }) {
   const save = useServerFn(adminSaveProvider)
   const [name, setName] = useState(provider?.name ?? 'Royal SMM World')
   const [url, setUrl] = useState(provider?.api_url ?? 'https://royalsmmworld.com/api/v2')
