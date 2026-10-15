@@ -32,4 +32,4 @@
 - Hard-coded customer UI text is wrapped in tr("English") (useTr) and translated via the central src/lib/translations.json dictionary (per language, English fallback); admin labels fall back to it too. Why: one dictionary, new languages need no code changes.
 - Reseller docs use one scrolling page and placeholder keys; never expose credentials.
 - Upstream keys stay admin-only; stable IDs/claims avoid duplicate spending. Preserve manual/custom prices. Import all types; block unsupported paid orders. Secret-gated hourly catalogs run only for active providers.
-- Per-category panel choice: categories.source_provider/manual_control; changes snapshot to service_snapshots for undo; manual_control skips provider dispatch. Why: one panel per category, safe rollback.
+- Panel choice (ProviderCompare): provider tabs → category ON switches others' same platform+name categories off; per-service edit/pick; snapshots before each change for undo; manual_control skips dispatch. Why: one panel per category, safe rollback.
