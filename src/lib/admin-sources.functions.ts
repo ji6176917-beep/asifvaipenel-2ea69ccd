@@ -106,3 +106,50 @@ export const adminRestoreSnapshot = createServerFn({ method: 'POST' })
     await admin.logAdmin('source_restored', { id: data.id })
     return { ok: true }
   })
+
+/** Categories that mean the same thing across panels: same platform and same name (case-insensitive). */
+async function matchingCategories(db: Db, categoryId: string) {
+  const { data: cat } = await db.from('categories').select('id,name,platform_id').eq('id', categoryId).single()
+  if (!cat) throw new Error('ক্যাটাগরি পাওয়া যায়নি')
+  const { data: all } = await db.from('categories').select('id,name').eq('platform_id', cat.platform_id).is('deleted_at', null)
+  const key = cat.name.trim().toLowerCase()
+  return (all ?? []).filter((c) => c.name.trim().toLowerCase() === key).map((c) => c.id)
+}
+
+/** Turn a provider's category on (other panels' same category switch off) or off. */
+export const adminSetProviderCategory = createServerFn({ method: 'POST' })
+  .inputValidator((i) => z.object({ provider: z.string().uuid(), category_id: z.string().uuid(), on: z.boolean() }).parse(i))
+  .handler(async ({ data }) => {
+    const { admin, db } = await context()
+    await snapshot(db, 'পরিবর্তনের আগে')
+    const ids = await matchingCategories(db, data.category_id)
+    const set = new Set(ids)
+    const rows = (await allApiServices(db)).filter((s) => set.has(s.category_id))
+    const mine = rows.filter((s) => s.provider_id === data.provider).map((s) => s.id)
+    if (data.on) {
+      await setActive(db, mine, true)
+      await setActive(db, rows.filter((s) => s.provider_id !== data.provider).map((s) => s.id), false)
+      await db.from('categories').update({ source_provider: data.provider }).in('id', ids)
+    } else {
+      await setActive(db, mine, false)
+      await db.from('categories').update({ source_provider: null }).in('id', ids).eq('source_provider', data.provider)
+    }
+    await bump(db)
+    await admin.logAdmin('provider_category_set', { ...data, categories: ids.length })
+    return { ok: true }
+  })
+
+/** All panels' services for one category (and its same-name twins), for editing and switching panel. */
+export const adminCategoryServices = createServerFn({ method: 'POST' })
+  .inputValidator((i) => z.object({ category_id: z.string().uuid() }).parse(i))
+  .handler(async ({ data }) => {
+    const { db } = await context()
+    const ids = await matchingCategories(db, data.category_id)
+    const [{ data: rows, error }, { data: providers }] = await Promise.all([
+      db.from('services').select('id,service_no,name,rate,rate_per,provider_rate,min_qty,max_qty,active,provider_available,provider_id').in('category_id', ids).not('provider_id', 'is', null).is('deleted_at', null).order('rate').limit(1000),
+      db.from('service_providers').select('id,name').is('deleted_at', null),
+    ])
+    if (error) throw new Error('সার্ভিস পাওয়া যায়নি')
+    const names = new Map((providers ?? []).map((p) => [p.id, p.name]))
+    return (rows ?? []).map((r) => ({ ...r, rate: Number(r.rate), provider_rate: r.provider_rate == null ? null : Number(r.provider_rate), provider: names.get(r.provider_id ?? '') ?? 'প্যানেল' }))
+  })
