@@ -187,25 +187,31 @@ export type Database = {
           active: boolean
           deleted_at: string | null
           id: string
+          manual_control: boolean
           name: string
           platform_id: string
           sort: number
+          source_provider: string | null
         }
         Insert: {
           active?: boolean
           deleted_at?: string | null
           id?: string
+          manual_control?: boolean
           name: string
           platform_id: string
           sort?: number
+          source_provider?: string | null
         }
         Update: {
           active?: boolean
           deleted_at?: string | null
           id?: string
+          manual_control?: boolean
           name?: string
           platform_id?: string
           sort?: number
+          source_provider?: string | null
         }
         Relationships: [
           {
@@ -213,6 +219,13 @@ export type Database = {
             columns: ["platform_id"]
             isOneToOne: false
             referencedRelation: "platforms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "categories_source_provider_fkey"
+            columns: ["source_provider"]
+            isOneToOne: false
+            referencedRelation: "service_providers"
             referencedColumns: ["id"]
           },
         ]
@@ -836,6 +849,27 @@ export type Database = {
           link_parameter?: string
           markup?: number
           name?: string
+        }
+        Relationships: []
+      }
+      service_snapshots: {
+        Row: {
+          created_at: string
+          data: Json
+          id: number
+          label: string
+        }
+        Insert: {
+          created_at?: string
+          data: Json
+          id?: number
+          label: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: number
+          label?: string
         }
         Relationships: []
       }
