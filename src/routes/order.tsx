@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Search, ChevronRight, Rocket } from "lucide-react";
+import { Search, Rocket } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { catalogQuery, platformsQuery } from "@/lib/queries";
 import { PlatformIcon } from "@/lib/brand";
@@ -32,16 +32,12 @@ function OrderPage() {
   const qc = useQueryClient();
   // Warm every platform's order form so the first tap opens it fully populated.
   useEffect(() => { (data ?? []).forEach((p) => { qc.prefetchQuery(catalogQuery(p.slug)); }); }, [data, qc]);
-  const descriptions: Record<string, string> = {
-    tiktok: "Grow your TikTok presence", instagram: "Boost your Instagram",
-    facebook: "Get more Facebook engagement", youtube: "Increase your YouTube growth",
-    telegram: "Grow your Telegram channel",
-  };
   const sequence = ["tiktok", "instagram", "facebook", "youtube", "telegram"];
+  const query = search.trim().toLowerCase();
   const platforms = [...(data ?? [])].sort((a, b) => {
     const rank = (slug: string) => sequence.includes(slug) ? sequence.indexOf(slug) : sequence.length;
     return rank(a.slug) - rank(b.slug);
-  }).filter((p) => `${p.name} ${descriptions[p.slug] ?? ""}`.toLowerCase().includes(search.trim().toLowerCase()));
+  }).filter((p) => p.name.toLowerCase().includes(query));
   return (
     <div className="order-reference-page">
       <section className="order-welcome">
@@ -61,12 +57,11 @@ function OrderPage() {
       {data && data.length === 0 && <Empty text={tr("No platforms available right now.")} />}
       {data && data.length > 0 && platforms.length === 0 && <Empty text={tr("No services found.")} />}
       <div className="order-platform-grid">
-        {isLoading && Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-32 rounded-2xl" />)}
+        {isLoading && Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-16 rounded-xl" />)}
         {platforms.map((p) => (
-          <Link key={p.id} to="/service/$platform" params={{ platform: p.slug }} className={`order-platform-card order-platform-${p.slug}`}>
+          <Link key={p.id} to="/service/$platform" params={{ platform: p.slug }} title={p.name} className={`order-platform-card order-platform-${p.slug}`}>
             <span className="order-platform-logo"><PlatformIcon slug={p.slug} logo={p.logo_url} name={p.name} className="h-full w-full" /></span>
-            <span className="order-platform-copy"><strong>{p.name} {tr("Service")}</strong></span>
-            <span className="order-platform-arrow"><ChevronRight aria-hidden /></span>
+            <span className="order-platform-copy"><strong>{p.name}</strong></span>
           </Link>
         ))}
       </div>
