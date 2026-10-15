@@ -563,7 +563,7 @@
   .order-reference-shell .home-header-inner > a { gap: 6px; }
   .order-reference-shell .home-header-inner > a img { width: 27px; height: 34px; }
   .order-main { padding: 0 16px; }
-  .order-reference-page { padding-top: 10px; padding-bottom: 100px; min-height: 840px; }
+  .order-reference-page { padding-top: 10px; padding-bottom: 140px; min-height: 840px; }
   .order-welcome { min-height: 164px; display: flex; align-items: center; text-align: left; border-radius: 16px; overflow: hidden; }
   .order-banner-art { display: block; position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
   .order-welcome-copy { padding: 22px; width: 60%; }
