@@ -65,7 +65,7 @@ function OrderPage() {
         {platforms.map((p) => (
           <Link key={p.id} to="/service/$platform" params={{ platform: p.slug }} className={`order-platform-card order-platform-${p.slug}`}>
             <span className="order-platform-logo"><PlatformIcon slug={p.slug} logo={p.logo_url} name={p.name} className="h-full w-full" /></span>
-            <span className="order-platform-copy"><strong>{p.name} {tr("Service")}</strong><span>{tr(descriptions[p.slug] ?? "Grow your social media")}</span></span>
+            <span className="order-platform-copy"><strong>{p.name} {tr("Service")}</strong></span>
             <span className="order-platform-arrow"><ChevronRight aria-hidden /></span>
           </Link>
         ))}
