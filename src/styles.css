@@ -555,6 +555,7 @@
 .order-reference-shell .home-bottom-nav svg { width: 23px; height: 23px; filter: none; }
 .order-reference-shell .home-whatsapp-float { background: var(--order-green); bottom: 25px; right: 25px; }
 @media (max-width: 900px) {
+  .order-cat-grid { width: 100%; }
   .order-platform-grid { width: 100%; }
   .order-platform-card { gap: 10px; padding: 15px 10px; }
   .order-platform-logo { width: 44px; height: 44px; }
@@ -584,6 +585,8 @@
   .order-search input { font-size: 13px; }
   .order-search .order-search-submit { width: 60px; height: 42px; }
   .order-search .order-search-submit svg { width: 22px; height: 22px; }
+  .order-cat-grid { grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; margin-bottom: 22px; }
+  .order-cat-btn { padding: 0 10px; }
   .order-platform-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px 10px; }
   .order-platform-card { min-height: 132px; border-left: 3px solid var(--platform-accent); border-radius: 20px; align-items: flex-start; padding: 16px 12px 32px; gap: 10px; }
   .order-platform-logo { width: 44px; height: 44px; }
