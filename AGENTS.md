@@ -33,4 +33,4 @@
 - Telegram alerts are sent from Postgres triggers via pg_net (tg_send); the bot token lives only in telegram_config (service-role only). Why: alerts fire for every order/deposit path, token never reaches the browser.
 - Hard-coded customer UI text is wrapped in tr("English") (useTr) and translated via the central src/lib/translations.json dictionary (per language, English fallback); admin labels fall back to it too. Why: one dictionary, new languages need no code changes.
 - Reseller docs use one scrolling page and placeholder keys; never expose credentials.
-- Upstream APIs use admin-only keys, stable mapped IDs, source-gated catalogs/orders and server dispatch claims. Preserve manual services/custom prices; ambiguous submissions need review, not retry, to avoid duplicate spending.
+- Upstream keys stay admin-only; stable IDs/claims avoid duplicate spending. Preserve manual/custom prices. Import all types; block unsupported paid orders. Secret-gated hourly catalogs run only for active providers.
