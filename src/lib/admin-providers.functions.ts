@@ -1,0 +1,107 @@
+import { createServerFn } from '@tanstack/react-start'
+import { z } from 'zod'
+import { validateProviderUrl } from './provider-utils'
+import type { Database } from '@/integrations/supabase/types'
+
+async function context() {
+  const admin = await import('./admin.server')
+  await admin.requireAdmin()
+  const { supabaseAdmin: db } = await import('@/integrations/supabase/client.server')
+  return { admin, db }
+}
+
+export const adminListProviders = createServerFn({ method: 'POST' }).handler(async () => {
+  const { db } = await context()
+  const [{ data: providers, error }, { data: sources }] = await Promise.all([
+    db.from('service_providers').select('id,name,api_url,active,markup,link_parameter,last_synced_at').is('deleted_at', null).order('created_at'),
+    db.from('service_source_settings').select('own_enabled,api_enabled').eq('id', 1).maybeSingle(),
+  ])
+  if (error) throw new Error('প্রোভাইডার তালিকা পাওয়া যায়নি')
+  return { providers: providers ?? [], sources: sources ?? { own_enabled: true, api_enabled: true } }
+})
+
+export const adminSaveProvider = createServerFn({ method: 'POST' })
+  .inputValidator((input) => z.object({ id: z.string().uuid().optional(), name: z.string().trim().min(1).max(100), api_url: z.string().max(300), api_key: z.string().trim().max(500).optional(), markup: z.number().finite().min(0).max(10000), link_parameter: z.enum(['link', 'url']) }).parse(input))
+  .handler(async ({ data }) => {
+    const { admin, db } = await context()
+    const api_url = validateProviderUrl(data.api_url)
+    const values = { name: data.name, api_url, markup: data.markup, link_parameter: data.link_parameter, ...(data.api_key ? { api_key: data.api_key } : {}) }
+    let id = data.id
+    if (id) {
+      const { data: before } = await db.from('service_providers').select('markup').eq('id', id).single()
+      const { error } = await db.from('service_providers').update(values).eq('id', id).is('deleted_at', null)
+      if (error) throw new Error('প্রোভাইডার সংরক্ষণ করা যায়নি')
+      if (before?.markup !== data.markup) {
+        const { error: markupError } = await db.rpc('set_provider_markup', { _provider: id, _markup: data.markup })
+        if (markupError) throw new Error('দাম পরিবর্তন করা যায়নি')
+      }
+    } else {
+      if (!data.api_key) throw new Error('প্রোভাইডারের গোপন কী দিন')
+      const { data: saved, error } = await db.from('service_providers').insert({ ...values, api_key: data.api_key }).select('id').single()
+      if (error || !saved) throw new Error('প্রোভাইডার সংরক্ষণ করা যায়নি')
+      id = saved.id
+    }
+    await admin.logAdmin('provider_saved', { id, credential_changed: Boolean(data.api_key) })
+    const { syncProvider } = await import('./providers.server')
+    try { return { id, ...await syncProvider(id), syncError: null } }
+    catch { return { id, count: 0, skipped: 0, syncError: 'সংরক্ষিত হয়েছে, কিন্তু সার্ভিস আনা যায়নি; ঠিকানা/কী ও প্রোভাইডারের অনুমতি যাচাই করুন' } }
+  })
+
+export const adminProviderAction = createServerFn({ method: 'POST' })
+  .inputValidator((input) => z.object({ id: z.string().uuid(), action: z.enum(['on', 'off', 'sync', 'status']) }).parse(input))
+  .handler(async ({ data }) => {
+    const { admin, db } = await context()
+    const worker = await import('./providers.server')
+    if (data.action === 'sync') return worker.syncProvider(data.id)
+    if (data.action === 'status') return worker.refreshProviderOrders(data.id)
+    if (data.action === 'on') await worker.syncProvider(data.id)
+    const { error } = await db.from('service_providers').update({ active: data.action === 'on' }).eq('id', data.id).is('deleted_at', null)
+    if (error) throw new Error('পরিবর্তন করা যায়নি')
+    const { data: settings } = await db.from('site_settings').select('content_version').eq('id', 1).single()
+    await db.from('site_settings').update({ content_version: (settings?.content_version ?? 0) + 1 }).eq('id', 1)
+    await admin.logAdmin(`provider_${data.action}`, { id: data.id })
+    return { ok: true }
+  })
+
+export const adminSetServiceSource = createServerFn({ method: 'POST' })
+  .inputValidator((input) => z.object({ source: z.enum(['own_enabled', 'api_enabled']), enabled: z.boolean() }).parse(input))
+  .handler(async ({ data }) => {
+    const { admin, db } = await context()
+    const patch: Database['public']['Tables']['service_source_settings']['Insert'] = { id: 1 }
+    patch[data.source] = data.enabled
+    const { error } = await db.from('service_source_settings').upsert(patch)
+    if (error) throw new Error('পরিবর্তন করা যায়নি')
+    const { data: settings } = await db.from('site_settings').select('content_version').eq('id', 1).single()
+    await db.from('site_settings').update({ content_version: (settings?.content_version ?? 0) + 1 }).eq('id', 1)
+    await admin.logAdmin('service_source_updated', { source: data.source, enabled: data.enabled })
+    return { ok: true }
+  })
+
+export const adminProviderServices = createServerFn({ method: 'POST' })
+  .inputValidator((input) => z.object({ id: z.string().uuid(), page: z.number().int().min(0), q: z.string().max(100) }).parse(input))
+  .handler(async ({ data }) => {
+    const { db } = await context()
+    let query = db.from('services').select('id,service_no,name,rate,rate_per,provider_rate,active,provider_available').eq('provider_id', data.id).is('deleted_at', null).order('service_no').range(data.page * 50, data.page * 50 + 49)
+    const q = data.q.replace(/[%,()*]/g, '')
+    if (q) query = query.ilike('name', `%${q}%`)
+    const { data: rows, error } = await query
+    if (error) throw new Error('সার্ভিস পাওয়া যায়নি')
+    return rows ?? []
+  })
+
+export const adminEditProviderService = createServerFn({ method: 'POST' })
+  .inputValidator((input) => z.object({ id: z.string().uuid(), name: z.string().trim().min(1).max(200).optional(), rate: z.number().finite().positive().max(1000000).optional(), active: z.boolean().optional() }).parse(input))
+  .handler(async ({ data }) => {
+    const { admin, db } = await context()
+    const { id, ...values } = data
+    const patch: Database['public']['Tables']['services']['Update'] = {}
+    if (values.name !== undefined) { patch.name = values.name; patch.custom_name = true }
+    if (values.rate !== undefined) { patch.rate = values.rate; patch.custom_rate = true }
+    if (values.active !== undefined) patch.active = values.active
+    const { error } = await db.from('services').update(patch).eq('id', id).not('provider_id', 'is', null)
+    if (error) throw new Error('সার্ভিস সংরক্ষণ করা যায়নি')
+    const { data: settings } = await db.from('site_settings').select('content_version').eq('id', 1).single()
+    await db.from('site_settings').update({ content_version: (settings?.content_version ?? 0) + 1 }).eq('id', 1)
+    await admin.logAdmin('provider_service_edited', { id, ...values })
+    return { ok: true }
+  })

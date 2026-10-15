@@ -10,11 +10,30 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import { PlatformIcon } from "@/lib/brand";
 import { money } from "@/lib/format";
+import { AdminProviders } from "./AdminProviders";
+import { adminListProviders, adminSetServiceSource } from "@/lib/admin-providers.functions";
+import { Button } from "@/components/ui/button";
 
 type Level = "platforms" | "categories" | "services";
 type Nav = { platform?: { id: string; name: string } | undefined; category?: { id: string; name: string } | undefined };
 
 export function AdminServices() {
+  const [mode, setMode] = useState<"own" | "api">("own");
+  const get = useServerFn(adminListProviders), setSource = useServerFn(adminSetServiceSource);
+  const qc = useQueryClient();
+  const { data, isError, isLoading } = useQuery({ queryKey: ["admin-providers"], queryFn: () => get() });
+  const change = async (source: "own_enabled" | "api_enabled", enabled: boolean) => {
+    try { await setSource({ data: { source, enabled } }); qc.invalidateQueries(); }
+    catch { toast.error("পরিবর্তন সংরক্ষণ করা যায়নি"); }
+  };
+  if (isError) return <ErrorState />;
+  if (isLoading || !data) return <Skeleton className="h-40" />;
+  return <div className="space-y-4"><div className="flex flex-wrap gap-3 border-b border-border pb-3">
+    <div className="flex items-center gap-2"><Button variant={mode === "own" ? "default" : "outline"} onClick={() => setMode("own")}>নিজের সার্ভিস</Button><Switch checked={data.sources.own_enabled} aria-label="নিজের সার্ভিস অন/অফ" onCheckedChange={(v) => void change("own_enabled", v)} /></div>
+    <div className="flex items-center gap-2"><Button variant={mode === "api" ? "default" : "outline"} onClick={() => setMode("api")}>এপিআই সার্ভিস</Button><Switch checked={data.sources.api_enabled} aria-label="এপিআই সার্ভিস অন/অফ" onCheckedChange={(v) => void change("api_enabled", v)} /></div>
+  </div>{mode === "own" ? <OwnServices /> : <AdminProviders providers={data.providers} />}</div>;
+}
+function OwnServices() {
   const [nav, setNav] = useState<Nav>({});
   if (nav.category && nav.platform) return <LevelView level="services" parentId={nav.category.id} title={nav.category.name} sub={nav.platform.name} onBack={() => setNav({ platform: nav.platform })} />;
   if (nav.platform) return <LevelView level="categories" parentId={nav.platform.id} title={nav.platform.name} sub="Categories" onBack={() => setNav({})} onOpen={(r) => setNav({ platform: nav.platform, category: { id: r.id, name: r.name } })} />;
@@ -35,7 +54,7 @@ function LevelView({ level, parentId, title, sub, onBack, onOpen }: {
   const [q, setQ] = useState("");
   const [form, setForm] = useState<{ id: string | null; row?: any } | null>(null);
   const key = ["adm-catalog", level, parentId, trash];
-  const { data, isLoading, isError } = useQuery({ queryKey: key, queryFn: () => list({ data: { level, parentId, trash } }) });
+  const { data, isLoading, isError } = useQuery({ queryKey: key, queryFn: () => list({ data: { level, parentId, trash, ownOnly: level === "services" } }) });
   const refresh = () => qc.invalidateQueries({ queryKey: ["adm-catalog"] });
   const run = async (id: string, action: "on" | "off" | "delete" | "restore" | "up" | "down") => {
     try {

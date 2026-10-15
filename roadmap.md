@@ -1,4 +1,7 @@
 # Roadmap
+- [x] Add multi-provider management with admin-only credentials, paginated service editing, preserved custom names/prices, percentage markup, independent source/provider switches, gated reseller/catalog reads, mapped dispatch claims and ledger-based status reconciliation. Customer fonts/styles unchanged. 23 focused tests pass and preview build is clean.
+- [ ] Connect Royal SMM World and verify live import; requires a real provider key (uploaded video shows documentation only).
+- [ ] Verify provider admin actions and real upstream order end-to-end; admin login did not establish a session, and no valid upstream key is available. No paid test order submitted. Automatic recurring catalog/status checks are not configured; current import runs on save/enable/sync and status updates use the admin button.
 - [x] Show full lower Add Funds image on desktop only; verified full 1920:640 image at 992×331 and unchanged 2.9 mobile ratio. Other styling untouched.
 - [x] Final read-only customer/login review: 11 signed-in/public pages and 4 guest auth pages open; invalid customer login rejected, session survives reload, no overflow/runtime errors, all 22 tests pass. Signup/email delivery and live money/settings writes not executed.
 - [ ] Final authenticated admin retest blocked: current admin password attempt did not establish a session. All 19 sections were verified in the previous audit; this pass only inspected source and signed-out access guard. Requires a working admin session to retest protected actions; no further password attempts made.

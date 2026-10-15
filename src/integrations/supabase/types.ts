@@ -442,12 +442,17 @@ export type Database = {
           created_at: string
           deleted_at: string | null
           delivered_qty: number | null
+          dispatch_state: string
           id: string
           idempotency_key: string
           link: string
           order_code: string
           platform_name: string
           platform_slug: string
+          provider_error: string | null
+          provider_id: string | null
+          provider_order_id: string | null
+          provider_service_id: string | null
           quantity: number
           refunded: number
           service_id: string
@@ -464,12 +469,17 @@ export type Database = {
           created_at?: string
           deleted_at?: string | null
           delivered_qty?: number | null
+          dispatch_state?: string
           id?: string
           idempotency_key: string
           link: string
           order_code: string
           platform_name: string
           platform_slug: string
+          provider_error?: string | null
+          provider_id?: string | null
+          provider_order_id?: string | null
+          provider_service_id?: string | null
           quantity: number
           refunded?: number
           service_id: string
@@ -486,12 +496,17 @@ export type Database = {
           created_at?: string
           deleted_at?: string | null
           delivered_qty?: number | null
+          dispatch_state?: string
           id?: string
           idempotency_key?: string
           link?: string
           order_code?: string
           platform_name?: string
           platform_slug?: string
+          provider_error?: string | null
+          provider_id?: string | null
+          provider_order_id?: string | null
+          provider_service_id?: string | null
           quantity?: number
           refunded?: number
           service_id?: string
@@ -502,6 +517,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "orders_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "service_providers"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "orders_service_id_fkey"
             columns: ["service_id"]
@@ -760,11 +782,70 @@ export type Database = {
         }
         Relationships: []
       }
+      service_providers: {
+        Row: {
+          active: boolean
+          api_key: string
+          api_url: string
+          created_at: string
+          deleted_at: string | null
+          id: string
+          last_synced_at: string | null
+          link_parameter: string
+          markup: number
+          name: string
+        }
+        Insert: {
+          active?: boolean
+          api_key: string
+          api_url: string
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          last_synced_at?: string | null
+          link_parameter?: string
+          markup?: number
+          name: string
+        }
+        Update: {
+          active?: boolean
+          api_key?: string
+          api_url?: string
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          last_synced_at?: string | null
+          link_parameter?: string
+          markup?: number
+          name?: string
+        }
+        Relationships: []
+      }
+      service_source_settings: {
+        Row: {
+          api_enabled: boolean
+          id: number
+          own_enabled: boolean
+        }
+        Insert: {
+          api_enabled?: boolean
+          id: number
+          own_enabled?: boolean
+        }
+        Update: {
+          api_enabled?: boolean
+          id?: number
+          own_enabled?: boolean
+        }
+        Relationships: []
+      }
       services: {
         Row: {
           active: boolean
           avg_time: string
           category_id: string
+          custom_name: boolean
+          custom_rate: boolean
           deleted_at: string | null
           description: string | null
           id: string
@@ -772,6 +853,10 @@ export type Database = {
           max_qty: number
           min_qty: number
           name: string
+          provider_available: boolean
+          provider_id: string | null
+          provider_rate: number | null
+          provider_service_id: string | null
           rate: number
           rate_per: number
           refill_info: string | null
@@ -782,6 +867,8 @@ export type Database = {
           active?: boolean
           avg_time?: string
           category_id: string
+          custom_name?: boolean
+          custom_rate?: boolean
           deleted_at?: string | null
           description?: string | null
           id?: string
@@ -789,6 +876,10 @@ export type Database = {
           max_qty?: number
           min_qty?: number
           name: string
+          provider_available?: boolean
+          provider_id?: string | null
+          provider_rate?: number | null
+          provider_service_id?: string | null
           rate: number
           rate_per?: number
           refill_info?: string | null
@@ -799,6 +890,8 @@ export type Database = {
           active?: boolean
           avg_time?: string
           category_id?: string
+          custom_name?: boolean
+          custom_rate?: boolean
           deleted_at?: string | null
           description?: string | null
           id?: string
@@ -806,6 +899,10 @@ export type Database = {
           max_qty?: number
           min_qty?: number
           name?: string
+          provider_available?: boolean
+          provider_id?: string | null
+          provider_rate?: number | null
+          provider_service_id?: string | null
           rate?: number
           rate_per?: number
           refill_info?: string | null
@@ -818,6 +915,13 @@ export type Database = {
             columns: ["category_id"]
             isOneToOne: false
             referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "services_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "service_providers"
             referencedColumns: ["id"]
           },
         ]
@@ -1320,8 +1424,17 @@ export type Database = {
         }
         Returns: Json
       }
+      service_source_enabled: { Args: { _provider: string }; Returns: boolean }
       set_my_avatar: { Args: { _path: string }; Returns: undefined }
       set_my_language: { Args: { _lang: string }; Returns: undefined }
+      set_provider_markup: {
+        Args: { _markup: number; _provider: string }
+        Returns: undefined
+      }
+      sync_provider_catalog: {
+        Args: { _provider: string; _rows: Json }
+        Returns: number
+      }
       tg_recent_results: {
         Args: never
         Returns: {

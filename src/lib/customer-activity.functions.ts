@@ -9,6 +9,8 @@ export const submitCustomerOrder = createServerFn({ method: 'POST' })
     const { data: result, error } = await context.supabase.rpc('place_order', { _service_id: data.serviceId, _link: data.link, _quantity: data.quantity, _idem: data.idempotencyKey })
     if (error) return { result: null, error: error.message }
     const order = z.object({ order_code: z.string(), charge: z.number() }).parse(result)
+    const { dispatchProviderOrder } = await import('./providers.server')
+    await dispatchProviderOrder(order.order_code, context.userId)
     const { sendAdminActivityAlert } = await import('./admin-alerts.server')
     await sendAdminActivityAlert('order', order.order_code, context.userId)
     return { result: order, error: null }

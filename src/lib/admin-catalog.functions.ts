@@ -18,10 +18,11 @@ const level = z.enum(["platforms", "categories", "services"]);
 const parentCol = { platforms: null, categories: "platform_id", services: "category_id" } as const;
 
 export const adminCatalogList = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) => z.object({ level, parentId: z.string().uuid().nullable(), trash: z.boolean().default(false) }).parse(d))
+  .inputValidator((d: unknown) => z.object({ level, parentId: z.string().uuid().nullable(), trash: z.boolean().default(false), ownOnly: z.boolean().default(false) }).parse(d))
   .handler(async ({ data }) => {
     const { db } = await ctx();
     let q = db.from(data.level).select("*").order("sort").order("name").limit(2000);
+    if (data.level === "services" && data.ownOnly) q = q.is("provider_id", null);
     const pc = parentCol[data.level];
     if (pc && data.parentId) q = q.eq(pc, data.parentId);
     q = data.trash ? q.not("deleted_at", "is", null) : q.is("deleted_at", null);
@@ -65,6 +66,7 @@ export const adminCatalogSave = createServerFn({ method: "POST" })
     const pc = parentCol[data.level];
     if (data.id) {
       const { data: before } = await db.from(data.level).select("*").eq("id", data.id).single();
+      if (data.level === "services" && before?.provider_id) { values["custom_name"] = true; values["custom_rate"] = true; }
       const { error } = await db.from(data.level).update(values).eq("id", data.id);
       if (error) throw new Error(error.message);
       await s.logAdmin(`${data.level}_edit`, { id: data.id }, before, values);
