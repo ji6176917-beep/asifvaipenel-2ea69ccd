@@ -33,7 +33,7 @@ export function ProviderCompare() {
   if (isLoading || !data) return <Skeleton className="h-60" />
   if (!data.providers.length) return <Card>কোনো এপিআই প্যানেল যুক্ত নেই। আগে "এপিআই সার্ভিস" থেকে প্যানেল যোগ করুন।</Card>
   const names = new Map(data.providers.map((p) => [p.id, p.name]))
-  const pid = provider ?? data.providers[0].id
+  const pid = provider ?? data.providers[0]!.id
   const cats = data.categories.filter((c) => c.providers[pid])
   const plats = data.platforms.filter((p) => cats.some((c) => c.platform_id === p.id))
   const plat = platform && plats.some((p) => p.id === platform) ? platform : plats[0]?.id
