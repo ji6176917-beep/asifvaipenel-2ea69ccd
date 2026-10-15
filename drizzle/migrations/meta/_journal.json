@@ -218,13 +218,6 @@
       "when": 1792066115285,
       "tag": "0030_category_source_control",
       "breakpoints": true
-    },
-    {
-      "idx": 31,
-      "version": "7",
-      "when": 1792070160814,
-      "tag": "0031_price_follow_provider",
-      "breakpoints": true
     }
   ]
 }
