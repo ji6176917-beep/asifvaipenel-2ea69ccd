@@ -65,7 +65,10 @@ async function handle(request: Request) {
         .select("service_no,name,description,rate,rate_per,min_qty,max_qty,avg_time,refill_info,categories!inner(name,active,deleted_at,platforms!inner(name,active,deleted_at))")
         .eq("active", true).is("deleted_at", null).eq("categories.active", true).is("categories.deleted_at", null)
         .eq("categories.platforms.active", true).is("categories.platforms.deleted_at", null).order("sort");
-      return json((data ?? []).map((s) => ({
+      // Only live services: hidden/deleted services, categories or platforms never reach reseller panels.
+      const live = (data ?? []).filter((s) => s.categories && s.categories.active && !s.categories.deleted_at
+        && s.categories.platforms && s.categories.platforms.active && !s.categories.platforms.deleted_at);
+      return json(live.map((s) => ({
         service: s.service_no, name: s.name, type: "Default",
         category: `${s.categories.platforms.name} - ${s.categories.name}`,
         rate: Number(s.rate).toString(), min: String(s.min_qty), max: String(s.max_qty),
