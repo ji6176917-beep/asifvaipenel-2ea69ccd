@@ -107,7 +107,7 @@ function Orders() {
               </div>
               <a href={o.link} target="_blank" rel="noreferrer" className="history-link">{o.link}</a>
               {step >= 0 && <div className="flex items-center gap-1 pt-1">{FLOW.map((f, i) => <div key={f} className={`h-1 flex-1 rounded-full ${i <= step ? "bg-primary" : "bg-muted"}`} title={tr(f)} />)}</div>}
-              {o.status === "pending" && <Button variant="ghost" size="sm" onClick={() => void cancel(o.id)} className="h-7 px-0 text-xs text-destructive">{tr("Cancel order")}</Button>}
+              {o.status === "pending" && !o.provider_id && <Button variant="ghost" size="sm" onClick={() => void cancel(o.id)} className="h-7 px-0 text-xs text-destructive">{tr("Cancel order")}</Button>}
             </HistoryCard>
           );
         })}

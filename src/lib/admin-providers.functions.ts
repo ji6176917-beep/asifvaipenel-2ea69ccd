@@ -62,10 +62,36 @@ export const adminSetServiceSource = createServerFn({ method: 'POST' })
   .inputValidator((input) => z.object({ source: z.enum(['own_enabled', 'api_enabled']), enabled: z.boolean() }).parse(input))
   .handler(async ({ data }) => {
     const { admin, db } = await context()
-    const { error } = await db.from('service_source_settings').upsert({ id: 1, [data.source]: data.enabled })
+    const patch = data.source === 'own_enabled' ? { id: 1, own_enabled: data.enabled } : { id: 1, api_enabled: data.enabled }
+    const { error } = await db.from('service_source_settings').upsert(patch)
     if (error) throw new Error('পরিবর্তন করা যায়নি')
     const { data: settings } = await db.from('site_settings').select('content_version').eq('id', 1).single()
     await db.from('site_settings').update({ content_version: (settings?.content_version ?? 0) + 1 }).eq('id', 1)
     await admin.logAdmin('service_source_updated', { source: data.source, enabled: data.enabled })
+    return { ok: true }
+  })
+
+export const adminProviderServices = createServerFn({ method: 'POST' })
+  .inputValidator((input) => z.object({ id: z.string().uuid(), page: z.number().int().min(0), q: z.string().max(100) }).parse(input))
+  .handler(async ({ data }) => {
+    const { db } = await context()
+    let query = db.from('services').select('id,service_no,name,rate,rate_per,provider_rate,active,provider_available').eq('provider_id', data.id).is('deleted_at', null).order('service_no').range(data.page * 50, data.page * 50 + 49)
+    const q = data.q.replace(/[%,()*]/g, '')
+    if (q) query = query.ilike('name', `%${q}%`)
+    const { data: rows, error } = await query
+    if (error) throw new Error('সার্ভিস পাওয়া যায়নি')
+    return rows ?? []
+  })
+
+export const adminEditProviderService = createServerFn({ method: 'POST' })
+  .inputValidator((input) => z.object({ id: z.string().uuid(), name: z.string().trim().min(1).max(200).optional(), rate: z.number().finite().positive().max(1000000).optional(), active: z.boolean().optional() }).parse(input))
+  .handler(async ({ data }) => {
+    const { admin, db } = await context()
+    const { id, ...values } = data
+    const { error } = await db.from('services').update({ ...values, ...(values.name !== undefined ? { custom_name: true } : {}), ...(values.rate !== undefined ? { custom_rate: true } : {}) }).eq('id', id).not('provider_id', 'is', null)
+    if (error) throw new Error('সার্ভিস সংরক্ষণ করা যায়নি')
+    const { data: settings } = await db.from('site_settings').select('content_version').eq('id', 1).single()
+    await db.from('site_settings').update({ content_version: (settings?.content_version ?? 0) + 1 }).eq('id', 1)
+    await admin.logAdmin('provider_service_edited', { id, ...values })
     return { ok: true }
   })

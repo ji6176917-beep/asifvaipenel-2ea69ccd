@@ -62,11 +62,16 @@ async function handle(request: Request) {
       return json({ balance: Number(prof.balance).toFixed(2), currency: "USD" });
     case "services": {
       const { data } = await db.from("services")
-        .select("service_no,name,description,rate,rate_per,min_qty,max_qty,avg_time,refill_info,categories!inner(name,active,deleted_at,platforms!inner(name,active,deleted_at))")
+        .select("provider_id,provider_available,service_no,name,description,rate,rate_per,min_qty,max_qty,avg_time,refill_info,categories!inner(name,active,deleted_at,platforms!inner(name,active,deleted_at))")
         .eq("active", true).is("deleted_at", null).eq("categories.active", true).is("categories.deleted_at", null)
         .eq("categories.platforms.active", true).is("categories.platforms.deleted_at", null).order("sort");
       // Only live services: hidden/deleted services, categories or platforms never reach reseller panels.
-      const live = (data ?? []).filter((s) => s.categories && s.categories.active && !s.categories.deleted_at
+      const [{ data: sources }, { data: providers }] = await Promise.all([
+        db.from("service_source_settings").select("own_enabled,api_enabled").eq("id", 1).maybeSingle(),
+        db.from("service_providers").select("id").eq("active", true).is("deleted_at", null),
+      ]);
+      const enabledProviders = new Set((providers ?? []).map((p) => p.id));
+      const live = (data ?? []).filter((s) => s.provider_available && (s.provider_id ? sources?.api_enabled !== false && enabledProviders.has(s.provider_id) : sources?.own_enabled !== false) && s.categories && s.categories.active && !s.categories.deleted_at
         && s.categories.platforms && s.categories.platforms.active && !s.categories.platforms.deleted_at);
       return json(live.map((s) => ({
         service: s.service_no, name: s.name, type: "Default",
@@ -91,6 +96,8 @@ async function handle(request: Request) {
         return json({ error: "Could not place order" }, 500);
       }
       const r = data as { order: string; charge: number; balance: number };
+      const { dispatchProviderOrder } = await import("@/lib/providers.server");
+      await dispatchProviderOrder(String(r.order), prof.id);
       const { sendAdminActivityAlert } = await import("@/lib/admin-alerts.server");
       await sendAdminActivityAlert("order", r.order, prof.id);
       return json({ order: /^\d+$/.test(String(r.order)) ? Number(r.order) : r.order });
