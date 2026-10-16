@@ -36,6 +36,39 @@ export function detectPlatform(title: string) {
   return PLATFORM_PATTERNS.find(([, re]) => re.test(title))?.[0] ?? 'other'
 }
 
+function formatMinutes(min: number) {
+  if (min < 1) return 'Instant'
+  if (min < 60) return `${Math.round(min)} minutes`
+  if (min < 1440) { const h = Math.round(min / 60); return h === 1 ? '1 hour' : `${h} hours` }
+  const d = Math.round(min / 1440); return d === 1 ? '1 day' : `${d} days`
+}
+
+const RANGE = String.raw`(\d+(?:\.\d+)?(?:\s*[-–~]\s*\d+(?:\.\d+)?)?)`
+function unitText(range: string, unit: string) {
+  const r = range.replace(/\s*[-–~]\s*/, '-')
+  const u = unit.toLowerCase()
+  const single = !r.includes('-') && Number(r) === 1
+  if (u.startsWith('m')) return `${r} ${single ? 'minute' : 'minutes'}`
+  if (u.startsWith('d')) return `${r} ${single ? 'day' : 'days'}`
+  return `${r} ${single ? 'hour' : 'hours'}`
+}
+
+/** Real start time from the provider: speed hints in name/description or average_time (minutes). Null = unknown. */
+export function providerAvgTime(row: Record<string, unknown>): string | null {
+  const text = `${row['name'] ?? ''} ${row['description'] ?? row['desc'] ?? ''}`.replace(/\s+/g, ' ')
+  const start = new RegExp(String.raw`start(?:\s*time)?\s*[:\-]?\s*${RANGE}\s*(min(?:ute)?s?|h(?:ours?|rs?)?|d(?:ays?)?)\b`, 'i').exec(text)
+  if (start) return unitText(start[1], start[2])
+  if (/start(?:\s*time)?\s*[:\-]?\s*(super\s*)?instant/i.test(text)) return 'Instant (0-5 minutes)'
+  const avg = Number(row['average_time'])
+  if (Number.isFinite(avg) && avg > 0) return formatMinutes(avg)
+  if (/\binstant\b/i.test(text)) return 'Instant (0-5 minutes)'
+  const m = new RegExp(String.raw`(?:^|[\s\[|(])${RANGE}\s*(min(?:ute)?s?)\b`, 'i').exec(text)
+  if (m && /[-–~]/.test(m[1])) return unitText(m[1], m[2])
+  const h = new RegExp(String.raw`(?:^|[\s\[|(])${RANGE}\s*(?:\/\s*)?(h|hrs?|hours?)\b`, 'i').exec(text)
+  if (h) return unitText(h[1], h[2])
+  return null
+}
+
 export function normalizeProviderServices(input: unknown) {
   if (!Array.isArray(input)) throw new Error('সঠিক সার্ভিস তালিকা পাওয়া যায়নি')
   let skipped = 0
@@ -48,7 +81,7 @@ export function normalizeProviderServices(input: unknown) {
     seen.add(r.service)
     const title = `${r.category} ${r.name}`
     const platform = detectPlatform(title)
-    return [{ service: r.service, name: r.name, type: r.type, rate: r.rate, min: r.min, max: r.max, available: providerServiceAvailable(r), category: r.category.slice(0, 120), platform, platform_name: PLATFORM_NAMES[platform] ?? platform.charAt(0).toUpperCase() + platform.slice(1) }]
+    return [{ service: r.service, name: r.name, type: r.type, rate: r.rate, min: r.min, max: r.max, available: providerServiceAvailable(r), avg_time: providerAvgTime(r)?.slice(0, 60) ?? null, category: r.category.slice(0, 120), platform, platform_name: PLATFORM_NAMES[platform] ?? platform.charAt(0).toUpperCase() + platform.slice(1) }]
   })
   if (input.length && skipped > input.length * 0.2) throw new Error('অসম্পূর্ণ সার্ভিস তালিকা এসেছে; পুরনো তালিকা অপরিবর্তিত আছে')
   return { rows, skipped }
