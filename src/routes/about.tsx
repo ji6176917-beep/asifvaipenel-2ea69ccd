@@ -10,6 +10,7 @@ export const Route = createFileRoute("/about")({
       { property: "og:description", content: "Who we are and how we deliver." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
+      { name: "robots", content: "noindex, nofollow" },
     ],
   }),
   component: Page,
