@@ -29,6 +29,7 @@ import { Route as PSlugRouteImport } from './routes/p/$slug'
 import { Route as AuthenticatedAddFundsIndexRouteImport } from './routes/_authenticated/add-funds.index'
 import { Route as AuthenticatedAddFundsHistoryRouteImport } from './routes/_authenticated/add-funds.history'
 import { Route as AuthenticatedServicePlatformRouteImport } from './routes/_authenticated/service.$platform'
+import { Route as ApiPublicOrderStatusSyncRouteImport } from './routes/api/public/order-status-sync'
 import { Route as ApiPublicProviderCatalogSyncRouteImport } from './routes/api/public/provider-catalog-sync'
 import { Route as ApiPublicV2RouteImport } from './routes/api/public/v2'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
@@ -138,6 +139,12 @@ const AuthenticatedServicePlatformRoute =
     path: '/service/$platform',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiPublicOrderStatusSyncRoute =
+  ApiPublicOrderStatusSyncRouteImport.update({
+    id: '/api/public/order-status-sync',
+    path: '/api/public/order-status-sync',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicProviderCatalogSyncRoute =
   ApiPublicProviderCatalogSyncRouteImport.update({
     id: '/api/public/provider-catalog-sync',
@@ -185,6 +192,7 @@ export interface FileRoutesByFullPath {
   '/p/$slug': typeof PSlugRoute
   '/add-funds/history': typeof AuthenticatedAddFundsHistoryRoute
   '/service/$platform': typeof AuthenticatedServicePlatformRoute
+  '/api/public/order-status-sync': typeof ApiPublicOrderStatusSyncRoute
   '/api/public/provider-catalog-sync': typeof ApiPublicProviderCatalogSyncRoute
   '/api/public/v2': typeof ApiPublicV2Route
   '/add-funds/': typeof AuthenticatedAddFundsIndexRoute
@@ -211,6 +219,7 @@ export interface FileRoutesByTo {
   '/p/$slug': typeof PSlugRoute
   '/add-funds/history': typeof AuthenticatedAddFundsHistoryRoute
   '/service/$platform': typeof AuthenticatedServicePlatformRoute
+  '/api/public/order-status-sync': typeof ApiPublicOrderStatusSyncRoute
   '/api/public/provider-catalog-sync': typeof ApiPublicProviderCatalogSyncRoute
   '/api/public/v2': typeof ApiPublicV2Route
   '/add-funds': typeof AuthenticatedAddFundsIndexRoute
@@ -239,6 +248,7 @@ export interface FileRoutesById {
   '/p/$slug': typeof PSlugRoute
   '/_authenticated/add-funds/history': typeof AuthenticatedAddFundsHistoryRoute
   '/_authenticated/service/$platform': typeof AuthenticatedServicePlatformRoute
+  '/api/public/order-status-sync': typeof ApiPublicOrderStatusSyncRoute
   '/api/public/provider-catalog-sync': typeof ApiPublicProviderCatalogSyncRoute
   '/api/public/v2': typeof ApiPublicV2Route
   '/_authenticated/add-funds/': typeof AuthenticatedAddFundsIndexRoute
@@ -267,6 +277,7 @@ export interface FileRouteTypes {
     | '/p/$slug'
     | '/add-funds/history'
     | '/service/$platform'
+    | '/api/public/order-status-sync'
     | '/api/public/provider-catalog-sync'
     | '/api/public/v2'
     | '/add-funds/'
@@ -293,6 +304,7 @@ export interface FileRouteTypes {
     | '/p/$slug'
     | '/add-funds/history'
     | '/service/$platform'
+    | '/api/public/order-status-sync'
     | '/api/public/provider-catalog-sync'
     | '/api/public/v2'
     | '/add-funds'
@@ -320,6 +332,7 @@ export interface FileRouteTypes {
     | '/p/$slug'
     | '/_authenticated/add-funds/history'
     | '/_authenticated/service/$platform'
+    | '/api/public/order-status-sync'
     | '/api/public/provider-catalog-sync'
     | '/api/public/v2'
     | '/_authenticated/add-funds/'
@@ -341,6 +354,7 @@ export interface RootRouteChildren {
   SignInRoute: typeof SignInRoute
   SignUpRoute: typeof SignUpRoute
   PSlugRoute: typeof PSlugRoute
+  ApiPublicOrderStatusSyncRoute: typeof ApiPublicOrderStatusSyncRoute
   ApiPublicProviderCatalogSyncRoute: typeof ApiPublicProviderCatalogSyncRoute
   ApiPublicV2Route: typeof ApiPublicV2Route
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
@@ -490,6 +504,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedServicePlatformRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/order-status-sync': {
+      id: '/api/public/order-status-sync'
+      path: '/api/public/order-status-sync'
+      fullPath: '/api/public/order-status-sync'
+      preLoaderRoute: typeof ApiPublicOrderStatusSyncRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/provider-catalog-sync': {
       id: '/api/public/provider-catalog-sync'
       path: '/api/public/provider-catalog-sync'
@@ -566,6 +587,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignInRoute: SignInRoute,
   SignUpRoute: SignUpRoute,
   PSlugRoute: PSlugRoute,
+  ApiPublicOrderStatusSyncRoute: ApiPublicOrderStatusSyncRoute,
   ApiPublicProviderCatalogSyncRoute: ApiPublicProviderCatalogSyncRoute,
   ApiPublicV2Route: ApiPublicV2Route,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
