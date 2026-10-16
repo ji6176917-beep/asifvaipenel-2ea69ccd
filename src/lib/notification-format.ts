@@ -46,7 +46,14 @@ export type NotificationDetails = {
   amount?: number; bdt_amount?: number | null; method_name?: string; txn_id?: string;
   service_name?: string; platform_name?: string; platform_slug?: string;
   quantity?: number; charge?: number; link?: string;
+  status?: string;
 };
+
+/** Order notifications always reflect the order's current status, not the event that created the notice. */
+export function currentNotificationStatus(parsed: ParsedNote, details?: NotificationDetails | null) {
+  const status = parsed.type === "order" && details?.status ? details.status : parsed.status;
+  return { status, tone: status ? STATUS_TONE[status] ?? "neutral" : parsed.tone };
+}
 
 export function notificationDestination(title: string, body?: string | null) {
   const parsed = parseNotification(title, body);

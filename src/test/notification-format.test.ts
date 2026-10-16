@@ -1,7 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { parseNotification, matchesNotification, notificationInPeriod, notificationDestination } from "@/lib/notification-format";
+import { parseNotification, matchesNotification, notificationInPeriod, notificationDestination, currentNotificationStatus } from "@/lib/notification-format";
 
 describe("parseNotification", () => {
+  it.each(["completed", "processing", "canceled", "pending"])("shows the order's current %s status on an older notification", (status) => {
+    expect(currentNotificationStatus(parseNotification("Order #7 is now processing"), { status }).status).toBe(status);
+  });
   it("opens the matching funding history and reference", () => {
     expect(notificationDestination("Add Fund #ADD-194871 approved")).toEqual({ to: "/add-funds/history", search: { q: "ADD-194871" } });
   });

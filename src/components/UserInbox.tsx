@@ -56,7 +56,7 @@ export function UserInbox() {
         const unique = [...new Set(refs)];
         for (let i = 0; i < unique.length; i += 100) {
           if (type === "order") {
-            const { data: rows, error } = await supabase.from("orders").select("order_code,service_name,platform_name,platform_slug,quantity,charge,link").eq("user_id", user.id).in("order_code", unique.slice(i, i + 100));
+            const { data: rows, error } = await supabase.from("orders").select("order_code,service_name,platform_name,platform_slug,quantity,charge,link,status").eq("user_id", user.id).in("order_code", unique.slice(i, i + 100));
             if (error) throw error;
             rows.forEach((r) => details.set(`order:${r.order_code}`, r));
           } else {
@@ -89,6 +89,8 @@ export function UserInbox() {
           const n = p.new as Note;
           if (n?.title) void showSystemNotification(n.title, n.body ?? "");
         })
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "orders", filter: `user_id=eq.${user.id}` },
+        () => { qc.invalidateQueries({ queryKey: ["notifications", user.id] }); })
       .subscribe();
     return () => { supabase.removeChannel(ch); };
   }, [user?.id, qc]);
