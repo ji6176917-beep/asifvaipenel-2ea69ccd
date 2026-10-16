@@ -49,6 +49,7 @@ function Orders() {
   const query = useInfiniteQuery({
     queryKey: ["orders", user?.id, tab, term],
     enabled: !!user,
+    refetchInterval: 30000,
     initialPageParam: 0,
     queryFn: async ({ pageParam }) => {
       if (!user) return [];

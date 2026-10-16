@@ -90,7 +90,10 @@ export function normalizeProviderServices(input: unknown) {
 export function providerOrderStatus(status: string, quantity: number, remains: unknown) {
   const value = status.toLowerCase().replace(/[ _-]/g, '')
   if (value === 'completed') return { status: 'completed' as const, delivered: quantity }
-  if (['canceled', 'cancelled', 'rejected', 'refunded'].includes(value)) return { status: 'rejected' as const, delivered: 0 }
+  if (['canceled', 'cancelled'].includes(value)) return { status: 'canceled' as const, delivered: 0 }
+  if (['rejected', 'refunded', 'failed', 'error'].includes(value)) return { status: 'rejected' as const, delivered: 0 }
+  if (value === 'pending') return { status: 'pending' as const, delivered: 0 }
+  if (['processing', 'inprogress'].includes(value)) return { status: 'processing' as const, delivered: 0 }
   if (value === 'partial') {
     const remaining = Number(remains)
     if (!Number.isInteger(remaining) || remaining <= 0 || remaining >= quantity) return null

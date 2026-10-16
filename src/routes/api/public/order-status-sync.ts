@@ -10,7 +10,7 @@ export const Route = createFileRoute('/api/public/order-status-sync')({
     const { refreshProviderOrders } = await import('@/lib/providers.server')
     const results: Record<string, number | string> = {}
     for (const p of providers ?? []) {
-      try { results[p.id] = (await refreshProviderOrders(p.id)).updated }
+      try { results[p.id] = (await refreshProviderOrders(p.id, { statusOnly: true })).updated }
       catch (e) { results[p.id] = 'failed'; console.error('order status sync failed', p.id, e instanceof Error ? e.message : e) }
     }
     return Response.json({ results })
