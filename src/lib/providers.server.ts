@@ -16,7 +16,7 @@ export async function providerRequest(provider: { api_url: string; api_key: stri
   for (let attempt = 0; attempt < 3 && !response; attempt++) {
     const started = Date.now()
     try {
-      response = await fetch(url, { method: 'POST', redirect: 'error', headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36' }, body: new URLSearchParams({ ...params, key: provider.api_key }), signal: AbortSignal.timeout(45000) })
+      response = await fetch(url, { method: 'POST', redirect: 'follow', headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36' }, body: new URLSearchParams({ ...params, key: provider.api_key }), signal: AbortSignal.timeout(45000) })
     } catch (e) {
       lastError = e
       const fast = Date.now() - started < 3000 && (e as Error)?.name !== 'TimeoutError' && (e as Error)?.name !== 'AbortError'
