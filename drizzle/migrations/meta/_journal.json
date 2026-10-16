@@ -232,6 +232,13 @@
       "when": 1792086596318,
       "tag": "0032_provider_currency",
       "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "7",
+      "when": 1792124384100,
+      "tag": "0033_provider_avg_time",
+      "breakpoints": true
     }
   ]
 }
