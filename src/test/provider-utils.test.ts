@@ -2,6 +2,10 @@ import { describe, expect, it } from 'vitest'
 import { markedUpRate, normalizeProviderServices, providerOrderStatus, validateProviderUrl, providerServiceAvailable } from '@/lib/provider-utils'
 
 describe('provider business rules', () => {
+  it('keeps a completed provider order completed', () => { expect(providerOrderStatus('Completed', 100, 0)).toEqual({ status: 'completed', delivered: 100 }) })
+  it('keeps a processing provider order processing', () => { expect(providerOrderStatus('In progress', 100, 100)?.status).toBe('processing') })
+  it('keeps a canceled provider order canceled', () => { expect(providerOrderStatus('Canceled', 100, 100)?.status).toBe('canceled') })
+  it('keeps a pending provider order pending', () => { expect(providerOrderStatus('Pending', 100, 100)?.status).toBe('pending') })
   it('adds 20 percent to a provider price of 10', () => { expect(markedUpRate(10, 20)).toBe(12) })
   it('keeps provider names and categories during import', () => {
     const result = normalizeProviderServices([{ service: 45, name: 'Facebook Likes', category: 'Facebook Real', rate: '2', min: '10', max: '1000', type: 'Default' }])
