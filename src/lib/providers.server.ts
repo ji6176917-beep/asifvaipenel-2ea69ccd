@@ -10,7 +10,7 @@ export async function providerRequest(provider: { api_url: string; api_key: stri
   const url = validateProviderUrl(provider.api_url)
   // Read-only actions are always safe to retry. 'add' retries only on fast connection failures
   // (request almost certainly never reached the provider), never after a slow/timeout failure.
-  const readOnly = params.action !== 'add'
+  const readOnly = params['action'] !== 'add'
   let response: Response | undefined
   let lastError: unknown
   for (let attempt = 0; attempt < 3 && !response; attempt++) {
