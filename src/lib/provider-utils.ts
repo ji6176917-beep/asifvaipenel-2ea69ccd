@@ -57,15 +57,15 @@ function unitText(range: string, unit: string) {
 export function providerAvgTime(row: Record<string, unknown>): string | null {
   const text = `${row['name'] ?? ''} ${row['description'] ?? row['desc'] ?? ''}`.replace(/\s+/g, ' ')
   const start = new RegExp(String.raw`start(?:\s*time)?\s*[:\-]?\s*${RANGE}\s*(min(?:ute)?s?|h(?:ours?|rs?)?|d(?:ays?)?)\b`, 'i').exec(text)
-  if (start) return unitText(start[1], start[2])
+  if (start) return unitText(start[1]!, start[2]!)
   if (/start(?:\s*time)?\s*[:\-]?\s*(super\s*)?instant/i.test(text)) return 'Instant (0-5 minutes)'
   const avg = Number(row['average_time'])
   if (Number.isFinite(avg) && avg > 0) return formatMinutes(avg)
   if (/\binstant\b/i.test(text)) return 'Instant (0-5 minutes)'
   const m = new RegExp(String.raw`(?:^|[\s\[|(])${RANGE}\s*(min(?:ute)?s?)\b`, 'i').exec(text)
-  if (m && /[-–~]/.test(m[1])) return unitText(m[1], m[2])
+  if (m && /[-–~]/.test(m[1]!)) return unitText(m[1]!, m[2]!)
   const h = new RegExp(String.raw`(?:^|[\s\[|(])${RANGE}\s*(?:\/\s*)?(h|hrs?|hours?)\b`, 'i').exec(text)
-  if (h) return unitText(h[1], h[2])
+  if (h) return unitText(h[1]!, h[2]!)
   return null
 }
 
