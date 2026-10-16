@@ -4,12 +4,27 @@ export class ProviderError extends Error {
   constructor(message: string, readonly refused: boolean) { super(message) }
 }
 
+const wait = (ms: number) => new Promise((r) => setTimeout(r, ms))
+
 export async function providerRequest(provider: { api_url: string; api_key: string }, params: Record<string, string>) {
   const url = validateProviderUrl(provider.api_url)
-  let response: Response
-  try {
-    response = await fetch(url, { method: 'POST', redirect: 'error', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams({ ...params, key: provider.api_key }), signal: AbortSignal.timeout(20000) })
-  } catch (e) { throw new ProviderError(`প্রোভাইডারের উত্তর পাওয়া যায়নি (${String((e as Error)?.name ?? e).slice(0, 60)})`, false) }
+  // Read-only actions are always safe to retry. 'add' retries only on fast connection failures
+  // (request almost certainly never reached the provider), never after a slow/timeout failure.
+  const readOnly = params.action !== 'add'
+  let response: Response | undefined
+  let lastError: unknown
+  for (let attempt = 0; attempt < 3 && !response; attempt++) {
+    const started = Date.now()
+    try {
+      response = await fetch(url, { method: 'POST', redirect: 'error', headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json' }, body: new URLSearchParams({ ...params, key: provider.api_key }), signal: AbortSignal.timeout(45000) })
+    } catch (e) {
+      lastError = e
+      const fast = Date.now() - started < 3000 && (e as Error)?.name !== 'TimeoutError' && (e as Error)?.name !== 'AbortError'
+      if (!(readOnly || fast)) break
+      if (attempt < 2) await wait(800 * (attempt + 1))
+    }
+  }
+  if (!response) throw new ProviderError(`প্রোভাইডারের উত্তর পাওয়া যায়নি (${String((lastError as Error)?.name ?? lastError).slice(0, 60)})`, false)
   // HTTP refusal (blocked, auth, server error) means the order was never accepted upstream.
   if (!response.ok) throw new ProviderError(`প্রোভাইডার অনুরোধ গ্রহণ করেনি (HTTP ${response.status})`, true)
   const text = await response.text()
