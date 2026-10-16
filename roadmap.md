@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Correct only order status synchronization and current status in notifications/history; preserve design, submission and refund behavior.
 - [x] Homepage Popular Services now uses the same horizontal cards as New Order (logo left, name right, 179×62 at 6 columns desktop, 3 columns mobile); card click navigation and no mobile overflow browser-verified.
 - [ ] Connect both providers: Royal SMM World and World of SMM addresses saved OFF; usable real keys could not be read from the recordings. Requires entering real keys in Admin → Services → API; no live upstream request/order made.
 - [x] Import all provider types, upstream off flags/removals and price changes; preserve custom prices. Paginate consumer/reseller service lists. Protected hourly catalog callbacks scheduled only on provider activation (needs publication); inactive providers have no jobs. 27 focused tests pass, anonymous callback rejected, authenticated nonexistent-provider callback skipped, build OK. Special-input types are listed but their orders safely blocked pending dedicated input support. Transactional DB integration test retained but could not execute through sandbox psql.

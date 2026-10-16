@@ -7,7 +7,7 @@ import { Empty, ErrorState, Spinner } from "@/components/ui-kit";
 import { MethodLogo, PlatformIcon } from "@/lib/brand";
 import { useTr } from "@/lib/i18n";
 import { copy, money } from "@/lib/format";
-import { matchesNotification, notificationInPeriod, notificationDestination, parseNotification, type NotificationDetails } from "@/lib/notification-format";
+import { currentNotificationStatus, matchesNotification, notificationInPeriod, notificationDestination, parseNotification, type NotificationDetails } from "@/lib/notification-format";
 import apexLogo from "@/assets/apex-logo.png.asset.json";
 import bkash from "@/assets/payments/bkash.png.asset.json";
 import nagad from "@/assets/payments/nagad.png.asset.json";
@@ -32,7 +32,8 @@ function NotificationItem({ note, onNavigate }: { note: InboxNote; onNavigate: (
   const isDeposit = p.type === "deposit";
   const isWebsite = !isOrder && !isDeposit;
   const title = isDeposit ? tr("Add Fund") : isOrder ? d?.platform_name || tr("Order") : "Apex SMM World";
-  const status = p.status ? tr(p.status.charAt(0).toUpperCase() + p.status.slice(1)) : null;
+  const current = currentNotificationStatus(p, d);
+  const status = current.status ? tr(current.status.charAt(0).toUpperCase() + current.status.slice(1)) : null;
   const date = new Date(note.created_at);
   const methodName = d?.method_name?.trim() ?? "";
   const methodKey = methodName.toLowerCase();
@@ -53,7 +54,7 @@ function NotificationItem({ note, onNavigate }: { note: InboxNote; onNavigate: (
       <div className="notification-highlights">
         {(isDeposit || p.amount) && <span className="notification-amount"><Banknote />{p.amount ?? (d?.amount != null ? money(d.amount) : "—")}</span>}
         {isOrder && d?.quantity != null && <span className="notification-chip"><Users />{d.quantity.toLocaleString()} <span>{tr("Quantity")}</span></span>}
-        {status && <span className={`notification-status notification-status--${p.tone}`}>{p.tone === "success" ? <CheckCircle2 /> : p.tone === "danger" ? <CircleAlert /> : <Clock />}{status}</span>}
+        {status && <span className={`notification-status notification-status--${current.tone}`}>{current.tone === "success" ? <CheckCircle2 /> : current.tone === "danger" ? <CircleAlert /> : <Clock />}{status}</span>}
       </div>
       {isOrder && d?.service_name && <div className="notification-service"><Link2 /><span>{tr("Service")}: <strong>{d.service_name}</strong></span></div>}
       {isOrder && d?.charge != null && <span className="notification-chip notification-charge"><Banknote />{money(d.charge)}</span>}
