@@ -17,7 +17,7 @@ const FILTERS: [Filter, string][] = [["all", "All"], ["online", "Online now"], [
 
 type Action = { kind: "password" | "balance" | "message" | "ban"; user: AdminUserRow } | null;
 
-export function AdminUsers({ initialQ, initialFilter, onOpen }: { initialQ: string; initialFilter?: Filter; onOpen: (id: string) => void }) {
+export function AdminUsers({ initialQ, initialFilter, onOpen }: { initialQ: string; initialFilter?: Filter | undefined; onOpen: (id: string) => void }) {
   const list = useServerFn(adminListUsers);
   const stats = useUserStats();
   const [input, setInput] = useState(initialQ);
