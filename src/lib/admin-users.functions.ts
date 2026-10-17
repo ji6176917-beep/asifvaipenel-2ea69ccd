@@ -61,7 +61,7 @@ const listInput = z.object({
 
 export type AdminUserRow = {
   id: string; full_name: string; email: string | null; phone: string | null; public_id: string; username: string;
-  avatar_url: string | null; balance: number; created_at: string; last_sign_in_at: string | null;
+  avatar_url: string | null; balance: number; created_at: string; last_sign_in_at: string | null; last_seen_at: string | null;
   method: string; verified: boolean; banned: boolean;
 };
 
