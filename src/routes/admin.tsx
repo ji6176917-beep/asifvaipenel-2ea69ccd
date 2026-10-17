@@ -115,7 +115,7 @@ function AdminLayout() {
   const qc = useQueryClient();
   const [drawer, setDrawer] = useState(false);
   const [global, setGlobal] = useState("");
-  const pick = (id: string) => { setDrawer(false); navigate({ search: { section: id } }); };
+  const pick = (id: string) => { setDrawer(false); const [sec, v] = id.split(":"); navigate({ search: { section: sec, view: v || undefined } }); };
   const out = async () => {
     await logout();
     qc.removeQueries({ queryKey: ["admin-status"] });
