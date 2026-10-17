@@ -71,14 +71,14 @@ export function AdminDashboard({ onGo }: { onGo: (id: string) => void }) {
       ) : (
         <>
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-            <Stat icon={Wifi} label="Online now" value={data.online} />
+            <Stat icon={Wifi} label="Online now" value={data.online} onClick={() => onGo("users:online")} />
             <Stat icon={Eye} label="Visitors today" value={data.visitorsToday} />
             <Stat icon={Globe} label="Visitors total" value={data.visitorsTotal} />
             <Stat icon={Users} label="Total users" value={data.totalUsers} onClick={() => onGo("users")} />
             <Stat icon={UserPlus} label="New users today" value={data.newToday} onClick={() => onGo("users")} />
-            <Stat icon={ShoppingCart} label="Total orders" value={data.totalOrders} />
-            <Stat icon={Clock} label="Pending orders" value={data.pendingOrders} />
-            <Stat icon={Loader} label="Processing orders" value={data.processingOrders} />
+            <Stat icon={ShoppingCart} label="Total orders" value={data.totalOrders} onClick={() => onGo("orders:all")} />
+            <Stat icon={Clock} label="Pending orders" value={data.pendingOrders} onClick={() => onGo("orders:pending")} />
+            <Stat icon={Loader} label="Processing orders" value={data.processingOrders} onClick={() => onGo("orders:processing")} />
             <Stat icon={PlusCircle} label="Pending Add Funds" value={data.pendingDeposits} />
             <Stat icon={DollarSign} label="Revenue today" value={money(data.revenueToday)} />
             <Stat icon={DollarSign} label="Revenue this month" value={money(data.revenueMonth)} />

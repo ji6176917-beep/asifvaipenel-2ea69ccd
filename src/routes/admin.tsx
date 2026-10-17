@@ -31,6 +31,7 @@ const search = z.object({
   section: z.string().optional(),
   user: z.string().optional(),
   q: z.string().optional(),
+  view: z.string().optional(),
 });
 
 export const Route = createFileRoute("/admin")({
@@ -108,7 +109,7 @@ function SideNav({ current, onPick }: { current: string; onPick: (id: string) =>
 }
 
 function AdminLayout() {
-  const { section = "dashboard", user, q } = Route.useSearch();
+  const { section = "dashboard", user, q, view } = Route.useSearch();
   const navigate = useNavigate({ from: "/admin" });
   const logout = useServerFn(adminLogout);
   const qc = useQueryClient();
@@ -147,10 +148,10 @@ function AdminLayout() {
           <button onClick={out} className="btn-ghost-glow !py-2 text-sm"><LogOut className="h-4 w-4" /> Logout</button>
         </div>
         {section === "users" && user ? <AdminUserDetail id={user} onBack={() => navigate({ search: { section: "users", q } })} />
-          : section === "users" ? <AdminUsers initialQ={q ?? ""} onOpen={(id) => navigate({ search: { section: "users", user: id, q } })} />
+          : section === "users" ? <AdminUsers initialQ={q ?? ""} initialFilter={view === "online" ? "online" : undefined} onOpen={(id) => navigate({ search: { section: "users", user: id, q } })} />
           : section === "settings" ? <SettingsSection />
           : section === "music" ? <AdminMusic />
-          : section === "orders" ? <AdminOrders />
+          : section === "orders" ? <AdminOrders key={view ?? "grid"} all={view === "all" || view === "pending" || view === "processing"} initialTab={view === "pending" ? "pending" : view === "processing" ? "processing" : view === "all" ? "all" : undefined} />
           : section === "api" ? <AdminApi />
           : section === "add-funds" ? <AdminFunds />
           : section === "services" ? <AdminServices />
