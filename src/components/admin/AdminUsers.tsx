@@ -11,24 +11,25 @@ import { fmtDate, money } from "@/lib/format";
 import { useUserStats, Stat } from "./AdminDashboard";
 import { BalanceDialog, BanDialog, MessageDialog, PasswordDialog } from "./UserActionDialogs";
 
-type Filter = "all" | "verified" | "unverified" | "banned" | "balance" | "today";
+type Filter = "all" | "verified" | "unverified" | "banned" | "balance" | "today" | "online";
 type Sort = "newest" | "oldest" | "balance" | "signin";
-const FILTERS: [Filter, string][] = [["all", "All"], ["verified", "Verified"], ["unverified", "Not verified"], ["banned", "Banned"], ["balance", "Has balance"], ["today", "New today"]];
+const FILTERS: [Filter, string][] = [["all", "All"], ["online", "Online now"], ["verified", "Verified"], ["unverified", "Not verified"], ["banned", "Banned"], ["balance", "Has balance"], ["today", "New today"]];
 
 type Action = { kind: "password" | "balance" | "message" | "ban"; user: AdminUserRow } | null;
 
-export function AdminUsers({ initialQ, onOpen }: { initialQ: string; onOpen: (id: string) => void }) {
+export function AdminUsers({ initialQ, initialFilter, onOpen }: { initialQ: string; initialFilter?: Filter | undefined; onOpen: (id: string) => void }) {
   const list = useServerFn(adminListUsers);
   const stats = useUserStats();
   const [input, setInput] = useState(initialQ);
   const [q, setQ] = useState(initialQ);
-  const [filter, setFilter] = useState<Filter>("all");
+  const [filter, setFilter] = useState<Filter>(initialFilter ?? "all");
   const [sort, setSort] = useState<Sort>("newest");
   const [page, setPage] = useState(1);
   const [size, setSize] = useState(25);
   const [action, setAction] = useState<Action>(null);
 
   useEffect(() => { setInput(initialQ); setQ(initialQ); setPage(1); }, [initialQ]);
+  useEffect(() => { if (initialFilter) { setFilter(initialFilter); setPage(1); } }, [initialFilter]);
   useEffect(() => { const t = setTimeout(() => { setQ(input); setPage(1); }, 300); return () => clearTimeout(t); }, [input]);
 
   const { data, isLoading, isError, refetch } = useQuery({

@@ -53,7 +53,7 @@ export const adminUserStats = createServerFn({ method: "GET" }).handler(async ()
 
 const listInput = z.object({
   q: z.string().max(200).default(""),
-  filter: z.enum(["all", "verified", "unverified", "banned", "balance", "today"]).default("all"),
+  filter: z.enum(["all", "verified", "unverified", "banned", "balance", "today", "online"]).default("all"),
   sort: z.enum(["newest", "oldest", "balance", "signin"]).default("newest"),
   page: z.number().int().min(1).default(1),
   size: z.number().int().min(1).max(10000).default(25),
@@ -61,7 +61,7 @@ const listInput = z.object({
 
 export type AdminUserRow = {
   id: string; full_name: string; email: string | null; phone: string | null; public_id: string; username: string;
-  avatar_url: string | null; balance: number; created_at: string; last_sign_in_at: string | null;
+  avatar_url: string | null; balance: number; created_at: string; last_sign_in_at: string | null; last_seen_at: string | null;
   method: string; verified: boolean; banned: boolean;
 };
 
@@ -79,7 +79,7 @@ export const adminListUsers = createServerFn({ method: "POST" })
       return {
         id: p.id, full_name: p.full_name, email: p.email ?? u?.email ?? null, phone: p.phone, public_id: p.public_id,
         username: p.username, avatar_url: p.avatar_url, balance: Number(p.balance), created_at: p.created_at,
-        last_sign_in_at: p.last_sign_in_at ?? u?.last_sign_in_at ?? null, method: methodOf(u, p.sign_in_method),
+        last_sign_in_at: p.last_sign_in_at ?? u?.last_sign_in_at ?? null, last_seen_at: p.last_seen_at ?? null, method: methodOf(u, p.sign_in_method),
         verified: !!u?.email_confirmed_at, banned: p.banned,
       };
     });
@@ -96,6 +96,7 @@ export const adminListUsers = createServerFn({ method: "POST" })
         case "banned": return r.banned;
         case "balance": return r.balance > 0;
         case "today": return new Date(r.created_at).getTime() >= today;
+        case "online": return !!r.last_seen_at && Date.now() - new Date(r.last_seen_at).getTime() < ONLINE_MS;
         default: return true;
       }
     });

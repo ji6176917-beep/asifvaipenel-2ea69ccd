@@ -18,8 +18,9 @@ type Tab = (typeof TABS)[number][0];
 type Act = "processing" | "completed" | "partial" | "rejected";
 const ACT_LABEL: Record<Act, string> = { processing: "Accept", completed: "Mark Completed", partial: "Partial", rejected: "Reject" };
 
-export function AdminOrders() {
+export function AdminOrders({ all, initialTab }: { all?: boolean; initialTab?: Tab | undefined }) {
   const [platform, setPlatform] = useState<{ slug: string; name: string } | null>(null);
+  if (all) return <PlatformOrders initialTab={initialTab} />;
   return platform ? <PlatformOrders platform={platform} onBack={() => setPlatform(null)} /> : <PlatformGrid onOpen={setPlatform} />;
 }
 
@@ -47,12 +48,12 @@ function PlatformGrid({ onOpen }: { onOpen: (p: { slug: string; name: string }) 
 
 type Order = Awaited<ReturnType<typeof adminListOrders>>[number];
 
-export function PlatformOrders({ platform, source, onBack }: { platform?: { slug: string; name: string }; source?: "web" | "api"; onBack?: () => void }) {
+export function PlatformOrders({ platform, source, onBack, initialTab }: { platform?: { slug: string; name: string }; source?: "web" | "api"; onBack?: () => void; initialTab?: Tab | undefined }) {
   const list = useServerFn(adminListOrders);
   const exportCsv = useServerFn(adminExportOrdersCsv);
   const bulk = useServerFn(adminBulkUpdateOrders);
   const qc = useQueryClient();
-  const [tab, setTab] = useState<Tab>("pending");
+  const [tab, setTab] = useState<Tab>(initialTab ?? "pending");
   const [q, setQ] = useState("");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
