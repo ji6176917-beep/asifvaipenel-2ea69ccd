@@ -87,7 +87,7 @@ export const adminCatalogSave = createServerFn({ method: "POST" })
         if (ex) slug = `${slug}-${Math.floor(Math.random() * 9000 + 1000)}`;
         row["slug"] = slug; row["active"] = true;
       }
-      if (data.level === "categories") row["active"] = true;
+      if (data.level === "categories") row["active"] = false;
       const { data: ins, error } = await db.from(data.level).insert(row).select("id").single();
       if (error) throw new Error(error.message);
       await s.logAdmin(`${data.level}_add`, { id: ins.id }, null, row);
