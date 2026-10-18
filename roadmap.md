@@ -1,5 +1,6 @@
 # Roadmap
-- [ ] Isolate Own Services categories/services under shared platforms, preserve API panels and existing controls; test catalog isolation and check admin access.
+- [x] Isolate Own Services categories/services under shared platforms without changing API panels or controls; 19 focused tests pass and preview build OK. Read-only live counts confirm TikTok has 4 own categories and 27 excluded provider categories.
+- [ ] Verify updated own hierarchy and add/toggle flow through authenticated admin UI; configured master-password login did not establish a session. Requires the owner's working admin session; no catalog or money data changed during verification.
 - [x] Order notifications/history show current actual status; protected 2-minute status-only sync runs. 33 focused tests pass; live sync responded successfully.
 - [x] Homepage Popular Services now uses the same horizontal cards as New Order (logo left, name right, 179×62 at 6 columns desktop, 3 columns mobile); card click navigation and no mobile overflow browser-verified.
 - [ ] Connect both providers: Royal SMM World and World of SMM addresses saved OFF; usable real keys could not be read from the recordings. Requires entering real keys in Admin → Services → API; no live upstream request/order made.
