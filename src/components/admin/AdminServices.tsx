@@ -55,8 +55,8 @@ function LevelView({ level, parentId, title, sub, onBack, onOpen }: {
   const [trash, setTrash] = useState(false);
   const [q, setQ] = useState("");
   const [form, setForm] = useState<{ id: string | null; row?: any } | null>(null);
-  const key = ["adm-catalog", level, parentId, trash];
-  const { data, isLoading, isError } = useQuery({ queryKey: key, queryFn: () => list({ data: { level, parentId, trash, ownOnly: level === "services" } }) });
+  const key = ["adm-catalog", "own", level, parentId, trash];
+  const { data, isLoading, isError } = useQuery({ queryKey: key, queryFn: () => list({ data: { level, parentId, trash, ownOnly: true } }) });
   const refresh = () => qc.invalidateQueries({ queryKey: ["adm-catalog"] });
   const run = async (id: string, action: "on" | "off" | "delete" | "restore" | "up" | "down") => {
     try {

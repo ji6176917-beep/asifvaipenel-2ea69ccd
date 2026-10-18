@@ -21,7 +21,11 @@ export const adminCatalogList = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => z.object({ level, parentId: z.string().uuid().nullable(), trash: z.boolean().default(false), ownOnly: z.boolean().default(false) }).parse(d))
   .handler(async ({ data }) => {
     const { db } = await ctx();
-    let q = db.from(data.level).select("*").order("sort").order("name").limit(2000);
+    // source_provider is a panel preference, not ownership. Exclude categories
+    // with provider-backed services even when those services are in Trash.
+    const ownCategories = data.level === "categories" && data.ownOnly;
+    let q = db.from(data.level).select(ownCategories ? "*, api_services:services(id)" : "*").order("sort").order("name").limit(2000);
+    if (ownCategories) q = q.not("api_services.provider_id", "is", null).is("api_services", null);
     if (data.level === "services" && data.ownOnly) q = q.is("provider_id", null);
     const pc = parentCol[data.level];
     if (pc && data.parentId) q = q.eq(pc, data.parentId);
@@ -34,7 +38,7 @@ export const adminCatalogList = createServerFn({ method: "POST" })
       const { data: p } = await db.from(t).select("*").eq("id", data.parentId).maybeSingle();
       parent = p;
     }
-    return { rows: (rows ?? []) as any[], parent };
+    return { rows: (rows ?? []).map(({ api_services: _apiServices, ...row }: any) => row) as any[], parent };
   });
 
 const slugify = (s: string) => s.toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40);
