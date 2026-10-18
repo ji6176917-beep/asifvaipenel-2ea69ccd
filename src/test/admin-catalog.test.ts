@@ -13,6 +13,7 @@ const platformId = "00000000-0000-4000-8000-000000000001";
 
 beforeEach(() => {
   mocks.requireAdmin.mockReset();
+  mocks.from.mockReset();
   mocks.queries.length = 0;
   mocks.from.mockImplementation((table: string) => {
     const calls: any[] = [];
