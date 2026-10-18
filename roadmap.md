@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Isolate Own Services categories/services under shared platforms, preserve API panels and existing controls; test catalog isolation and check admin access.
 - [x] Order notifications/history show current actual status; protected 2-minute status-only sync runs. 33 focused tests pass; live sync responded successfully.
 - [x] Homepage Popular Services now uses the same horizontal cards as New Order (logo left, name right, 179×62 at 6 columns desktop, 3 columns mobile); card click navigation and no mobile overflow browser-verified.
 - [ ] Connect both providers: Royal SMM World and World of SMM addresses saved OFF; usable real keys could not be read from the recordings. Requires entering real keys in Admin → Services → API; no live upstream request/order made.
