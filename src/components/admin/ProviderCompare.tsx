@@ -1,11 +1,10 @@
 import { useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
-import { ArrowLeft, ChevronRight, History, Pencil, Plus, Power, Save, Trash2 } from 'lucide-react'
+import { ArrowLeft, ChevronRight, History, Pencil, Power, Save } from 'lucide-react'
 import { toast } from 'sonner'
 import { adminCategoryServices, adminRestoreSnapshot, adminSetCategorySource, adminSetProviderScope, adminSetScopeMarkup, adminSourceBulk, adminSourceOverview } from '@/lib/admin-sources.functions'
 import { adminEditProviderService, adminPickService } from '@/lib/admin-providers.functions'
-import { adminCatalogAction, adminCatalogList, adminCatalogSave } from '@/lib/admin-catalog.functions'
 import { Card, ErrorState } from '@/components/ui-kit'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Switch } from '@/components/ui/switch'
@@ -134,56 +133,7 @@ function CategoryServices({ cat, provider, onBack }: { cat: { id: string; name: 
           </div>
         })}
       </Card>)}
-    <OwnInCategory cat={cat} />
   </div>
-}
-
-/** Admin's own services living inside this same category, side by side with the API services. */
-function OwnInCategory({ cat }: { cat: { id: string; name: string } }) {
-  const list = useServerFn(adminCatalogList), save = useServerFn(adminCatalogSave), act = useServerFn(adminCatalogAction)
-  const qc = useQueryClient()
-  const key = ['own-in-category', cat.id]
-  const { data } = useQuery({ queryKey: key, queryFn: () => list({ data: { level: 'services', parentId: cat.id, trash: false, ownOnly: true } }) })
-  const [form, setForm] = useState<{ id: string | null; name: string; rate: string; rate_per: string; min: string; max: string; time: string } | null>(null)
-  const [busy, setBusy] = useState(false)
-  const run = async (fn: () => Promise<unknown>, ok: string) => {
-    setBusy(true)
-    try { await fn(); toast.success(ok); await qc.invalidateQueries() } catch (e) { toast.error((e as Error).message || 'পরিবর্তন করা যায়নি') } finally { setBusy(false) }
-  }
-  const blank = { id: null, name: '', rate: '', rate_per: '1000', min: '100', max: '10000', time: '1 hours' }
-  const submit = () => {
-    if (!form) return
-    const values = { name: form.name.trim(), rate: Number(form.rate), rate_per: Number(form.rate_per), min_qty: Number(form.min), max_qty: Number(form.max), avg_time: form.time.trim() || '24 hours', active: false }
-    if (!values.name || !(values.rate > 0) || !(values.rate_per > 0) || !(values.min_qty > 0) || !(values.max_qty > values.min_qty)) { toast.error('নাম, দাম ও সর্বনিম্ন/সর্বোচ্চ ঠিকভাবে দিন'); return }
-    const row = form.id ? (data?.rows ?? []).find((r) => r.id === form.id) : null
-    void run(async () => { await save({ data: { level: 'services', id: form.id, parentId: cat.id, values: { ...values, active: row ? row.active : false } } }); setForm(null) }, form.id ? 'সংরক্ষিত' : 'নিজের সার্ভিস যোগ হয়েছে (বন্ধ অবস্থায়)')
-  }
-  const rows = data?.rows ?? []
-  return <Card className="!p-3 space-y-2 border-primary/40">
-    <div className="flex flex-wrap items-center gap-2">
-      <span className="flex-1 font-semibold">নিজের সার্ভিস (এই ক্যাটাগরিতে)</span>
-      <Button size="sm" disabled={busy} onClick={() => setForm(blank)}><Plus />নিজের সার্ভিস যোগ করুন</Button>
-    </div>
-    <p className="text-xs text-muted-foreground">নতুন সার্ভিস বন্ধ অবস্থায় যোগ হয়। সুইচ চালু করলেই এপিআই সার্ভিসগুলোর সাথে এই ক্যাটাগরিতে ওয়েবসাইটে ও রিসেলার এপিআইতে দেখাবে। এর অর্ডার প্রোভাইডারে যাবে না — অ্যাডমিন প্যানেলে আসবে, আপনি নিজে কাজ করবেন।</p>
-    {form && <div className="space-y-2 rounded-lg border border-border p-3 text-sm">
-      <label className="block font-semibold">সার্ভিসের নাম<Input className="mt-1" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></label>
-      <div className="flex flex-wrap gap-2">
-        <label className="font-semibold">দাম ($)<Input className="mt-1 w-28" type="number" step="0.0001" value={form.rate} onChange={(e) => setForm({ ...form, rate: e.target.value })} /></label>
-        <label className="font-semibold">প্রতি কতটি<Input className="mt-1 w-24" type="number" value={form.rate_per} onChange={(e) => setForm({ ...form, rate_per: e.target.value })} /></label>
-        <label className="font-semibold">সর্বনিম্ন<Input className="mt-1 w-24" type="number" value={form.min} onChange={(e) => setForm({ ...form, min: e.target.value })} /></label>
-        <label className="font-semibold">সর্বোচ্চ<Input className="mt-1 w-28" type="number" value={form.max} onChange={(e) => setForm({ ...form, max: e.target.value })} /></label>
-        <label className="font-semibold">সময়<Input className="mt-1 w-28" value={form.time} onChange={(e) => setForm({ ...form, time: e.target.value })} /></label>
-      </div>
-      <div className="flex gap-2"><Button size="sm" disabled={busy} onClick={submit}>সংরক্ষণ</Button><Button size="sm" variant="ghost" onClick={() => setForm(null)}>বাতিল</Button></div>
-    </div>}
-    {!rows.length ? <p className="text-sm text-muted-foreground">এখনো কোনো নিজের সার্ভিস নেই।</p> : rows.map((r) => <div key={r.id} className="flex flex-wrap items-center gap-2 border-t border-border pt-2 text-sm">
-      <span className="w-full min-w-0 break-words sm:w-auto sm:flex-1">#{r.service_no ?? '—'} {r.name} <span className="rounded bg-primary/10 px-1.5 text-xs text-primary">নিজের</span></span>
-      <span className="font-semibold">{rateMoney(Number(r.rate))}/{r.rate_per}</span>
-      <Button size="sm" variant="ghost" onClick={() => setForm({ id: r.id, name: r.name, rate: String(r.rate), rate_per: String(r.rate_per), min: String(r.min_qty), max: String(r.max_qty), time: r.avg_time })}><Pencil />এডিট</Button>
-      <Switch checked={r.active} disabled={busy} onCheckedChange={(v) => void run(() => act({ data: { level: 'services', id: r.id, action: v ? 'on' : 'off' } }), v ? 'চালু — এখন সাইটে ও এপিআইতে দেখাবে' : 'বন্ধ')} />
-      <Button size="sm" variant="ghost" disabled={busy} onClick={() => confirm(`"${r.name}" মুছে ফেলবেন?`) && void run(() => act({ data: { level: 'services', id: r.id, action: 'delete' } }), 'মুছে ফেলা হয়েছে')}><Trash2 className="text-destructive" /></Button>
-    </div>)}
-  </Card>
 }
 
 function EditRow({ s, busy, onSave, onCancel }: { s: Svc; busy: boolean; onSave: (name: string, rate: number) => void; onCancel: () => void }) {
