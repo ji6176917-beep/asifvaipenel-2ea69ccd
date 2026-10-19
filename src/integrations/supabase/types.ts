@@ -818,6 +818,7 @@ export type Database = {
           active: boolean
           api_key: string
           api_url: string
+          catalog_sync: boolean
           created_at: string
           currency: string
           deleted_at: string | null
@@ -832,6 +833,7 @@ export type Database = {
           active?: boolean
           api_key: string
           api_url: string
+          catalog_sync?: boolean
           created_at?: string
           currency?: string
           deleted_at?: string | null
@@ -846,6 +848,7 @@ export type Database = {
           active?: boolean
           api_key?: string
           api_url?: string
+          catalog_sync?: boolean
           created_at?: string
           currency?: string
           deleted_at?: string | null
@@ -902,6 +905,7 @@ export type Database = {
           active: boolean
           avg_time: string
           category_id: string
+          comments_template: string | null
           custom_name: boolean
           custom_rate: boolean
           deleted_at: string | null
@@ -929,6 +933,7 @@ export type Database = {
           active?: boolean
           avg_time?: string
           category_id: string
+          comments_template?: string | null
           custom_name?: boolean
           custom_rate?: boolean
           deleted_at?: string | null
@@ -956,6 +961,7 @@ export type Database = {
           active?: boolean
           avg_time?: string
           category_id?: string
+          comments_template?: string | null
           custom_name?: boolean
           custom_rate?: boolean
           deleted_at?: string | null

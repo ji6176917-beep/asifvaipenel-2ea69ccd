@@ -246,6 +246,13 @@
       "when": 1792142591945,
       "tag": "0034_accurate_order_status",
       "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
+      "when": 1792428880779,
+      "tag": "0035_manual_provider_dispatch",
+      "breakpoints": true
     }
   ]
 }
