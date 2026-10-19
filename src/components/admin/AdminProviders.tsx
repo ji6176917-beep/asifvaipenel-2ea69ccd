@@ -3,7 +3,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import { Pencil, Plus, RefreshCw, Save, X } from 'lucide-react'
 import { toast } from 'sonner'
-import { adminProviderAction, adminSaveProvider, adminListProviders, adminProviderServices, adminEditProviderService } from '@/lib/admin-providers.functions'
+import { adminProviderAction, adminSaveProvider, adminListProviders, adminProviderServices, adminEditProviderService, adminLinkProviderService } from '@/lib/admin-providers.functions'
 import { useQuery } from '@tanstack/react-query'
 import { Card, Empty, inputCls, labelCls, ErrorState } from '@/components/ui-kit'
 import { Button } from '@/components/ui/button'
@@ -37,7 +37,7 @@ export function AdminProviders({ providers }: { providers: Provider[] }) {
       <div className="break-all text-xs text-muted-foreground">{p.api_url}</div>
       <div className="flex flex-wrap gap-3 text-sm"><span>দাম বৃদ্ধি: {p.markup}%</span><span>মুদ্রা: {p.currency}{p.currency !== 'USD' && p.currency !== 'USDT' ? ` (১ ডলার = ${p.usd_rate} ${p.currency}, ডলারে রূপান্তরিত)` : ''}</span><span className="text-muted-foreground">সর্বশেষ: {p.last_synced_at ? fmtDate(p.last_synced_at) : 'এখনও সার্ভিস আনা হয়নি'}</span></div>
       <div className="flex flex-wrap gap-2"><Button variant="outline" disabled={busy === p.id} onClick={() => void run(p.id, 'sync')}><RefreshCw className={busy === p.id ? 'animate-spin' : ''} />সার্ভিস আনুন</Button><Button variant="outline" disabled={busy === p.id} onClick={() => void run(p.id, 'status')}><RefreshCw />অর্ডার আপডেট</Button><Button variant="outline" onClick={() => setServices(services === p.id ? null : p.id)}>সার্ভিস ও দাম</Button></div>
-      {services === p.id && <ProviderServices id={p.id} />}
+      {services === p.id && <><LinkService provider={p.id} /><ProviderServices id={p.id} /></>}
     </Card>)}
   </div>
 }
@@ -66,6 +66,21 @@ function ProviderForm({ provider, onClose, onSaved }: { provider?: Provider | un
     <label className={labelCls}>গোপন এপিআই কী{provider && ' (কী সংরক্ষিত আছে — বদলাতে চাইলে নতুন কী লিখুন)'}<input className={inputCls} type="password" autoComplete="new-password" placeholder={provider ? '•••••••• (কী সংরক্ষিত আছে)' : ''} required={!provider} value={key} onChange={(e) => setKey(e.target.value)} /></label>
     <div className="grid gap-3 sm:grid-cols-2"><label className={labelCls}>সব সার্ভিসের দাম বৃদ্ধি (%)<input className={inputCls} type="number" min="0" max="10000" step="0.01" required value={markup} onChange={(e) => setMarkup(e.target.value)} /></label><label className={labelCls}>প্রোভাইডারের লিংক ঘর<select className={inputCls} value={parameter} onChange={(e) => setParameter(e.target.value === 'url' ? 'url' : 'link')}><option value="link">link (সাধারণ — বেশিরভাগ প্যানেল)</option><option value="url">url (কিছু বিশেষ প্যানেল)</option></select></label></div>
     <Button disabled={busy} type="submit"><Save />{busy ? 'সংরক্ষণ হচ্ছে…' : 'সংরক্ষণ ও সার্ভিস আনুন'}</Button>
+  </form>
+}
+function LinkService({ provider }: { provider: string }) {
+  const link = useServerFn(adminLinkProviderService)
+  const qc = useQueryClient()
+  const [no, setNo] = useState(''); const [pid, setPid] = useState(''); const [comments, setComments] = useState('')
+  return <form className="space-y-2 border-t border-border pt-3" onSubmit={async (e) => {
+    e.preventDefault()
+    try { await link({ data: { provider, service_no: Number(no), provider_service_id: pid, comments } }); toast.success('সার্ভিস যুক্ত হয়েছে (Accept/Reject চালু)'); setNo(''); setPid(''); setComments(''); qc.invalidateQueries() }
+    catch (err) { toast.error(err instanceof Error ? err.message : 'যুক্ত করা যায়নি') }
+  }}>
+    <h4 className="text-sm font-semibold">+ এই এপিআইতে নতুন সার্ভিস যুক্ত করুন</h4>
+    <div className="grid gap-2 sm:grid-cols-2"><input className={inputCls} required inputMode="numeric" placeholder="সাইটের সার্ভিস আইডি (যেমন 254922)" value={no} onChange={(e) => setNo(e.target.value)} /><input className={inputCls} required placeholder="এপিআইয়ের সার্ভিস আইডি (যেমন 1)" value={pid} onChange={(e) => setPid(e.target.value)} /></div>
+    <textarea className={inputCls} rows={2} placeholder="কমেন্ট সার্ভিস হলে প্রতি লাইনে একটি কমেন্ট/ইমোজি (না হলে ফাঁকা)" value={comments} onChange={(e) => setComments(e.target.value)} />
+    <Button type="submit" size="sm"><Plus />যুক্ত করুন</Button>
   </form>
 }
 function ProviderServices({ id }: { id: string }) {
