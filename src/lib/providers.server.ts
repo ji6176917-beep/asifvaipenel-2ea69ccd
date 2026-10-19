@@ -65,9 +65,9 @@ export async function syncProvider(id: string) {
 }
 
 /** Claim before external spending. Ambiguous failures never automatically re-send. */
-export async function dispatchProviderOrder(code: string, userId: string) {
+export async function dispatchProviderOrder(code: string, userId: string, options: { fromStates?: string[] } = {}) {
   const { supabaseAdmin: db } = await import('@/integrations/supabase/client.server')
-  const { data: order } = await db.from('orders').update({ dispatch_state: 'sending' }).eq('order_code', code).eq('user_id', userId).eq('status', 'pending').eq('dispatch_state', 'queued').select('*').maybeSingle()
+  const { data: order } = await db.from('orders').update({ dispatch_state: 'sending' }).eq('order_code', code).eq('user_id', userId).eq('status', 'pending').in('dispatch_state', options.fromStates ?? ['queued']).select('*').maybeSingle()
   if (!order?.provider_id || !order.provider_service_id) return
   const { data: provider } = await db.from('service_providers').select('*').eq('id', order.provider_id).single()
   if (!provider) {
@@ -75,7 +75,14 @@ export async function dispatchProviderOrder(code: string, userId: string) {
     return
   }
   try {
-    const result = await providerRequest(provider, { action: 'add', service: order.provider_service_id, [provider.link_parameter]: order.link, quantity: String(order.quantity) })
+    const params: Record<string, string> = { action: 'add', service: order.provider_service_id, [provider.link_parameter]: order.link, quantity: String(order.quantity) }
+    // Services needing custom comments (e.g. emoji comments) send `quantity` lines from the service template.
+    const { data: svc } = await db.from('services').select('comments_template').eq('id', order.service_id).maybeSingle()
+    if (svc?.comments_template) {
+      const pool = svc.comments_template.split('\n').map((c: string) => c.trim()).filter(Boolean)
+      if (pool.length) params['comments'] = Array.from({ length: order.quantity }, (_, i) => pool[i % pool.length]).join('\n')
+    }
+    const result = await providerRequest(provider, params)
     // Explicit rejection (e.g. provider balance empty, service off): nothing was spent upstream, so refund the customer automatically.
     if (result && typeof result === 'object' && 'error' in result && !('order' in result)) {
       const reason = String((result as { error: unknown }).error).slice(0, 200)

@@ -118,7 +118,9 @@ export function PlatformOrders({ platform, source, onBack, initialTab }: { platf
 
 function OrderCard({ o, selected, onSelect, onAct }: { o: Order; selected: boolean; onSelect: (v: boolean) => void; onAct: (a: Act) => void }) {
   const [hist, setHist] = useState(false);
-  const acts: Act[] = o.provider_id ? [] : o.status === "pending" ? ["processing", "rejected"] : o.status === "processing" ? ["completed", "partial", "rejected"] : [];
+  const acts: Act[] = o.provider_id
+    ? o.dispatch_state === "manual" && o.status === "pending" ? ["processing", "rejected"] : []
+    : o.status === "pending" ? ["processing", "rejected"] : o.status === "processing" ? ["completed", "partial", "rejected"] : [];
   return (
     <Card className="!p-4 space-y-2 text-sm">
       <div className="flex flex-wrap items-center gap-2">

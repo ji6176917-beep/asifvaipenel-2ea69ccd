@@ -53,7 +53,11 @@ export const adminProviderAction = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     const { admin, db } = await context()
     const worker = await import('./providers.server')
-    if (data.action === 'sync') return worker.syncProvider(data.id)
+    if (data.action === 'sync') {
+      const { data: prov } = await db.from('service_providers').select('catalog_sync').eq('id', data.id).single()
+      if (prov && prov.catalog_sync === false) throw new Error('এই প্রোভাইডারের ক্যাটালগ সিঙ্ক বন্ধ; সার্ভিস ম্যানুয়ালি যুক্ত করা')
+      return worker.syncProvider(data.id)
+    }
     if (data.action === 'status') return worker.refreshProviderOrders(data.id)
     // On/off is instant; background catalog sync keeps every provider fresh regardless.
     const { error } = await db.from('service_providers').update({ active: data.action === 'on' }).eq('id', data.id).is('deleted_at', null)
