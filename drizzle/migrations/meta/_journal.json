@@ -253,6 +253,13 @@
       "when": 1792428880779,
       "tag": "0035_manual_provider_dispatch",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1792431232717,
+      "tag": "0036_manual_orders_keep_provider",
+      "breakpoints": true
     }
   ]
 }
