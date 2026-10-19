@@ -144,3 +144,17 @@ export const adminPickService = createServerFn({ method: 'POST' })
     await admin.logAdmin('provider_service_picked', { keep: data.keep }, null, { off })
     return { ok: true }
   })
+
+/** Manual-catalog providers (catalog_sync=false): attach an existing site service by its number to a provider service ID. */
+export const adminLinkProviderService = createServerFn({ method: 'POST' })
+  .inputValidator((input) => z.object({ provider: z.string().uuid(), service_no: z.number().int().positive(), provider_service_id: z.string().trim().regex(/^[a-zA-Z0-9_-]{1,50}$/), comments: z.string().max(5000).optional() }).parse(input))
+  .handler(async ({ data }) => {
+    const { admin, db } = await context()
+    const { data: svc } = await db.from('services').select('id,category_id').eq('service_no', data.service_no).is('deleted_at', null).maybeSingle()
+    if (!svc) throw new Error('এই নম্বরের সার্ভিস পাওয়া যায়নি')
+    const { error } = await db.from('services').update({ provider_id: data.provider, provider_service_id: data.provider_service_id, provider_type: 'api', provider_order_supported: true, provider_available: true, comments_template: data.comments?.trim() || null }).eq('id', svc.id)
+    if (error) throw new Error(error.message.includes('duplicate') ? 'এই এপিআই সার্ভিস আইডি ইতিমধ্যে অন্য সার্ভিসে যুক্ত' : 'যুক্ত করা যায়নি')
+    await db.from('categories').update({ manual_control: true }).eq('id', svc.category_id)
+    await admin.logAdmin('provider_service_linked', data)
+    return { ok: true }
+  })
