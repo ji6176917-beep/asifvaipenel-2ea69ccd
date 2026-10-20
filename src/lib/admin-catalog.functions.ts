@@ -24,9 +24,14 @@ export const adminCatalogList = createServerFn({ method: "POST" })
     // source_provider is a panel preference, not ownership. Exclude categories
     // with provider-backed services even when those services are in Trash.
     const ownCategories = data.level === "categories" && data.ownOnly;
-    let q = db.from(data.level).select(ownCategories ? "*, api_services:services(id)" : "*").order("sort").order("name").limit(2000);
-    if (ownCategories) q = q.not("api_services.provider_id", "is", null).is("api_services", null);
-    if (data.level === "services" && data.ownOnly) q = q.is("provider_id", null);
+    // Manual providers (catalog_sync=false, e.g. Filter Task) are wired by hand from Own Services, so their links stay visible here.
+    let manual: string[] = [];
+    if (data.ownOnly && data.level !== "platforms") {
+      const { data: mp } = await db.from("service_providers").select("id").eq("catalog_sync", false).is("deleted_at", null);
+      manual = (mp ?? []).map((r: any) => r.id);
+    }
+    let q = db.from(data.level).select(ownCategories ? "*, api_services:services(id, provider_id)" : "*").order("sort").order("name").limit(2000);
+    if (data.level === "services" && data.ownOnly) q = manual.length ? q.or(`provider_id.is.null,provider_id.in.(${manual.join(",")})`) : q.is("provider_id", null);
     const pc = parentCol[data.level];
     if (pc && data.parentId) q = q.eq(pc, data.parentId);
     q = data.trash ? q.not("deleted_at", "is", null) : q.is("deleted_at", null);
@@ -38,7 +43,10 @@ export const adminCatalogList = createServerFn({ method: "POST" })
       const { data: p } = await db.from(t).select("*").eq("id", data.parentId).maybeSingle();
       parent = p;
     }
-    return { rows: (rows ?? []).map(({ api_services: _apiServices, ...row }: any) => row) as any[], parent };
+    let out = (rows ?? []) as any[];
+    if (ownCategories) out = out.filter((r) => !(r.api_services ?? []).some((x: any) => x.provider_id && !manual.includes(x.provider_id)))
+      .map(({ api_services, ...row }: any) => ({ ...row, linked_count: (api_services ?? []).filter((x: any) => x.provider_id).length }));
+    return { rows: out, parent };
   });
 
 const slugify = (s: string) => s.toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40);
@@ -124,4 +132,33 @@ export const adminCatalogAction = createServerFn({ method: "POST" })
     await s.logAdmin(`${data.level}_${data.action}`, { id: data.id, name: row.name });
     await touch(db);
     return { ok: true };
+  });
+
+/** Link (or unlink) one own service, or every service in an own category, to the manual Filter Task API. */
+export const adminLinkManualApi = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => z.object({
+    level: z.enum(["categories", "services"]), id: z.string().uuid(), unlink: z.boolean().default(false),
+    provider_service_id: z.string().trim().regex(/^[a-zA-Z0-9_-]{1,50}$/).optional(), comments: z.string().max(5000).optional(),
+  }).parse(d))
+  .handler(async ({ data }) => {
+    const { s, db } = await ctx();
+    const { data: prov } = await db.from("service_providers").select("id, name").eq("catalog_sync", false).is("deleted_at", null).order("created_at").limit(1).maybeSingle();
+    if (!prov) throw new Error("Filter Task এপিআই পাওয়া যায়নি");
+    let sq = db.from("services").select("id, service_no, category_id, provider_id").is("deleted_at", null);
+    sq = data.level === "services" ? sq.eq("id", data.id) : sq.eq("category_id", data.id);
+    const { data: svcs } = await sq;
+    const list = ((svcs ?? []) as any[]).filter((x) => !x.provider_id || x.provider_id === prov.id);
+    if (!list.length) throw new Error(data.level === "categories" ? "এই ক্যাটাগরিতে কোনো সার্ভিস নেই" : "সার্ভিস পাওয়া যায়নি");
+    if (!data.unlink && !data.provider_service_id) throw new Error("এপিআই সার্ভিস আইডি দিন");
+    for (const x of list) {
+      const values = data.unlink
+        ? { provider_id: null, provider_service_id: null, provider_type: null, provider_order_supported: false, provider_available: false, comments_template: null }
+        : { provider_id: prov.id, provider_service_id: `${data.provider_service_id}#${x.service_no}`, provider_type: "api", provider_order_supported: true, provider_available: true, comments_template: data.comments?.trim() || null };
+      const { error } = await db.from("services").update(values).eq("id", x.id);
+      if (error) throw new Error("যুক্ত করা যায়নি: " + error.message);
+    }
+    await db.from("categories").update({ manual_control: false }).in("id", [...new Set(list.map((x) => x.category_id))]);
+    await s.logAdmin(data.unlink ? "manual_api_unlinked" : "manual_api_linked", { ...data, count: list.length });
+    await touch(db);
+    return { count: list.length, provider: prov.name };
   });
