@@ -100,7 +100,7 @@ function Orders() {
         {list.map((o) => {
           const step = FLOW.indexOf(o.status);
           return (
-            <HistoryCard key={o.id} type="order" logo={<PlatformIcon slug={o.platform_slug} className="history-platform-logo" />} title={o.platform_name || tr("Order")} reference={o.order_code} status={o.status} amount={money(o.charge)} createdAt={o.created_at} note={o.admin_note}>
+            <HistoryCard key={o.id} type="order" logo={<PlatformIcon slug={o.platform_slug} className="history-platform-logo" />} title={o.platform_name || tr("Order")} reference={o.order_code} status={o.dispatch_state === "canceling" && ["pending", "processing"].includes(o.status) ? "Canceling" : o.status} amount={money(o.charge)} createdAt={o.created_at} note={o.admin_note}>
               <div className="history-service">{o.service_name}</div>
               <div className="history-chips"><span className="notification-chip"><Users />{tr("Quantity")}: {o.quantity}</span><span className="notification-chip">{o.category_name}</span>
                 {o.delivered_qty != null && <span className="notification-chip">{tr("Delivered")}: {o.delivered_qty}</span>}
