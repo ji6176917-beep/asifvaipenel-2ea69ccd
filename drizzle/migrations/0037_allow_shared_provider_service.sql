@@ -1,0 +1,2 @@
+DROP INDEX IF EXISTS public.services_provider_reference;
+CREATE INDEX IF NOT EXISTS services_provider_reference_lookup ON public.services(provider_id, provider_service_id) WHERE provider_id IS NOT NULL;

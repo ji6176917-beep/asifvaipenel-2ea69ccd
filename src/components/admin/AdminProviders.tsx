@@ -74,7 +74,7 @@ function LinkService({ provider }: { provider: string }) {
   const [no, setNo] = useState(''); const [pid, setPid] = useState(''); const [comments, setComments] = useState('')
   return <form className="space-y-2 border-t border-border pt-3" onSubmit={async (e) => {
     e.preventDefault()
-    try { await link({ data: { provider, service_no: Number(no), provider_service_id: pid, comments } }); toast.success('সার্ভিস যুক্ত হয়েছে (Accept/Reject চালু)'); setNo(''); setPid(''); setComments(''); qc.invalidateQueries() }
+    try { await link({ data: { provider, service_no: Number(no), provider_service_id: pid, comments } }); toast.success('সার্ভিস যুক্ত হয়েছে — অর্ডার সরাসরি এপিআইতে যাবে'); setNo(''); setPid(''); setComments(''); qc.invalidateQueries() }
     catch (err) { toast.error(err instanceof Error ? err.message : 'যুক্ত করা যায়নি') }
   }}>
     <h4 className="text-sm font-semibold">+ এই এপিআইতে নতুন সার্ভিস যুক্ত করুন</h4>
