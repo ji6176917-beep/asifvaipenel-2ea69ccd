@@ -130,7 +130,7 @@ function LevelView({ level, parentId, title, sub, onBack, onOpen }: {
 
 function LinkApi({ level, row, onDone }: { level: "categories" | "services"; row: any; onDone: () => void }) {
   const link = useServerFn(adminLinkManualApi);
-  const [apiId, setApiId] = useState(level === "services" && row.provider_service_id ? String(row.provider_service_id).split("#")[0] : "");
+  const [apiId, setApiId] = useState(level === "services" && row.provider_service_id ? String(row.provider_service_id).split("#")[0] ?? "" : "");
   const [comments, setComments] = useState(row.comments_template ?? "");
   const [busy, setBusy] = useState(false);
   const linked = level === "services" ? !!row.provider_id : row.linked_count > 0;
