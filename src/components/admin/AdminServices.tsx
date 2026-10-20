@@ -1,9 +1,9 @@
 import { useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowDown, ArrowLeft, ArrowUp, Pencil, Plus, RotateCcw, Search, Trash2, Upload, X } from "lucide-react";
+import { ArrowDown, ArrowLeft, ArrowUp, Link2, Pencil, Plus, RotateCcw, Search, Trash2, Upload, X } from "lucide-react";
 import { toast } from "sonner";
-import { adminCatalogAction, adminCatalogList, adminCatalogSave } from "@/lib/admin-catalog.functions";
+import { adminCatalogAction, adminCatalogList, adminCatalogSave, adminLinkManualApi } from "@/lib/admin-catalog.functions";
 import { adminUploadImage } from "@/lib/admin-content.functions";
 import { Card, Empty, ErrorState, PageTitle, Spinner, inputCls, labelCls } from "@/components/ui-kit";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -55,6 +55,7 @@ function LevelView({ level, parentId, title, sub, onBack, onOpen }: {
   const [trash, setTrash] = useState(false);
   const [q, setQ] = useState("");
   const [form, setForm] = useState<{ id: string | null; row?: any } | null>(null);
+  const [linkRow, setLinkRow] = useState<any>(null);
   const key = ["adm-catalog", "own", level, parentId, trash];
   const { data, isLoading, isError } = useQuery({ queryKey: key, queryFn: () => list({ data: { level, parentId, trash, ownOnly: true } }) });
   const refresh = () => qc.invalidateQueries({ queryKey: ["adm-catalog"] });
@@ -100,6 +101,8 @@ function LevelView({ level, parentId, title, sub, onBack, onOpen }: {
                         {rateMoney(Number(r.rate))} per {r.rate_per} · min {r.min_qty} · max {r.max_qty} · {r.avg_time}
                       </div>
                     )}
+                    {level === "services" && r.provider_id && <div className="text-xs font-semibold text-brand">Filter Task #{String(r.provider_service_id ?? "").split("#")[0]}</div>}
+                    {level === "categories" && r.linked_count > 0 && <div className="text-xs font-semibold text-brand">Filter Task: {r.linked_count}টি সার্ভিস যুক্ত</div>}
                     <div className={`text-xs ${r.active ? "text-brand" : "text-muted-foreground"}`}>{r.active ? "ON" : "OFF"}</div>
                   </div>
                 </button>
@@ -110,17 +113,42 @@ function LevelView({ level, parentId, title, sub, onBack, onOpen }: {
                     <Switch checked={r.active} onCheckedChange={(v) => run(r.id, v ? "on" : "off")} aria-label="On/Off" />
                     <IconBtn label="Move up" disabled={i === 0 || !!q} onClick={() => run(r.id, "up")}><ArrowUp className="h-4 w-4" /></IconBtn>
                     <IconBtn label="Move down" disabled={i === rows.length - 1 || !!q} onClick={() => run(r.id, "down")}><ArrowDown className="h-4 w-4" /></IconBtn>
+                    {level !== "platforms" && <IconBtn label="Filter Task এপিআই" onClick={() => setLinkRow(linkRow?.id === r.id ? null : r)}><Link2 className="h-4 w-4 text-brand" /></IconBtn>}
                     <IconBtn label="Edit" onClick={() => setForm({ id: r.id })}><Pencil className="h-4 w-4" /></IconBtn>
                     <IconBtn label="Delete" onClick={() => { if (confirm(`Move "${r.name}" to Trash?`)) run(r.id, "delete"); }}><Trash2 className="h-4 w-4 text-destructive" /></IconBtn>
                   </div>
                 )}
               </div>
+              {linkRow?.id === r.id && level !== "platforms" && <LinkApi level={level} row={r} onDone={() => { setLinkRow(null); refresh(); }} />}
             </Card>
           ))}
         </div>
       )}
     </div>
   );
+}
+
+function LinkApi({ level, row, onDone }: { level: "categories" | "services"; row: any; onDone: () => void }) {
+  const link = useServerFn(adminLinkManualApi);
+  const [apiId, setApiId] = useState(level === "services" && row.provider_service_id ? String(row.provider_service_id).split("#")[0] : "");
+  const [comments, setComments] = useState(row.comments_template ?? "");
+  const [busy, setBusy] = useState(false);
+  const linked = level === "services" ? !!row.provider_id : row.linked_count > 0;
+  const go = async (unlink: boolean) => {
+    if (!unlink && !apiId.trim()) { toast.error("এপিআই সার্ভিস আইডি দিন"); return; }
+    setBusy(true);
+    try { const r = await link({ data: { level, id: row.id, unlink, provider_service_id: unlink ? undefined : apiId.trim(), comments: comments || undefined } }); toast.success(unlink ? `${r.count}টি সার্ভিস বিচ্ছিন্ন হয়েছে` : `${r.count}টি সার্ভিস ${r.provider}-এ যুক্ত হয়েছে`); onDone(); }
+    catch (e) { toast.error(errMsg(e)); } finally { setBusy(false); }
+  };
+  return <div className="mt-3 space-y-2 border-t border-border pt-3">
+    <div className="text-sm font-semibold">Filter Task এপিআই-তে যুক্ত করুন{level === "categories" ? " (ক্যাটাগরির সব সার্ভিস)" : ""}</div>
+    <input className={`${inputCls} !py-2`} placeholder="এপিআই সার্ভিস আইডি (যেমন 1)" value={apiId} onChange={(e) => setApiId(e.target.value)} />
+    <textarea className={`${inputCls} !py-2`} rows={2} placeholder="কমেন্ট টেমপ্লেট (শুধু কমেন্ট সার্ভিসে, ঐচ্ছিক)" value={comments} onChange={(e) => setComments(e.target.value)} />
+    <div className="flex gap-2">
+      <button type="button" disabled={busy} onClick={() => void go(false)} className="btn-glow !px-4 !py-2 text-sm">{busy && <Spinner />} যুক্ত করুন</button>
+      {linked && <button type="button" disabled={busy} onClick={() => { if (confirm("এপিআই থেকে বিচ্ছিন্ন করবেন?")) void go(true); }} className="btn-ghost-glow !px-4 !py-2 text-sm">বিচ্ছিন্ন করুন</button>}
+    </div>
+  </div>;
 }
 
 function IconBtn({ label, onClick, disabled, children }: { label: string; onClick: () => void; disabled?: boolean; children: React.ReactNode }) {

@@ -152,7 +152,7 @@ export const adminLinkManualApi = createServerFn({ method: "POST" })
     if (!data.unlink && !data.provider_service_id) throw new Error("এপিআই সার্ভিস আইডি দিন");
     for (const x of list) {
       const values = data.unlink
-        ? { provider_id: null, provider_service_id: null, provider_type: null, provider_order_supported: false, provider_available: false, comments_template: null }
+        ? { provider_id: null, provider_service_id: null, provider_type: "Default", provider_order_supported: true, provider_available: true, comments_template: null }
         : { provider_id: prov.id, provider_service_id: `${data.provider_service_id}#${x.service_no}`, provider_type: "api", provider_order_supported: true, provider_available: true, comments_template: data.comments?.trim() || null };
       const { error } = await db.from("services").update(values).eq("id", x.id);
       if (error) throw new Error("যুক্ত করা যায়নি: " + error.message);
