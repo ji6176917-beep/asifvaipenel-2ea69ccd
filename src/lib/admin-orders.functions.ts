@@ -114,6 +114,17 @@ export const adminUpdateOrder = createServerFn({ method: "POST" })
     return r as { refund: number; status: string };
   });
 
+/** Cancel a provider order only after the provider confirms; otherwise it shows "Canceling". */
+export const adminCancelProviderOrder = createServerFn({ method: "POST" })
+  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data }) => {
+    const { s } = await ctx();
+    const { cancelProviderOrder } = await import("./providers.server");
+    const r = await cancelProviderOrder(data.id);
+    await s.logAdmin("order_provider_cancel", { order: data.id, result: r.result });
+    return r;
+  });
+
 export const adminBulkUpdateOrders = createServerFn({ method: "POST" })
   .inputValidator((d) => z.object({
     ids: z.array(z.string().uuid()).min(1).max(200), status: z.enum(["processing", "rejected"]), note: z.string().max(500).optional(),
