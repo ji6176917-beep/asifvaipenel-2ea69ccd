@@ -75,7 +75,7 @@ export async function dispatchProviderOrder(code: string, userId: string, option
     return
   }
   try {
-    const params: Record<string, string> = { action: 'add', service: order.provider_service_id.split('#')[0], [provider.link_parameter]: order.link, quantity: String(order.quantity) }
+    const params: Record<string, string> = { action: 'add', service: order.provider_service_id.split('#')[0] ?? order.provider_service_id, [provider.link_parameter]: order.link, quantity: String(order.quantity) }
     // Services needing custom comments (e.g. emoji comments) send `quantity` lines from the service template.
     const { data: svc } = await db.from('services').select('comments_template').eq('id', order.service_id).maybeSingle()
     if (svc?.comments_template) {
