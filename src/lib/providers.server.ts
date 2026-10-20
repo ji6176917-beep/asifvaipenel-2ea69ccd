@@ -116,7 +116,7 @@ export async function refreshProviderOrders(providerId: string, options: { statu
     if (claimed) await db.rpc('admin_update_order_status', { _order_id: s.id, _status: 'rejected', _delivered: 0, _note: 'Service temporarily unavailable. Full amount refunded.' })
   }
   }
-  const { data: orders, error } = await db.from('orders').select('id,order_code,user_id,provider_order_id,status,quantity').eq('provider_id', providerId).eq('dispatch_state', 'sent').in('status', ['pending', 'processing']).is('deleted_at', null).order('updated_at', { ascending: true }).limit(100)
+  const { data: orders, error } = await db.from('orders').select('id,order_code,user_id,provider_order_id,status,quantity').eq('provider_id', providerId).in('dispatch_state', ['sent', 'canceling']).in('status', ['pending', 'processing']).is('deleted_at', null).order('updated_at', { ascending: true }).limit(100)
   if (error) throw new Error('অর্ডার তালিকা পাওয়া যায়নি')
   let updated = 0
   for (const order of orders ?? []) {
@@ -130,9 +130,54 @@ export async function refreshProviderOrders(providerId: string, options: { statu
       await db.from('orders').update({ updated_at: new Date().toISOString() }).eq('id', order.id).eq('status', order.status)
       continue
     }
-    const { error: updateError } = await db.rpc('admin_update_order_status', { _order_id: order.id, _status: target.status, _delivered: target.delivered, _note: '' })
-    if (!updateError) updated++
+    if (await applyProviderTarget(db, order, target)) updated++
     } catch { console.error('provider order status unavailable', order.order_code) }
   }
   return { updated }
+}
+
+type Db = Awaited<typeof import('@/integrations/supabase/client.server')>['supabaseAdmin']
+type Target = NonNullable<ReturnType<typeof providerOrderStatus>>
+
+/** Applies a provider-confirmed state. Canceled maps to a full-refund rejection (valid from pending and processing). */
+async function applyProviderTarget(db: Db, order: { id: string; status: string }, target: Target) {
+  const status: string = target.status === 'canceled' ? 'rejected' : target.status
+  // pending → completed/partial must pass through processing first.
+  if (order.status === 'pending' && (status === 'completed' || status === 'partial')) {
+    const { error } = await db.rpc('admin_update_order_status', { _order_id: order.id, _status: 'processing', _delivered: 0, _note: '' })
+    if (error) return false
+  }
+  if (status === 'pending' || (status === 'processing' && order.status === 'processing')) return false
+  const note = target.status === 'canceled' ? 'Order canceled. Full amount refunded.' : ''
+  const { error } = await db.rpc('admin_update_order_status', { _order_id: order.id, _status: status as Target['status'], _delivered: target.delivered, _note: note })
+  if (!error && ['rejected', 'completed', 'partial'].includes(status)) await db.from('orders').update({ dispatch_state: 'sent' }).eq('id', order.id).eq('dispatch_state', 'canceling')
+
+  return !error
+}
+
+/**
+ * Admin cancel for provider orders: asks the provider to cancel, then confirms the live status.
+ * Refund happens only when the provider confirms cancel; completed stays completed; otherwise "canceling".
+ */
+export async function cancelProviderOrder(orderId: string) {
+  const { supabaseAdmin: db } = await import('@/integrations/supabase/client.server')
+  const { data: order } = await db.from('orders').select('id,status,quantity,provider_id,provider_order_id,dispatch_state').eq('id', orderId).maybeSingle()
+  if (!order?.provider_id) throw new Error('এটি প্রোভাইডার অর্ডার নয়')
+  if (!['pending', 'processing'].includes(order.status)) throw new Error('এই অর্ডার আর বাতিল করা যাবে না')
+  if (!order.provider_order_id) throw new Error('প্রোভাইডার অর্ডার নম্বর নেই; কিছুক্ষণ পর আবার চেষ্টা করুন')
+  const { data: provider } = await db.from('service_providers').select('*').eq('id', order.provider_id).single()
+  if (!provider) throw new Error('প্রোভাইডার পাওয়া যায়নি')
+  await db.from('orders').update({ dispatch_state: 'canceling' }).eq('id', order.id).in('dispatch_state', ['sent', 'canceling'])
+  try { await providerRequest(provider, { action: 'cancel', orders: order.provider_order_id }) } catch { /* status check decides */ }
+  let target: Target | null = null
+  try {
+    const result = await providerRequest(provider, { action: 'status', order: order.provider_order_id })
+    if (result && typeof result === 'object' && 'status' in result) target = providerOrderStatus(String(result.status), order.quantity, 'remains' in result ? result.remains : undefined)
+  } catch { /* unconfirmed */ }
+  if (target && ['canceled', 'rejected', 'completed', 'partial'].includes(target.status)) {
+    await applyProviderTarget(db, order, target)
+    const { data: after } = await db.from('orders').select('status, refunded').eq('id', order.id).single()
+    return { result: target.status === 'canceled' || target.status === 'rejected' ? 'canceled' as const : target.status === 'completed' ? 'completed' as const : 'partial' as const, refund: Number(after?.refunded ?? 0) }
+  }
+  return { result: 'canceling' as const, refund: 0 }
 }

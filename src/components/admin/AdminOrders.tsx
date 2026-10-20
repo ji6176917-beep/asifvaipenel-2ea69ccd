@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { ArrowLeft, Download, ExternalLink, History, RefreshCw, Check, X, PackageCheck, PieChart } from "lucide-react";
 import { toast } from "sonner";
-import { adminBulkUpdateOrders, adminExportOrdersCsv, adminListOrders, adminOrderPlatforms, adminUpdateOrder } from "@/lib/admin-orders.functions";
+import { adminBulkUpdateOrders, adminCancelProviderOrder, adminExportOrdersCsv, adminListOrders, adminOrderPlatforms, adminUpdateOrder } from "@/lib/admin-orders.functions";
 import { Card, Copyable, Empty, ErrorState, PageTitle, Spinner, StatusBadge, inputCls, labelCls } from "@/components/ui-kit";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -118,15 +118,33 @@ export function PlatformOrders({ platform, source, onBack, initialTab }: { platf
 
 function OrderCard({ o, selected, onSelect, onAct }: { o: Order; selected: boolean; onSelect: (v: boolean) => void; onAct: (a: Act) => void }) {
   const [hist, setHist] = useState(false);
+  const [canceling, setCanceling] = useState(false);
+  const cancelFn = useServerFn(adminCancelProviderOrder);
+  const qc = useQueryClient();
   const acts: Act[] = o.provider_id
     ? o.dispatch_state === "manual" && o.status === "pending" ? ["processing", "rejected"] : []
     : o.status === "pending" ? ["processing", "rejected"] : o.status === "processing" ? ["completed", "partial", "rejected"] : [];
+  const isCanceling = o.dispatch_state === "canceling" && ["pending", "processing"].includes(o.status);
+  const canCancel = !!o.provider_id && !!o.provider_order_id && ["pending", "processing"].includes(o.status);
+  const doCancel = async () => {
+    if (!confirm(`অর্ডার #${o.order_code} বাতিল করবেন? এপিআই বাতিল নিশ্চিত করলে তবেই ইউজার টাকা ফেরত পাবে।`)) return;
+    setCanceling(true);
+    try {
+      const r = await cancelFn({ data: { id: o.id } });
+      if (r.result === "canceled") toast.success(`এপিআই বাতিল নিশ্চিত করেছে — ${money(r.refund)} রিফান্ড হয়েছে`);
+      else if (r.result === "completed") toast.info("অর্ডারটি আগেই Completed হয়ে গেছে — কোনো রিফান্ড হয়নি");
+      else if (r.result === "partial") toast.info("অর্ডার Partial হয়েছে — শুধু বাকি অংশের টাকা ফেরত গেছে");
+      else toast.info("এপিআই এখনো নিশ্চিত করেনি — অর্ডার Canceling অবস্থায় আছে, নিশ্চিত হলে নিজে থেকে আপডেট হবে");
+      qc.invalidateQueries({ queryKey: ["admin-orders"] });
+    } catch (e) { toast.error((e as Error).message); }
+    finally { setCanceling(false); }
+  };
   return (
     <Card className="!p-4 space-y-2 text-sm">
       <div className="flex flex-wrap items-center gap-2">
         {o.status === "pending" && !o.provider_id && <input type="checkbox" aria-label="Select order" checked={selected} onChange={(e) => onSelect(e.target.checked)} />}
         <Copyable value={o.order_code} className="font-semibold" />
-        <StatusBadge status={o.status} />
+        {isCanceling ? <span className="rounded-full border border-warning/40 bg-warning/15 px-2.5 py-0.5 text-xs font-semibold text-warning">Canceling</span> : <StatusBadge status={o.status} />}
         {o.provider_id && <span className="text-xs text-muted-foreground">প্রোভাইডার অর্ডার: {o.provider_order_id ?? o.dispatch_state}</span>}
         {o.source === "api" && <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-bold uppercase text-primary">API · {o.user?.username ?? "user"}</span>}
         <span className="ml-auto text-xs text-muted-foreground">{fmtDate(o.created_at)}</span>
@@ -149,6 +167,7 @@ function OrderCard({ o, selected, onSelect, onAct }: { o: Order; selected: boole
             {a === "processing" ? <Check className="h-3.5 w-3.5" /> : a === "completed" ? <PackageCheck className="h-3.5 w-3.5" /> : a === "partial" ? <PieChart className="h-3.5 w-3.5" /> : <X className="h-3.5 w-3.5" />} {ACT_LABEL[a]}
           </button>
         ))}
+        {canCancel && <button disabled={canceling} onClick={doCancel} className="btn-ghost-glow text-destructive !px-3 !py-1.5 text-xs">{canceling ? <Spinner /> : <X className="h-3.5 w-3.5" />} {isCanceling ? "আবার যাচাই করুন" : "Cancel order"}</button>}
         <button onClick={() => setHist(!hist)} className="ml-auto inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-primary"><History className="h-3.5 w-3.5" /> History ({o.history.length})</button>
       </div>
       {hist && (
