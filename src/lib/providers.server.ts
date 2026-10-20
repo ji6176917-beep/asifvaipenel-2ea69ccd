@@ -141,7 +141,7 @@ type Target = NonNullable<ReturnType<typeof providerOrderStatus>>
 
 /** Applies a provider-confirmed state. Canceled maps to a full-refund rejection (valid from pending and processing). */
 async function applyProviderTarget(db: Db, order: { id: string; status: string }, target: Target) {
-  let status: string = target.status === 'canceled' ? 'rejected' : target.status
+  const status: string = target.status === 'canceled' ? 'rejected' : target.status
   // pending → completed/partial must pass through processing first.
   if (order.status === 'pending' && (status === 'completed' || status === 'partial')) {
     const { error } = await db.rpc('admin_update_order_status', { _order_id: order.id, _status: 'processing', _delivered: 0, _note: '' })
@@ -151,7 +151,7 @@ async function applyProviderTarget(db: Db, order: { id: string; status: string }
   const note = target.status === 'canceled' ? 'Order canceled. Full amount refunded.' : ''
   const { error } = await db.rpc('admin_update_order_status', { _order_id: order.id, _status: status as Target['status'], _delivered: target.delivered, _note: note })
   if (!error && ['rejected', 'completed', 'partial'].includes(status)) await db.from('orders').update({ dispatch_state: 'sent' }).eq('id', order.id).eq('dispatch_state', 'canceling')
-  status = ''
+
   return !error
 }
 

@@ -167,6 +167,7 @@ function OrderCard({ o, selected, onSelect, onAct }: { o: Order; selected: boole
             {a === "processing" ? <Check className="h-3.5 w-3.5" /> : a === "completed" ? <PackageCheck className="h-3.5 w-3.5" /> : a === "partial" ? <PieChart className="h-3.5 w-3.5" /> : <X className="h-3.5 w-3.5" />} {ACT_LABEL[a]}
           </button>
         ))}
+        {canCancel && <button disabled={canceling} onClick={doCancel} className="btn-ghost-glow text-destructive !px-3 !py-1.5 text-xs">{canceling ? <Spinner /> : <X className="h-3.5 w-3.5" />} {isCanceling ? "আবার যাচাই করুন" : "Cancel order"}</button>}
         <button onClick={() => setHist(!hist)} className="ml-auto inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-primary"><History className="h-3.5 w-3.5" /> History ({o.history.length})</button>
       </div>
       {hist && (
