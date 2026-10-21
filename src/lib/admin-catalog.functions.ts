@@ -111,7 +111,8 @@ export const adminCatalogAction = createServerFn({ method: "POST" })
     const { data: row } = await db.from(data.level).select("*").eq("id", data.id).single();
     if (!row) throw new Error("Not found");
     if (data.action === "on" || data.action === "off") {
-      await db.from(data.level).update({ active: data.action === "on" }).eq("id", data.id);
+      const { error } = await db.from(data.level).update({ active: data.action === "on" }).eq("id", data.id);
+      if (error) throw new Error("পরিবর্তন সংরক্ষণ হয়নি: " + error.message);
     } else if (data.action === "delete") {
       await db.from(data.level).update({ deleted_at: new Date().toISOString() }).eq("id", data.id);
     } else if (data.action === "restore") {

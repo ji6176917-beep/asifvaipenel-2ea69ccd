@@ -14,22 +14,25 @@ export const settingsQuery = queryOptions({
 export const platformsQuery = queryOptions({
   queryKey: ["platforms"],
   queryFn: async () => {
-    const { data, error } = await supabase.from("platforms").select("*").order("sort");
+    const { data, error } = await supabase.from("platforms").select("*").eq("active", true).is("deleted_at", null).order("sort");
     if (error) throw error;
     return data;
   },
-  staleTime: 60_000,
+  staleTime: 0,
+  refetchInterval: 10_000,
+  refetchOnMount: "always",
 });
 
 export const catalogQuery = (platform: string) => queryOptions({
   queryKey: ["catalog", platform],
   queryFn: async () => {
-    const { data: p, error } = await supabase.from("platforms").select("id,name,slug,logo_url").eq("slug", platform).maybeSingle();
+    const { data: p, error } = await supabase.from("platforms").select("id,name,slug,logo_url").eq("slug", platform).eq("active", true).is("deleted_at", null).maybeSingle();
     if (error) throw error;
     if (!p) return null;
-    const { data: cats } = await supabase.from("categories").select("id,name").eq("platform_id", p.id).eq("active", true).is("deleted_at", null).order("sort");
+    const { data: cats, error: categoryError } = await supabase.from("categories").select("id,name").eq("platform_id", p.id).eq("active", true).is("deleted_at", null).order("sort");
+    if (categoryError) throw categoryError;
     const ids = (cats ?? []).map((c) => c.id);
-    const fetchPage = (offset: number) => supabase.from("services").select("*").in("category_id", ids).eq("active", true).is("deleted_at", null).order("service_no").range(offset, offset + 999);
+    const fetchPage = (offset: number) => supabase.from("services").select("*").in("category_id", ids).eq("active", true).eq("provider_available", true).is("deleted_at", null).order("service_no").range(offset, offset + 999);
     const svcs: NonNullable<Awaited<ReturnType<typeof fetchPage>>['data']> = [];
     if (ids.length) for (let offset = 0; ; offset += 1000) {
       const page = await fetchPage(offset);
@@ -40,5 +43,7 @@ export const catalogQuery = (platform: string) => queryOptions({
     const used = new Set(svcs.map((s) => s.category_id));
     return { platform: p, cats: (cats ?? []).filter((c) => used.has(c.id)), svcs };
   },
-  staleTime: 60_000,
+  staleTime: 0,
+  refetchInterval: 10_000,
+  refetchOnMount: "always",
 });

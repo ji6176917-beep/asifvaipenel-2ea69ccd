@@ -122,7 +122,7 @@ function OrderCard({ o, selected, onSelect, onAct }: { o: Order; selected: boole
   const cancelFn = useServerFn(adminCancelProviderOrder);
   const qc = useQueryClient();
   const acts: Act[] = o.provider_id
-    ? o.dispatch_state === "manual" && o.status === "pending" ? ["processing", "rejected"] : []
+    ? []
     : o.status === "pending" ? ["processing", "rejected"] : o.status === "processing" ? ["completed", "partial", "rejected"] : [];
   const isCanceling = o.dispatch_state === "canceling" && ["pending", "processing"].includes(o.status);
   const canCancel = !!o.provider_id && !!o.provider_order_id && ["pending", "processing"].includes(o.status);
