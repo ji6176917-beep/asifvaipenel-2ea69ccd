@@ -274,6 +274,13 @@
       "when": 1792472875271,
       "tag": "0038_restore_provider_reference_unique",
       "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "7",
+      "when": 1792605483060,
+      "tag": "0039_manual_control_orders_stay_manual",
+      "breakpoints": true
     }
   ]
 }
