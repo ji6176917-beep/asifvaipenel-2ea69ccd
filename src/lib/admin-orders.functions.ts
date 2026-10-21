@@ -92,18 +92,7 @@ export const adminUpdateOrder = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { s, db } = await ctx();
     const { data: before } = await db.from("orders").select("order_code, user_id, status, refunded, delivered_qty, provider_id, dispatch_state").eq("id", data.id).maybeSingle();
-    if (before?.provider_id && before.dispatch_state === "manual") {
-      // Manual-approval provider orders: Accept dispatches to the provider API, Reject refunds in full.
-      if (data.status === "processing") {
-        const { dispatchProviderOrder } = await import("./providers.server");
-        await dispatchProviderOrder(before.order_code, before.user_id, { fromStates: ["manual"] });
-        const { data: after } = await db.from("orders").select("status, dispatch_state, provider_error").eq("id", data.id).single();
-        await s.logAdmin("order_manual_dispatch", { order: before.order_code, note: data.note }, before, after);
-        if (after?.dispatch_state !== "sent") throw new Error(after?.provider_error ?? "প্রোভাইডারে পাঠানো যায়নি");
-        return { refund: 0, status: after.status };
-      }
-      if (data.status !== "rejected") throw new Error("এই অর্ডার প্রোভাইডার পরিচালনা করছে; শুধু Accept বা Reject করা যাবে");
-    } else if (before?.provider_id) {
+    if (before?.provider_id) {
       throw new Error("এই অর্ডার প্রোভাইডার পরিচালনা করছে; এপিআই সার্ভিস থেকে অর্ডার আপডেট করুন");
     }
     const { data: r, error } = await db.rpc("admin_update_order_status", {
