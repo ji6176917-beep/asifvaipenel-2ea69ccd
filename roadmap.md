@@ -1,6 +1,7 @@
 # Roadmap
-- [ ] Verify self-controlled orders never dispatch upstream, including legacy unsent orders; cover admin transitions with regression tests.
-- [ ] Fix disabled catalog entries remaining visible; verify customer lists and reseller filtering without placing paid orders.
+- [x] Verify live self-control trigger snapshots no provider; remove legacy admin Accept dispatch path. Six regression tests pass; zero provider-linked legacy manual orders currently need repair. No paid order or authenticated admin transition executed.
+- [x] Customer catalog refreshes on entry/every 10 seconds and clears hidden selections; OFF writes report failures. Five visibility tests pass; browser catalog read contains 1,022 services, zero OFF/deleted/unavailable rows. Reseller active filters inspected, authenticated reseller request not executed.
+- [ ] Verify protected service dropdown/admin OFF action end-to-end; requesting owner has no matching customer account for automatic test sign-in and no active admin session. Requires owner sign-in; no paid order submitted.
 - [x] Isolate Own Services categories/services under shared platforms without changing API panels or controls; 19 focused tests pass and preview build OK. Read-only live counts confirm TikTok has 4 own categories and 27 excluded provider categories.
 - [ ] Verify updated own hierarchy and add/toggle flow through authenticated admin UI; configured master-password login did not establish a session. Requires the owner's working admin session; no catalog or money data changed during verification.
 - [x] Order notifications/history show current actual status; protected 2-minute status-only sync runs. 33 focused tests pass; live sync responded successfully.
