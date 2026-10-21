@@ -49,8 +49,9 @@ function ServicePage() {
   const { data, isLoading, isError } = useQuery(catalogQuery(platform));
 
   const cats = useMemo(() => (data ? data.cats.filter((c) => data.svcs.some((s) => s.category_id === c.id)) : []), [data]);
-  const svcs = (data?.svcs ?? []).filter((s) => s.category_id === catId);
-  const svc = data?.svcs.find((s) => s.id === svcId);
+  const selectedCatId = cats.some((c) => c.id === catId) ? catId : "";
+  const svcs = (data?.svcs ?? []).filter((s) => s.category_id === selectedCatId);
+  const svc = svcs.find((s) => s.id === svcId);
   const qn = parseInt(qty || "0", 10);
   const charge = svc ? computeCharge(qn, Number(svc.rate), svc.rate_per) : 0;
   const linkOk = /^https?:\/\/\S+\.\S+/i.test(link.trim());
@@ -117,7 +118,7 @@ function ServicePage() {
         <div>
           <label className={labelCls}>{t("order.category")}</label>
           {isLoading ? <Skeleton className="h-12 rounded-2xl" /> : cats.length === 0 ? <Empty text={t("order.empty_categories")} /> : (
-            <Select value={catId} onValueChange={(v) => { setCatId(v); setSvcId(""); }}>
+            <Select value={selectedCatId} onValueChange={(v) => { setCatId(v); setSvcId(""); }}>
               <SelectTrigger className="h-auto min-h-12 rounded-2xl px-3 py-2 text-left text-sm">
                 <SelectValue placeholder={t("order.category_placeholder")} />
               </SelectTrigger>
@@ -137,7 +138,7 @@ function ServicePage() {
 
         <div>
           <label className={labelCls}>{t("order.service")}</label>
-          <Select value={svcId} onValueChange={setSvcId} disabled={!catId || svcs.length === 0}>
+          <Select value={svc?.id ?? ""} onValueChange={setSvcId} disabled={!selectedCatId || svcs.length === 0}>
             <SelectTrigger className="h-auto min-h-12 rounded-2xl px-3 py-2 text-left text-sm">
               <SelectValue placeholder={catId && svcs.length === 0 ? t("order.empty_services") : t("order.service_placeholder")} />
             </SelectTrigger>
