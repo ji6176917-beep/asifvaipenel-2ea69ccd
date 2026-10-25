@@ -29,7 +29,8 @@ export const signInWithIdentifier = createServerFn({ method: "POST" })
     });
     const { data: res, error } = await client.auth.signInWithPassword({ email, password: data.password });
     if (error || !res.session) {
-      if (error?.message?.toLowerCase().includes("not confirmed")) {
+      const msg = error?.message?.toLowerCase() ?? "";
+      if (msg.includes("not confirmed") || msg.includes("confirm")) {
         return { ok: false as const, error: "Please verify your email first — check your inbox." };
       }
       return generic;

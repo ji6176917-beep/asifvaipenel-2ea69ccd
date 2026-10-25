@@ -15,11 +15,13 @@ import {
 interface RecoveryEmailProps {
   siteName: string
   confirmationUrl: string
+  token?: string
 }
 
 export const RecoveryEmail = ({
   siteName,
   confirmationUrl,
+  token,
 }: RecoveryEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head>
@@ -32,8 +34,13 @@ export const RecoveryEmail = ({
         <Text style={{ textAlign: 'center' as const, fontSize: '18px', fontWeight: 'bold' as const, color: '#16a34a', margin: '0 0 24px' }}>Apex SMM World</Text>
         <Heading style={h1}>Reset your password</Heading>
         <Text style={text}>
-          We received a request to reset your password for {siteName}. Click
-          the button below to choose a new password.
+          We received a request to reset your password for {siteName}. Enter
+          the verification code below on the reset page to choose a new
+          password.
+        </Text>
+        {token ? <Text style={codeStyle}>{token}</Text> : null}
+        <Text style={text}>
+          Or click the button below to reset your password directly:
         </Text>
         <Button className="dm-btn" style={button} href={confirmationUrl}>
           Reset Password
@@ -61,6 +68,19 @@ const text = {
   fontSize: '14px',
   color: '#55575d',
   lineHeight: '1.5',
+  margin: '0 0 25px',
+}
+const codeStyle = {
+  fontFamily: 'Courier, monospace',
+  fontSize: '28px',
+  fontWeight: 'bold' as const,
+  letterSpacing: '6px',
+  textAlign: 'center' as const,
+  color: '#16a34a',
+  backgroundColor: '#f0fdf4',
+  border: '1px solid #bbf7d0',
+  borderRadius: '8px',
+  padding: '14px 0',
   margin: '0 0 25px',
 }
 const button = {
