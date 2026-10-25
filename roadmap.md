@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Implement and test email → verified code → new password recovery; check branded sending readiness and report delivery blockers.
 - [x] Verify live self-control trigger snapshots no provider; remove legacy admin Accept dispatch path. Six regression tests pass; zero provider-linked legacy manual orders currently need repair. No paid order or authenticated admin transition executed.
 - [x] Customer catalog refreshes on entry/every 10 seconds and clears hidden selections; OFF writes report failures. Five visibility tests pass; browser catalog read contains 1,022 services, zero OFF/deleted/unavailable rows. Reseller active filters inspected, authenticated reseller request not executed.
 - [ ] Verify protected service dropdown/admin OFF action end-to-end; requesting owner has no matching customer account for automatic test sign-in and no active admin session. Requires owner sign-in; no paid order submitted.
