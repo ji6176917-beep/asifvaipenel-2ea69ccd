@@ -28,7 +28,7 @@ export const RecoveryEmail = ({
     <Preview>Reset your password for {siteName}</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Img src="https://apexsmmworld.com/favicon-192.png" width="64" height="64" alt="Apex SMM World" style={{ margin: '0 auto 12px', display: 'block', borderRadius: '14px' }} />
+        <Img src="https://apexsmmworld.com/__l5e/assets-v1/9921a3e4-716e-472d-8536-64fbefa8c532/apex-header-logo.png" width="72" height="72" alt="Apex SMM World" style={{ margin: '0 auto 12px', display: 'block', borderRadius: '14px' }} />
         <Text style={{ textAlign: 'center' as const, fontSize: '18px', fontWeight: 'bold' as const, color: '#16a34a', margin: '0 0 24px' }}>Apex SMM World</Text>
         <Heading style={h1}>Reset your password</Heading>
         <Text style={text}>
@@ -70,15 +70,15 @@ const text = {
 }
 const codeStyle = {
   fontFamily: 'Courier, monospace',
-  fontSize: '36px',
+  fontSize: '40px',
   fontWeight: 'bold' as const,
-  letterSpacing: '0',
+  letterSpacing: '8px',
   textAlign: 'center' as const,
   color: '#16a34a',
   backgroundColor: '#f0fdf4',
   border: '1px solid #bbf7d0',
   borderRadius: '8px',
-  padding: '14px 0',
+  padding: '18px 0',
   margin: '0 0 25px',
 }
 const button = {

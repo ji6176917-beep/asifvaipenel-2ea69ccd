@@ -18,7 +18,7 @@ export function AdminActivityEmail(data: AdminAlertData) {
       <Preview>{title} #{data.code ?? '—'} · {data.amount ?? '—'} · {data.name ?? 'Customer'}</Preview>
       <Body style={{ backgroundColor: colors.white, fontFamily: 'Arial, sans-serif', margin: '0' }}>
         <Container style={{ maxWidth: '580px', padding: '28px 20px' }}>
-          <Img src="https://apexsmmworld.com/favicon-192.png" width="64" height="64" alt="Apex SMM World" style={{ margin: '0 auto 12px' }} />
+          <Img src="https://apexsmmworld.com/__l5e/assets-v1/9921a3e4-716e-472d-8536-64fbefa8c532/apex-header-logo.png" width="72" height="72" alt="Apex SMM World" style={{ margin: '0 auto 12px' }} />
           <Text style={{ ...text, textAlign: 'center', color: colors.green, fontSize: '20px', fontWeight: 'bold', marginBottom: '24px' }}>Apex SMM World</Text>
           <Heading style={{ color: colors.ink, fontSize: '23px', lineHeight: '1.4' }}>{title}</Heading>
           <Text style={text}>রেফারেন্স: <strong>#{data.code ?? '—'}</strong></Text>

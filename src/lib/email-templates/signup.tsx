@@ -33,7 +33,7 @@ export const SignupEmail = ({
     <Preview>Confirm your email for {siteName}</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Img src="https://apexsmmworld.com/favicon-192.png" width="64" height="64" alt="Apex SMM World" style={{ margin: '0 auto 12px', display: 'block', borderRadius: '14px' }} />
+        <Img src="https://apexsmmworld.com/__l5e/assets-v1/9921a3e4-716e-472d-8536-64fbefa8c532/apex-header-logo.png" width="72" height="72" alt="Apex SMM World" style={{ margin: '0 auto 12px', display: 'block', borderRadius: '14px' }} />
         <Text style={{ textAlign: 'center' as const, fontSize: '18px', fontWeight: 'bold' as const, color: '#16a34a', margin: '0 0 24px' }}>Apex SMM World</Text>
         <Heading style={h1}>Confirm your email</Heading>
         <Text style={text}>
