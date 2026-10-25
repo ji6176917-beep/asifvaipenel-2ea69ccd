@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({ send: vi.fn(), verify: vi.fn(), update: vi.fn(), user: vi.fn(), navigate: vi.fn(), error: vi.fn() }));
@@ -13,12 +13,12 @@ import { Forgot } from '@/routes/forgot-password';
 
 async function sendCode() {
   fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'customer@example.test' } });
-  fireEvent.click(screen.getByRole('button', { name: 'Send verification code' }));
+  await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Send verification code' })); });
   await screen.findByLabelText('Verification Code');
 }
 async function verifyCode() {
   fireEvent.change(screen.getByLabelText('Verification Code'), { target: { value: '123456' } });
-  fireEvent.click(screen.getByRole('button', { name: 'Verify code' }));
+  await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Verify code' })); });
 }
 describe('Recovery code gating', () => {
   beforeEach(() => {
@@ -52,7 +52,7 @@ describe('Recovery code gating', () => {
     expect(mocks.update).not.toHaveBeenCalled();
     fireEvent.change(screen.getByLabelText('New Password'), { target: { value: 'Example-password-2026' } });
     fireEvent.change(screen.getByLabelText('Confirm Password'), { target: { value: 'Example-password-2026' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Change Password' }));
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Change Password' })); });
     await waitFor(() => expect(mocks.update).toHaveBeenCalledWith({ password: 'Example-password-2026' }));
     expect(mocks.navigate).toHaveBeenCalledWith({ to: '/' });
   });
@@ -61,7 +61,7 @@ describe('Recovery code gating', () => {
     render(<Forgot />); await sendCode(); await verifyCode(); await screen.findByLabelText('New Password');
     fireEvent.change(screen.getByLabelText('New Password'), { target: { value: 'Example-password-2026' } });
     fireEvent.change(screen.getByLabelText('Confirm Password'), { target: { value: 'Example-password-2026' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Change Password' }));
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Change Password' })); });
     await screen.findByLabelText('Email');
     expect(mocks.update).not.toHaveBeenCalled();
   });
