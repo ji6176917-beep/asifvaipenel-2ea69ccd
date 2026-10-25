@@ -10,6 +10,7 @@
 <!-- LOVABLE:END -->
 
 ## Project rules
+- Password recovery gates password inputs on a successful recovery OTP/session and revalidates the same user before updating; email previews include a sample recovery token. Why: unverified codes and ordinary sign-in sessions must not unlock recovery forms.
 - Submission alerts use INSERT triggers and owner-scoped snapshots; NotificationPanel uses a right Sheet and MethodLogo; event destinations open validated reference searches via HistoryCard. Website order/deposit submissions use authenticated customer-activity server functions around the ledger RPCs; the reseller API calls the same admin alert helper. Email recipient is fixed in registered templates, dedupe keys derive from event UUIDs, mail failures are audited without invalidating committed money operations. Why: deep links, exactly-once alerts, every creation path covered safely.
 - Page redesigns stay scoped: Add Funds (funds-reference classes, payment CDN logos via MethodLogo), New Order (order-reference classes on /order), Homepage (HomeShowcase + homepage CSS + LiveStats variants). Preserve shared wallet, menus, auth and deposit/order logic. Why: redesigns must not affect other screens or money operations.
 - Navigation uses resolved locations, no global pending fallback, immediate intent preload and parameter-keyed remounts. Why: atomic replacements preserve auth/caches without blank gaps.

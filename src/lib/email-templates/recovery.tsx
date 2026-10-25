@@ -24,9 +24,7 @@ export const RecoveryEmail = ({
   token,
 }: RecoveryEmailProps) => (
   <Html lang="en" dir="ltr">
-    <Head>
-      <style>{darkModeCss}</style>
-    </Head>
+    <Head />
     <Preview>Reset your password for {siteName}</Preview>
     <Body style={main}>
       <Container style={container}>
@@ -42,7 +40,7 @@ export const RecoveryEmail = ({
         <Text style={text}>
           Or click the button below to reset your password directly:
         </Text>
-        <Button className="dm-btn" style={button} href={confirmationUrl}>
+        <Button style={button} href={confirmationUrl}>
           Reset Password
         </Button>
         <Text style={footer}>
@@ -72,9 +70,9 @@ const text = {
 }
 const codeStyle = {
   fontFamily: 'Courier, monospace',
-  fontSize: '28px',
+  fontSize: '36px',
   fontWeight: 'bold' as const,
-  letterSpacing: '6px',
+  letterSpacing: '0',
   textAlign: 'center' as const,
   color: '#16a34a',
   backgroundColor: '#f0fdf4',
@@ -93,11 +91,3 @@ const button = {
   textDecoration: 'none',
 }
 const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }
-// Rendered as a text child, which React may HTML-escape: keep this CSS free of >, &, and quotes.
-const darkModeCss = `
-  @media (prefers-color-scheme: dark) {
-    .dm-btn { background-color: #ffffff !important; color: #000000 !important; }
-  }
-  [data-ogsc] .dm-btn { background-color: #ffffff !important; color: #000000 !important; }
-  [data-ogsb] .dm-btn { background-color: #ffffff !important; color: #000000 !important; }
-`
