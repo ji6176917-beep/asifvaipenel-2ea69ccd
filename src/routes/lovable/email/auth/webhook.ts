@@ -10,7 +10,7 @@ import { ReauthenticationEmail } from '@/lib/email-templates/reauthentication'
 
 // Configuration
 const SITE_NAME = "Apex SMM World"
-const SENDER_DOMAIN = "notify.apexsmmworld.com"
+const SENDER_DOMAIN = "notify.mail.apexsmmworld.com"
 const ROOT_DOMAIN = "apexsmmworld.com"
 const FROM_DOMAIN = "apexsmmworld.com"
 const SITE_URL = `https://${ROOT_DOMAIN}`
