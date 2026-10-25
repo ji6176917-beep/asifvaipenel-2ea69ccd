@@ -1,5 +1,13 @@
 {
   "bn": {
+    "Verify code": "কোড যাচাই করুন",
+    "Unable to send the verification code. Please try again later.": "কোড পাঠানো যায়নি। কিছুক্ষণ পরে আবার চেষ্টা করুন।",
+    "Unable to verify the code. Please try again.": "কোড যাচাই করা যায়নি। আবার চেষ্টা করুন।",
+    "If this email has an account, a verification code has been sent to": "এই ইমেইলে অ্যাকাউন্ট থাকলে যাচাইকরণ কোড পাঠানো হয়েছে:",
+    "Your reset session has expired. Please request a new code.": "পাসওয়ার্ড পরিবর্তনের সময়সীমা শেষ হয়েছে। নতুন কোড নিন।",
+    "This reset link is invalid or expired. Please request a new code.": "এই লিংকটি অকার্যকর বা মেয়াদোত্তীর্ণ। নতুন কোড নিন।",
+    "Unable to update your password. Please try a different password or request a new code.": "Unable to update your password. Please try a different password or request a new code.",
+    "Unable to update your password. Please try again.": "Unable to update your password. Please try again.",
     "Search notifications": "নোটিফিকেশন খুঁজুন",
     "Clear search": "সার্চ মুছুন",
     "No results found": "কোনো ফলাফল পাওয়া যায়নি",
