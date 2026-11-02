@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Bell, BellRing, X } from "lucide-react";
 import { toast } from "sonner";
@@ -147,21 +148,23 @@ export function UserInbox() {
           </span>
         )}
       </Button>
-      {askPush && (
-        <div role="dialog" aria-label={tr("Allow notifications")} className="fixed inset-x-3 top-16 z-50 mx-auto max-w-sm rounded-2xl border border-border bg-card p-4 shadow-xl sm:right-4 sm:left-auto">
-          <Button variant="ghost" size="icon" aria-label={tr("Close")} onClick={dismissPush} className="absolute right-2 top-2 h-7 w-7 rounded-full text-muted-foreground"><X className="h-4 w-4" /></Button>
-          <div className="flex items-start gap-3">
-            <img src={LOGO} alt="" className="h-10 w-10 rounded-xl" />
-            <div>
-              <p className="font-semibold">{tr("Get instant notifications")}</p>
-              <p className="mt-0.5 text-sm text-muted-foreground">{tr("Order updates, fund approvals and offers right on your screen.")}</p>
+      {/* Portal to <body>: the header's backdrop-filter and compact header-button rules would otherwise clip and shrink this card. */}
+      {askPush && typeof document !== "undefined" && createPortal(
+        <div role="dialog" aria-label={tr("Allow notifications")} className="push-ask-card fixed inset-x-3 z-[70] mx-auto w-auto max-w-sm rounded-2xl border border-border bg-card p-4 shadow-xl sm:left-auto sm:right-4 sm:w-96" style={{ top: "calc(env(safe-area-inset-top, 0px) + 64px)" }}>
+          <button type="button" aria-label={tr("Close")} onClick={dismissPush} className="absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:bg-muted"><X className="h-4 w-4" /></button>
+          <div className="flex items-start gap-3 pr-8">
+            <img src={LOGO} alt="" className="h-10 w-10 shrink-0 rounded-xl" />
+            <div className="min-w-0">
+              <p className="font-semibold leading-snug">{tr("Get instant notifications")}</p>
+              <p className="mt-0.5 text-sm leading-snug text-muted-foreground">{tr("Order updates, fund approvals and offers right on your screen.")}</p>
             </div>
           </div>
-          <div className="mt-3 flex justify-end gap-2">
-            <Button variant="ghost" size="sm" onClick={dismissPush}>{tr("Later")}</Button>
-            <Button size="sm" onClick={enablePush}><BellRing className="h-4 w-4" />{tr("Allow")}</Button>
+          <div className="mt-4 grid grid-cols-2 gap-2">
+            <Button variant="outline" className="h-10 w-full" onClick={dismissPush}>{tr("Later")}</Button>
+            <Button className="h-10 w-full" onClick={enablePush}><BellRing className="h-4 w-4" />{tr("Allow")}</Button>
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
       <NotificationPanel open={open} onOpenChange={setOpen} notes={live} pending={isPending} error={isError} retry={() => void refetch()} />
       <Dialog open={!!popup} onOpenChange={(o) => { if (!o) closePopup(); }}>
