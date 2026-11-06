@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { InstallAppCard } from "@/components/InstallAppCard";
 import { installApp, watchInstallPrompt } from "@/lib/pwa-install";
@@ -11,7 +11,9 @@ function fireInstallPrompt() {
   const prompt = vi.fn(async () => {});
   const event = new Event("beforeinstallprompt");
   Object.assign(event, { prompt, userChoice: Promise.resolve({ outcome: "accepted" }) });
-  window.dispatchEvent(event);
+  act(() => {
+    window.dispatchEvent(event);
+  });
   return prompt;
 }
 
