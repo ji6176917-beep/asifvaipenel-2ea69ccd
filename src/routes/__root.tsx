@@ -19,8 +19,7 @@ import { settingsQuery, platformsQuery } from "@/lib/queries";
 import { SupportAdminProvider } from "@/components/SupportAdmin";
 import { Toaster } from "@/components/ui/sonner";
 import { VisitTracker } from "@/components/VisitTracker";
-import { registerAppSW } from "@/lib/pwa-registration";
-import { watchInstallPrompt } from "@/lib/pwa-install";
+import { PwaRegistration } from "@/components/PwaRegistration";
 
 function NotFoundComponent() {
   return (
@@ -172,15 +171,6 @@ function RootComponent() {
       </AuthProvider>
     </QueryClientProvider>
   );
-}
-
-/** Offline support for the installed app: registers /sw.js only on the published site. */
-function PwaRegistration() {
-  useEffect(() => {
-    watchInstallPrompt();
-    void registerAppSW();
-  }, []);
-  return null;
 }
 
 /** After first paint, download main page code so first taps (incl. touch) switch instantly. */
