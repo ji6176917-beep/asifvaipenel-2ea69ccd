@@ -19,6 +19,8 @@ import { settingsQuery, platformsQuery } from "@/lib/queries";
 import { SupportAdminProvider } from "@/components/SupportAdmin";
 import { Toaster } from "@/components/ui/sonner";
 import { VisitTracker } from "@/components/VisitTracker";
+import { registerAppSW } from "@/lib/pwa-registration";
+import { watchInstallPrompt } from "@/lib/pwa-install";
 
 function NotFoundComponent() {
   return (
@@ -92,6 +94,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:site_name", content: "Apex SMM World" },
       { name: "application-name", content: "Apex SMM World" },
       { name: "apple-mobile-web-app-title", content: "Apex SMM World" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "default" },
+      { name: "theme-color", content: "#01930c" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
@@ -103,7 +109,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "icon", href: "/favicon-48.png", type: "image/png", sizes: "48x48" },
       { rel: "icon", href: "/favicon.png", type: "image/png", sizes: "64x64" },
       { rel: "shortcut icon", href: "/favicon.ico" },
-      { rel: "apple-touch-icon", href: "/favicon-192.png" },
+      { rel: "manifest", href: "/manifest.webmanifest" },
+      { rel: "apple-touch-icon", href: "/icon-192.png" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@500;600;700;800&display=swap" },
@@ -161,9 +168,19 @@ function RootComponent() {
         <Toaster richColors position="top-center" />
         <VisitTracker />
         <WarmRoutes />
+        <PwaRegistration />
       </AuthProvider>
     </QueryClientProvider>
   );
+}
+
+/** Offline support for the installed app: registers /sw.js only on the published site. */
+function PwaRegistration() {
+  useEffect(() => {
+    watchInstallPrompt();
+    void registerAppSW();
+  }, []);
+  return null;
 }
 
 /** After first paint, download main page code so first taps (incl. touch) switch instantly. */

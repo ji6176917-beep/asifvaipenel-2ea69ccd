@@ -8,6 +8,7 @@ import { fmtDate, money } from "@/lib/format";
 import { Card, Copyable, PageTitle } from "@/components/ui-kit";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AvatarEditor } from "@/components/AvatarEditor";
+import { InstallAppCard } from "@/components/InstallAppCard";
 import { useTr } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/profile")({
@@ -52,6 +53,7 @@ function Profile() {
       <Card className="divide-y divide-border">
         {rows.map(([k, v]) => <div key={k} className="flex items-center justify-between gap-4 py-3 text-sm"><span className="text-muted-foreground">{k}</span><span className="text-right">{v}</span></div>)}
       </Card>
+      <InstallAppCard />
       <button onClick={() => out("local")} className="btn-ghost-glow w-full"><LogOut className="h-4 w-4" /> {tr("Logout")}</button>
       <button onClick={() => out("global")} className="btn-ghost-glow w-full text-destructive"><ShieldOff className="h-4 w-4" /> {tr("Logout from all devices")}</button>
     </div>
