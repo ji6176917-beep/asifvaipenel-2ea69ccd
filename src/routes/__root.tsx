@@ -167,14 +167,14 @@ function RootComponent() {
         <Toaster richColors position="top-center" />
         <VisitTracker />
         <WarmRoutes />
+        <PwaRegistration />
       </AuthProvider>
     </QueryClientProvider>
   );
 }
 
 /** After first paint, download main page code so first taps (incl. touch) switch instantly. */
-function WarmRoutes() {
-  const router = useRouter();
+function WarmRoutes() {  const router = useRouter();
   useEffect(() => {
     const ids = ["/order", "/_authenticated/service/$platform", "/_authenticated/orders", "/_authenticated/add-funds/", "/_authenticated/dashboard", "/sign-in", "/qna"];
     const run = () => ids.forEach((id) => {
