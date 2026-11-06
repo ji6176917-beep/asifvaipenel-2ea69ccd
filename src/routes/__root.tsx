@@ -173,8 +173,17 @@ function RootComponent() {
   );
 }
 
+/** Offline support for the installed app: registers /sw.js only on the published site. */
+function PwaRegistration() {
+  useEffect(() => {
+    void registerAppSW();
+  }, []);
+  return null;
+}
+
 /** After first paint, download main page code so first taps (incl. touch) switch instantly. */
-function WarmRoutes() {  const router = useRouter();
+function WarmRoutes() {
+  const router = useRouter();
   useEffect(() => {
     const ids = ["/order", "/_authenticated/service/$platform", "/_authenticated/orders", "/_authenticated/add-funds/", "/_authenticated/dashboard", "/sign-in", "/qna"];
     const run = () => ids.forEach((id) => {
