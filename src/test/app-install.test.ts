@@ -1,13 +1,13 @@
 import { readFileSync } from "node:fs";
+import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { isPreviewHostname, shouldRegisterAppSW } from "@/lib/pwa-registration";
 
-const manifest = JSON.parse(
-  readFileSync(new URL("../../public/manifest.webmanifest", import.meta.url), "utf8"),
-);
+const PUBLIC_DIR = path.resolve(process.cwd(), "public");
+const manifest = JSON.parse(readFileSync(path.join(PUBLIC_DIR, "manifest.webmanifest"), "utf8"));
 
-function pngSize(path: URL) {
-  const bytes = readFileSync(path);
+function pngSize(file: string) {
+  const bytes = readFileSync(file);
   return { width: bytes.readUInt32BE(16), height: bytes.readUInt32BE(20) };
 }
 
@@ -31,8 +31,8 @@ describe("home-screen install", () => {
 
   it("ships the icon files the manifest points at", () => {
     for (const icon of manifest.icons) {
-      const path = new URL(`../../public${icon.src}`, import.meta.url);
-      expect(pngSize(path)).toEqual({ width: Number(icon.sizes.split("x")[0]), height: Number(icon.sizes.split("x")[0]) });
+      const edge = Number(icon.sizes.split("x")[0]);
+      expect(pngSize(path.join(PUBLIC_DIR, icon.src.slice(1)))).toEqual({ width: edge, height: edge });
     }
   });
 });
