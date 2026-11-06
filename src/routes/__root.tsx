@@ -20,6 +20,7 @@ import { SupportAdminProvider } from "@/components/SupportAdmin";
 import { Toaster } from "@/components/ui/sonner";
 import { VisitTracker } from "@/components/VisitTracker";
 import { registerAppSW } from "@/lib/pwa-registration";
+import { watchInstallPrompt } from "@/lib/pwa-install";
 
 function NotFoundComponent() {
   return (
