@@ -176,6 +176,7 @@ function RootComponent() {
 /** Offline support for the installed app: registers /sw.js only on the published site. */
 function PwaRegistration() {
   useEffect(() => {
+    watchInstallPrompt();
     void registerAppSW();
   }, []);
   return null;

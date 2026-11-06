@@ -8,6 +8,7 @@ import { fmtDate, money } from "@/lib/format";
 import { Card, Copyable, PageTitle } from "@/components/ui-kit";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AvatarEditor } from "@/components/AvatarEditor";
+import { InstallAppCard } from "@/components/InstallAppCard";
 import { useTr } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/profile")({
