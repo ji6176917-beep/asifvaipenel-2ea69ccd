@@ -641,13 +641,11 @@
   .funds-crypto-logo > svg { width: 22px; height: 22px; }
   .funds-method-copy { flex: none; }
   .funds-method-copy strong { font-size: 14px; }
-  .funds-method-copy > span { font-size: 10px; margin-top: 2px; }
   .funds-method-arrow { display: none; }
+  .funds-crypto-logo--p2p { font-size: 19px; }
   .funds-method--p2p { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
-  .funds-p2p-title { font-size: 14px; }
-  .funds-local-logos { gap: 6px; max-width: 100%; }
-  .funds-local-logos > div + div { border-left: 0; padding-left: 0; }
-  .funds-local-logo { max-width: 34px; height: 22px; }
+  .funds-local-logos { gap: 5px; max-width: 100%; margin-top: 6px; }
+  .funds-local-chip { width: 34px; height: 23px; padding: 2px 4px; border-radius: 5px; }
   .funds-method-grid > :nth-child(odd):last-child { grid-column: 1 / -1; flex-direction: row; align-items: center; justify-content: space-between; min-height: 68px; }
   .funds-method-grid > :nth-child(odd):last-child .funds-local-logos { width: auto; }
   .funds-social-banner { aspect-ratio: 2.9; object-position: 44% center; }
