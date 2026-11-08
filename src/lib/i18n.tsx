@@ -80,8 +80,7 @@ export const DEFAULT_LABELS: Record<string, Def> = {
   "footer.quick_links": ["Footer", "Quick Links"],
   "footer.info": ["Footer", "Info"],
   "footer.rights": ["Footer", "All rights reserved."],
-  "footer.cookie": ["Footer", "We use cookies to keep you signed in and remember your preferences."],
-  "footer.cookie_ok": ["Footer", "OK"],
+
   "menu.language": ["3-dot menu", "Language"],
   "menu.music": ["3-dot menu", "Music"],
   "menu.logout": ["3-dot menu", "Logout"],
