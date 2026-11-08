@@ -603,18 +603,17 @@
 .funds-method[aria-pressed=true] { border-color: var(--funds-green); outline: 1px solid var(--funds-green); }
 .funds-crypto-logo { display: grid; place-items: center; width: 66px; height: 66px; border-radius: 50%; flex-shrink: 0; background: var(--funds-green); color: var(--funds-white); }
 .funds-crypto-logo--binance { background: var(--funds-crypto-dark); color: var(--funds-crypto-gold); }
+.funds-crypto-logo--p2p { background: var(--funds-pink); color: var(--funds-white); font-family: var(--font-sans); font-size: 32px; font-weight: 850; line-height: 1; }
 .funds-crypto-logo > svg { width: 42px; height: 42px; }
 .funds-method-copy { min-width: 0; flex: 1; }
-.funds-method-copy strong, .funds-p2p-title { display: block; font-size: 20px; font-weight: 850; line-height: 1.3; }
-.funds-method-copy > span { display: block; font-size: 12px; color: var(--funds-muted); margin-top: 4px; }
+.funds-method-copy strong { display: block; font-size: 20px; font-weight: 850; line-height: 1.3; }
 .funds-method-arrow { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--funds-green); color: var(--funds-white); flex-shrink: 0; }
 .funds-method-arrow > svg { width: 21px; height: 21px; }
 .funds-method--usdt .funds-method-arrow { background: var(--funds-blue); }
-.funds-method--p2p .funds-method-arrow { background: var(--funds-pink); grid-column: 2; grid-row: 1 / 3; }
-.funds-local-logos { display: flex; align-items: center; gap: 12px; min-width: 0; }
-.funds-local-logos > div { flex: 1; min-width: 0; display: grid; place-items: center; }
-.funds-local-logos > div + div { border-left: 1px solid var(--border); padding-left: 10px; }
-.funds-local-logo { width: 100%; max-width: 70px; height: 58px; object-fit: contain; }
+.funds-method--p2p .funds-method-arrow { background: var(--funds-pink); }
+.funds-local-logos { display: flex; align-items: center; gap: 8px; min-width: 0; margin-top: 9px; flex-wrap: wrap; }
+.funds-local-chip { display: grid; place-items: center; width: 46px; height: 30px; padding: 3px 6px; border-radius: 7px; background: var(--funds-white); border: 1px solid var(--border); box-shadow: 0 1px 3px oklch(0.4 0.07 175 / .12); }
+.funds-local-logo { width: 100%; height: 100%; object-fit: contain; }
 .funds-social-banner { display: block; width: 100%; height: auto; aspect-ratio: auto; object-fit: cover; object-position: center 45%; margin-top: 18px; border-radius: 8px; }
 .funds-form-section { max-width: 620px; margin: 24px auto 0; padding: 24px 0; border-top: 1px solid var(--border); }
 .funds-form-section input, .funds-form-section form > div, .funds-form-section form > label, .funds-form-section form > p { border-radius: 8px; }
