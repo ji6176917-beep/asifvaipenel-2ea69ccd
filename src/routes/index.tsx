@@ -1,14 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Headset, MessageCircleQuestion } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import ReactMarkdown from "react-markdown";
 import { useI18n, pickLang } from "@/lib/i18n";
 import { useStorageUrl } from "@/lib/storage-url";
 import { platformsQuery, settingsQuery } from "@/lib/queries";
 import { homeConfig, type HomeSectionId } from "@/lib/site-config";
-import { PlatformIcon } from "@/lib/brand";
+import { PlatformIcon, WhatsAppIcon } from "@/lib/brand";
+import { whatsappUrl } from "@/lib/format";
 import { Skeleton } from "@/components/ui/skeleton";
 import { HomeShowcase } from "@/components/HomeShowcase";
 import { LiveStats } from "@/components/LiveStats";
@@ -65,6 +66,7 @@ function Home() {
   });
   const { data: platforms, isLoading } = useQuery(platformsQuery);
   const { data: settings } = useQuery(settingsQuery);
+  const waSupport = whatsappUrl(settings?.whatsapp);
   const cfg = homeConfig(settings?.home_config, (platforms ?? []).map((p) => p.slug));
   const shown = cfg.platforms.filter((c) => c.on).flatMap((c) => {
     const p = platforms?.find((p) => p.slug === c.slug);
