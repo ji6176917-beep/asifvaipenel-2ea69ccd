@@ -201,8 +201,6 @@ function Shell({ children }: { children: ReactNode }) {
     if (settings.seo_description) document.querySelector('meta[name="description"]')?.setAttribute("content", settings.seo_description);
   }, [path, settings?.seo_title, settings?.seo_description]);
 
-  useEffect(() => { setCookieOk(localStorage.getItem("cookie_ok") === "1"); }, []);
-
   const logout = async () => {
     setMenuOpen(false);
     await qc.cancelQueries();
