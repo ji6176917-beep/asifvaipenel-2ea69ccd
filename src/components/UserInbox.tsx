@@ -11,13 +11,14 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { NotificationPanel } from "@/components/NotificationPanel";
 import { useTr } from "@/lib/i18n";
+import { registerNotificationWorker } from "@/lib/notification-worker";
 
 const LOGO = "/favicon-192.png";
 async function showSystemNotification(title: string, body: string) {
   if (typeof window === "undefined" || !("Notification" in window) || Notification.permission !== "granted") return;
   const opts: NotificationOptions = { body, icon: LOGO, badge: "/favicon-48.png", data: { url: "/" } };
   try {
-    const reg = await navigator.serviceWorker?.getRegistration("/notify-sw.js") ?? await navigator.serviceWorker?.register("/notify-sw.js");
+    const reg = await registerNotificationWorker();
     if (reg) return reg.showNotification(title, opts);
   } catch { /* fall back below */ }
   try { new Notification(title, opts); } catch { /* unsupported */ }
@@ -73,7 +74,7 @@ export function UserInbox() {
 
   useEffect(() => {
     if (!user || !("Notification" in window)) return;
-    if (Notification.permission === "granted") { navigator.serviceWorker?.register("/notify-sw.js").catch(() => {}); return; }
+    if (Notification.permission === "granted") { void registerNotificationWorker().catch(() => {}); return; }
     if (Notification.permission === "default" && localStorage.getItem("push_ask_dismissed") !== "1") {
       const t = setTimeout(() => setAskPush(true), 2500);
       return () => clearTimeout(t);
@@ -101,7 +102,7 @@ export function UserInbox() {
     if (window.top !== window.self) { toast(tr("Open the website in its own tab to allow notifications")); return; }
     const perm = await Notification.requestPermission();
     if (perm === "granted") {
-      await navigator.serviceWorker?.register("/notify-sw.js").catch(() => {});
+      await registerNotificationWorker().catch(() => {});
       toast.success(tr("Notifications enabled"));
       void showSystemNotification("Apex SMM World", tr("You will now get order and fund updates here."));
     } else {
