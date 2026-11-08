@@ -98,6 +98,7 @@ function AddFunds() {
     setGroup(g);
     const list = methods?.filter((x) => x.kind === g) ?? [];
     setM(list.length === 1 ? list[0] ?? null : null);
+    window.scrollTo({ top: 0, behavior: "instant" });
   };
 
   const submit = async (e: React.FormEvent) => {
@@ -134,6 +135,7 @@ function AddFunds() {
 
   return (
     <div className="funds-reference">
+      {!group && <>
       <section className="funds-hero">
         <img src={fundsHeader} alt="" width={1920} height={640} className="funds-hero-image" />
         <div className="funds-hero-copy">
@@ -157,10 +159,11 @@ function AddFunds() {
             </Button>
           ))}
       </div>
+      </>}
 
       {group && (
         <section className="funds-form-section">
-          <Button variant="ghost" onClick={() => { setGroup(null); setM(null); }} className="mb-4 gap-1 text-sm text-muted-foreground"><ArrowLeft className="h-4 w-4" /> {tr("Change method")}</Button>
+          <Button variant="ghost" onClick={() => { setGroup(null); setM(null); window.scrollTo({ top: 0, behavior: "instant" }); }} className="mb-4 gap-1 text-sm text-muted-foreground"><ArrowLeft className="h-4 w-4" /> {tr("Change method")}</Button>
 
           {(methods?.filter((x) => x.kind === group).length ?? 0) > 1 && (
             <div className="mb-5 grid grid-cols-3 gap-2">
@@ -211,7 +214,7 @@ function AddFunds() {
         </section>
       )}
 
-      <img src={fundsSocialBanner} alt={tr("Social media growth services")} width={1920} height={640} loading="lazy" className="funds-social-banner" />
+      {!group && <img src={fundsSocialBanner} alt={tr("Social media growth services")} width={1920} height={640} loading="lazy" className="funds-social-banner" />}
 
       <Dialog open={!!done} onOpenChange={(o) => !o && setDone(null)}>
         <DialogContent className="text-center">
