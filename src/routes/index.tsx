@@ -119,7 +119,7 @@ function Home() {
               </Button>
             ) : (
               <Button asChild variant="outline" className="w-full gap-2">
-                <Link to="/support">{tr("Contact Support")}</Link>
+                <Link to="/qna">{tr("Contact Support")}</Link>
               </Button>
             )}
           </div>
