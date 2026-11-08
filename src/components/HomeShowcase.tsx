@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { LiveStats } from "@/components/LiveStats";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
-import growthImage from "@/assets/social-growth.jpg";
+import growthImage from "@/assets/social-growth.webp";
 
 export function HomeShowcase() {
   const { t, tr, lang } = useI18n();
@@ -29,7 +29,7 @@ export function HomeShowcase() {
             </>)}
           </div>
         </div>
-        <div className="home-growth-art"><img src={growthImage} alt={tr("Social media growth dashboard with Instagram, TikTok, Facebook, YouTube and Telegram")} width={1024} height={1024} fetchPriority="high" /></div>
+        <div className="home-growth-art"><img src={growthImage} alt={tr("Social media growth dashboard with Instagram, TikTok, Facebook, YouTube and Telegram")} width={640} height={640} loading="eager" decoding="async" fetchPriority="high" /></div>
       </div>
       <LiveStats layout="strip" />
     </section>
