@@ -597,24 +597,23 @@
 .funds-method::after { content: ''; position: absolute; width: 120px; height: 220px; right: -55px; bottom: -115px; transform: rotate(40deg); background: color-mix(in oklch,var(--funds-green) 5%,transparent); pointer-events: none; }
 .funds-method--usdt { background: linear-gradient(130deg,var(--funds-white) 25%,var(--funds-blue-surface)); }
 .funds-method--usdt::after { background: color-mix(in oklch,var(--funds-blue) 7%,transparent); }
-.funds-method--p2p { background: linear-gradient(130deg,var(--funds-white) 25%,var(--funds-pink-surface)); display: grid; grid-template-columns: minmax(0,1fr) 34px; grid-template-rows: 24px 1fr; gap: 8px; }
+.funds-method--p2p { background: linear-gradient(130deg,var(--funds-white) 25%,var(--funds-pink-surface)); }
 .funds-method--p2p::after { background: color-mix(in oklch,var(--funds-pink) 6%,transparent); }
 .funds-method:hover { transform: translateY(-2px); box-shadow: var(--shadow-card); }
 .funds-method[aria-pressed=true] { border-color: var(--funds-green); outline: 1px solid var(--funds-green); }
 .funds-crypto-logo { display: grid; place-items: center; width: 66px; height: 66px; border-radius: 50%; flex-shrink: 0; background: var(--funds-green); color: var(--funds-white); }
 .funds-crypto-logo--binance { background: var(--funds-crypto-dark); color: var(--funds-crypto-gold); }
+.funds-crypto-logo--p2p { background: var(--funds-pink); color: var(--funds-white); font-family: var(--font-sans); font-size: 32px; font-weight: 850; line-height: 1; }
 .funds-crypto-logo > svg { width: 42px; height: 42px; }
 .funds-method-copy { min-width: 0; flex: 1; }
-.funds-method-copy strong, .funds-p2p-title { display: block; font-size: 20px; font-weight: 850; line-height: 1.3; }
-.funds-method-copy > span { display: block; font-size: 12px; color: var(--funds-muted); margin-top: 4px; }
+.funds-method-copy strong { display: block; font-size: 20px; font-weight: 850; line-height: 1.3; }
 .funds-method-arrow { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--funds-green); color: var(--funds-white); flex-shrink: 0; }
 .funds-method-arrow > svg { width: 21px; height: 21px; }
 .funds-method--usdt .funds-method-arrow { background: var(--funds-blue); }
-.funds-method--p2p .funds-method-arrow { background: var(--funds-pink); grid-column: 2; grid-row: 1 / 3; }
-.funds-local-logos { display: flex; align-items: center; gap: 12px; min-width: 0; }
-.funds-local-logos > div { flex: 1; min-width: 0; display: grid; place-items: center; }
-.funds-local-logos > div + div { border-left: 1px solid var(--border); padding-left: 10px; }
-.funds-local-logo { width: 100%; max-width: 70px; height: 58px; object-fit: contain; }
+.funds-method--p2p .funds-method-arrow { background: var(--funds-pink); }
+.funds-local-logos { display: flex; align-items: center; gap: 6px; min-width: 0; margin-top: 9px; flex-wrap: wrap; }
+.funds-local-chip { display: grid; place-items: center; width: 34px; height: 26px; padding: 3px 4px; border-radius: 7px; background: var(--funds-white); border: 1px solid var(--border); box-shadow: 0 1px 3px oklch(0.4 0.07 175 / .12); }
+.funds-local-logo { height: 20px; max-width: 100%; object-fit: contain; }
 .funds-social-banner { display: block; width: 100%; height: auto; aspect-ratio: auto; object-fit: cover; object-position: center 45%; margin-top: 18px; border-radius: 8px; }
 .funds-form-section { max-width: 620px; margin: 24px auto 0; padding: 24px 0; border-top: 1px solid var(--border); }
 .funds-form-section input, .funds-form-section form > div, .funds-form-section form > label, .funds-form-section form > p { border-radius: 8px; }
@@ -642,15 +641,14 @@
   .funds-crypto-logo > svg { width: 22px; height: 22px; }
   .funds-method-copy { flex: none; }
   .funds-method-copy strong { font-size: 14px; }
-  .funds-method-copy > span { font-size: 10px; margin-top: 2px; }
   .funds-method-arrow { display: none; }
+  .funds-crypto-logo--p2p { font-size: 19px; }
   .funds-method--p2p { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
-  .funds-p2p-title { font-size: 14px; }
-  .funds-local-logos { gap: 6px; max-width: 100%; }
-  .funds-local-logos > div + div { border-left: 0; padding-left: 0; }
-  .funds-local-logo { max-width: 34px; height: 22px; }
-  .funds-method-grid > :nth-child(odd):last-child { grid-column: 1 / -1; flex-direction: row; align-items: center; justify-content: space-between; min-height: 68px; }
-  .funds-method-grid > :nth-child(odd):last-child .funds-local-logos { width: auto; }
+  .funds-local-logos { gap: 5px; max-width: 100%; margin-top: 6px; }
+  .funds-local-chip { width: 32px; height: 26px; padding: 2px 3px; border-radius: 5px; }
+  .funds-method-grid > :nth-child(odd):last-child { grid-column: 1 / -1; flex-direction: row; align-items: center; justify-content: flex-start; gap: 12px; min-height: 72px; }
+  .funds-method-grid > :nth-child(odd):last-child .funds-method-copy { flex: 1; min-width: 0; }
+  .funds-method-grid > :nth-child(odd):last-child .funds-local-logos { width: 100%; justify-content: space-between; }
   .funds-social-banner { aspect-ratio: 2.9; object-position: 44% center; }
   .funds-form-section { padding: 18px 0; }
 }
