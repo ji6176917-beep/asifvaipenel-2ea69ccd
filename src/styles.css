@@ -611,8 +611,8 @@
 .funds-method-arrow > svg { width: 21px; height: 21px; }
 .funds-method--usdt .funds-method-arrow { background: var(--funds-blue); }
 .funds-method--p2p .funds-method-arrow { background: var(--funds-pink); }
-.funds-local-logos { display: flex; align-items: center; gap: 8px; min-width: 0; margin-top: 9px; flex-wrap: wrap; }
-.funds-local-chip { display: grid; place-items: center; width: 46px; height: 30px; padding: 3px 6px; border-radius: 7px; background: var(--funds-white); border: 1px solid var(--border); box-shadow: 0 1px 3px oklch(0.4 0.07 175 / .12); }
+.funds-local-logos { display: flex; align-items: center; gap: 6px; min-width: 0; margin-top: 9px; flex-wrap: wrap; }
+.funds-local-chip { display: grid; place-items: center; width: 42px; height: 28px; padding: 3px 5px; border-radius: 7px; background: var(--funds-white); border: 1px solid var(--border); box-shadow: 0 1px 3px oklch(0.4 0.07 175 / .12); }
 .funds-local-logo { width: 100%; height: 100%; object-fit: contain; }
 .funds-social-banner { display: block; width: 100%; height: auto; aspect-ratio: auto; object-fit: cover; object-position: center 45%; margin-top: 18px; border-radius: 8px; }
 .funds-form-section { max-width: 620px; margin: 24px auto 0; padding: 24px 0; border-top: 1px solid var(--border); }
@@ -646,7 +646,8 @@
   .funds-method--p2p { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
   .funds-local-logos { gap: 5px; max-width: 100%; margin-top: 6px; }
   .funds-local-chip { width: 34px; height: 23px; padding: 2px 4px; border-radius: 5px; }
-  .funds-method-grid > :nth-child(odd):last-child { grid-column: 1 / -1; flex-direction: row; align-items: center; justify-content: space-between; min-height: 68px; }
+  .funds-method-grid > :nth-child(odd):last-child { grid-column: 1 / -1; flex-direction: row; align-items: center; justify-content: flex-start; gap: 12px; min-height: 72px; }
+  .funds-method-grid > :nth-child(odd):last-child .funds-method-copy { flex: 1; min-width: 0; }
   .funds-method-grid > :nth-child(odd):last-child .funds-local-logos { width: auto; }
   .funds-social-banner { aspect-ratio: 2.9; object-position: 44% center; }
   .funds-form-section { padding: 18px 0; }
