@@ -217,7 +217,7 @@ function Shell({ children }: { children: ReactNode }) {
   };
 
   return (
-    <div className={`relative min-h-screen pb-28 ${path === "/" ? "home-reference-shell" : path === "/order" ? "order-reference-shell" : ""}`}>
+    <div className={`relative flex min-h-screen flex-col pb-28 ${path === "/" ? "home-reference-shell" : path === "/order" ? "order-reference-shell" : ""}`}>
       <ThemeApplier t={theme} />
       {path !== "/" && path !== "/order" && <FloatingBackground cfg={home.bg} glowOn={theme.bg3d} />}
       <WelcomePopup s={settings as Settings | null | undefined} />
@@ -263,7 +263,7 @@ function Shell({ children }: { children: ReactNode }) {
         </div>
       )}
 
-      <main className={path === "/" ? "home-main" : path === "/order" ? "order-main" : `mx-auto px-4 pt-6 ${path.startsWith("/admin") ? "max-w-7xl" : "max-w-5xl"}`}>
+      <main className={"flex-1 w-full " + (path === "/" ? "home-main" : path === "/order" ? "order-main" : `mx-auto px-4 pt-6 ${path.startsWith("/admin") ? "max-w-7xl" : "max-w-5xl"}`)}>
         {settings?.maintenance_on && !path.startsWith("/admin") ? (
           <div className="glass mx-auto mt-10 max-w-lg rounded-3xl p-8 text-center">
             <Sparkles className="mx-auto h-10 w-10 text-primary" />
@@ -273,30 +273,38 @@ function Shell({ children }: { children: ReactNode }) {
         ) : <RouteTransition>{children}</RouteTransition>}
       </main>
 
-      {path !== "/order" && !(path === "/" && home.sections.find((x) => x.id === "footer")?.on === false) && <footer className="mx-auto mt-20 max-w-5xl px-4 pb-8 sm:mt-24">
-        <div className="glass space-y-6 rounded-3xl p-6">
-          {fc.info && <div>
-            <h3 className="label-premium mb-3 text-lg">{t("footer.info")}</h3>
-            <div className="grid gap-2 sm:grid-cols-3">
-              {footInfo.filter(visible).map((m) => {
-                const txt = m.target_type === "whatsapp" ? (m.target_value || settings?.whatsapp || undefined)
-                  : m.target_type === "telegram" ? tr("Telegram Support")
-                  : m.target_type === "email" ? (m.target_value || settings?.email || undefined) : undefined;
-                return <NavItem key={m.id} m={m} settings={settings} onAction={onAction} iconClass="h-5 w-5 shrink-0 text-primary" className="footer-contact flex min-w-0 items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 text-sm font-medium">{txt ? <span className="truncate">{txt}</span> : undefined}</NavItem>;
-              })}
+      {path !== "/order" && !(path === "/" && home.sections.find((x) => x.id === "footer")?.on === false) && (() => {
+        const full = path === "/";
+        const contacts = fc.info ? footInfo.filter(visible).map((m) => {
+          const txt = m.target_type === "whatsapp" ? tr("WhatsApp Support")
+            : m.target_type === "telegram" ? tr("Telegram Support")
+            : m.target_type === "email" ? tr("Email Support") : undefined;
+          return <NavItem key={m.id} m={m} settings={settings} onAction={onAction} iconClass="h-4 w-4 shrink-0 text-primary" className="inline-flex min-w-0 items-center gap-2 rounded-full border border-border bg-card px-3.5 py-2 text-xs font-semibold text-foreground transition-colors hover:border-primary hover:text-primary">{txt ? <span className="truncate">{txt}</span> : undefined}</NavItem>;
+        }) : [];
+        const links = <>
+          {fc.quick_links && footLinks.filter(visible).map((m) => <NavItem key={m.id} m={m} settings={settings} onAction={onAction} showIcon={false} className="transition-colors hover:text-primary" />)}
+          {fc.pages && (footerPages ?? []).map((p) => <Link key={p.slug} to="/p/$slug" params={{ slug: p.slug }} className="transition-colors hover:text-primary">{pickLang(p.title, lang, p.slug)}</Link>)}
+        </>;
+        const copy = fc.copyright ? (settings?.footer_copyright || `© ${new Date().getFullYear()} ${siteName}. ${t("footer.rights")}`) : null;
+        const brand = <div className="flex items-center gap-2.5"><img src={siteLogo.url} alt={siteName} width={32} height={32} className="h-8 w-auto object-contain" /><span className="text-base font-bold text-foreground">{siteName}</span></div>;
+        return <footer className="mt-16 border-t border-border bg-card/60 sm:mt-20">
+          {full ? <div className="mx-auto max-w-5xl px-4 py-10">
+            <div className="grid gap-8 sm:grid-cols-[1.4fr_1fr_1.2fr]">
+              <div className="space-y-3">{brand}<p className="max-w-xs text-sm text-muted-foreground">{tr("Fast, reliable social media growth services trusted worldwide.")}</p></div>
+              <div><h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("footer.quick_links")}</h3><div className="flex flex-col gap-2 text-sm text-foreground/80">{links}</div></div>
+              <div><h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{tr("Support")}</h3><div className="flex flex-wrap gap-2">{contacts}</div>
+                {fc.hours && settings?.support_hours && <p className="mt-3 text-xs text-muted-foreground">{t("footer.hours", "Support hours")}: {settings.support_hours}</p>}</div>
             </div>
+            {copy && <p className="mt-8 border-t border-border pt-5 text-center text-xs text-muted-foreground">{copy}</p>}
+          </div> : <div className="mx-auto flex max-w-5xl flex-col items-center gap-3 px-4 py-5 text-center sm:flex-row sm:justify-between sm:text-left">
+            {brand}
+            <div className="flex flex-wrap justify-center gap-x-4 gap-y-1.5 text-xs text-muted-foreground">{links}</div>
+            {contacts.length > 0 && <div className="flex flex-wrap justify-center gap-2">{contacts}</div>}
+            {copy && <p className="w-full text-xs text-muted-foreground sm:hidden">{copy}</p>}
           </div>}
-          {fc.hours && settings?.support_hours && <p className="text-xs text-muted-foreground">{t("footer.hours", "Support hours")}: {settings.support_hours}</p>}
-          {(fc.quick_links || (fc.pages && !!footerPages?.length)) && <div className="border-t border-border pt-5">
-            <h3 className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t("footer.quick_links")}</h3>
-            <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-muted-foreground">
-              {fc.quick_links && footLinks.filter(visible).map((m) => <NavItem key={m.id} m={m} settings={settings} onAction={onAction} showIcon={false} className="hover:text-primary" />)}
-              {fc.pages && (footerPages ?? []).map((p) => <Link key={p.slug} to="/p/$slug" params={{ slug: p.slug }} className="hover:text-primary">{pickLang(p.title, lang, p.slug)}</Link>)}
-            </div>
-          </div>}
-          {fc.copyright && <p className="text-xs text-muted-foreground">{settings?.footer_copyright || `© ${new Date().getFullYear()} ${siteName}. ${t("footer.rights")}`}</p>}
-        </div>
-      </footer>}
+          {!full && copy && <p className="hidden border-t border-border py-3 text-center text-xs text-muted-foreground sm:block">{copy}</p>}
+        </footer>;
+      })()}
 
       {/* Floating WhatsApp support button: fixed to the bottom-right corner on every page. */}
       {wa && settings?.whatsapp_float !== false && (
