@@ -287,7 +287,7 @@ function Shell({ children }: { children: ReactNode }) {
         </>;
         const copy = fc.copyright ? (settings?.footer_copyright || `© ${new Date().getFullYear()} ${siteName}. ${t("footer.rights")}`) : null;
         const brand = <div className="flex items-center gap-2.5"><img src={siteLogo.url} alt={siteName} width={32} height={32} className="h-8 w-auto object-contain" /><span className="text-base font-bold text-foreground">{siteName}</span></div>;
-        return <footer className="mt-16 border-t border-border bg-card/60 sm:mt-20">
+        return <footer className="mt-16 border-t border-border bg-card sm:mt-20">
           {full ? <div className="mx-auto max-w-5xl px-4 py-10">
             <div className="grid gap-8 sm:grid-cols-[1.4fr_1fr_1.2fr]">
               <div className="space-y-3">{brand}<p className="max-w-xs text-sm text-muted-foreground">{tr("Fast, reliable social media growth services trusted worldwide.")}</p></div>
