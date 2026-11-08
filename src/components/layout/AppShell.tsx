@@ -217,7 +217,7 @@ function Shell({ children }: { children: ReactNode }) {
   };
 
   return (
-    <div className={`relative flex min-h-screen flex-col pb-28 ${path === "/" ? "home-reference-shell" : path === "/order" ? "order-reference-shell" : ""}`}>
+    <div className={`relative flex min-h-screen flex-col pb-[calc(4rem+env(safe-area-inset-bottom,0px))] ${path === "/" ? "home-reference-shell" : path === "/order" ? "order-reference-shell" : ""}`}>
       <ThemeApplier t={theme} />
       {path !== "/" && path !== "/order" && <FloatingBackground cfg={home.bg} glowOn={theme.bg3d} />}
       <WelcomePopup s={settings as Settings | null | undefined} />
