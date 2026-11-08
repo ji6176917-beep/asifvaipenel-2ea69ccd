@@ -109,20 +109,22 @@ function Home() {
             <h2 className="label-premium mb-2 text-center text-2xl lg:text-start lg:text-3xl">{t("home.qna_title")}</h2>
             <p className="text-center text-sm text-muted-foreground lg:text-start">{tr("Quick answers to the most common questions about our services, payments and delivery.")}</p>
           </div>
-          <div className="glass mt-6 flex items-center gap-3 rounded-xl p-4 text-start lg:mt-0">
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-              <Headset className="h-5 w-5" />
-            </span>
-            <div className="min-w-0 flex-1">
-              <p className="label-premium text-sm">{tr("Didn't find your answer?")}</p>
-              <p className="text-xs text-muted-foreground">{tr("Our support team is here for you 24/7.")}</p>
+          <div className="glass mt-6 rounded-xl p-4 text-start lg:mt-0">
+            <div className="flex items-center gap-3">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                <Headset className="h-5 w-5" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="label-premium text-sm">{tr("Didn't find your answer?")}</p>
+                <p className="text-xs text-muted-foreground">{tr("Our support team is here for you 24/7.")}</p>
+              </div>
             </div>
             {waSupport ? (
-              <Button asChild className="shrink-0 gap-2">
+              <Button asChild className="mt-3 w-full justify-center gap-2">
                 <a href={waSupport} target="_blank" rel="noreferrer"><WhatsAppIcon className="h-4 w-4" /> {tr("Chat with Support")}</a>
               </Button>
             ) : (
-              <Button asChild variant="outline" className="shrink-0 gap-2">
+              <Button asChild variant="outline" className="mt-3 w-full justify-center gap-2">
                 <Link to="/qna">{tr("Contact Support")}</Link>
               </Button>
             )}
