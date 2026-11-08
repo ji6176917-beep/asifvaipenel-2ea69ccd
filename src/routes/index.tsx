@@ -96,8 +96,10 @@ function Home() {
     ),
     order: null,
     qna: homeQna.length ? (
-      <section className="home-qna mx-auto max-w-2xl">
-        <h2 className="label-premium mb-4 text-center text-2xl">{t("home.qna_title")}</h2>
+      <section className="home-qna mx-auto max-w-2xl lg:grid lg:max-w-6xl lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:items-start lg:gap-10">
+        <div className="lg:sticky lg:top-24">
+          <h2 className="label-premium mb-4 text-center text-2xl lg:text-start lg:text-3xl">{t("home.qna_title")}</h2>
+        </div>
         <div className="space-y-2">
           {homeQna.map((q) => {
             const isOpen = openQ === q.id;
