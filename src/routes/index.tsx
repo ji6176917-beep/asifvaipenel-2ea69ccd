@@ -105,20 +105,22 @@ function Home() {
               <MessageCircleQuestion className="h-3.5 w-3.5" /> {tr("FAQ & Help")}
             </span>
           </p>
-          <h2 className="label-premium mb-3 text-center text-2xl lg:text-start lg:text-3xl">{t("home.qna_title")}</h2>
-          <p className="mb-6 text-center text-sm text-muted-foreground lg:text-start">{tr("Quick answers to the most common questions about our services, payments and delivery.")}</p>
-          <div className="glass rounded-2xl p-5 text-center lg:text-start">
-            <span className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-primary/10 text-primary lg:mx-0">
-              <Headset className="h-5 w-5" />
+          <h2 className="label-premium mb-2 text-center text-2xl lg:text-start lg:text-3xl">{t("home.qna_title")}</h2>
+          <p className="mb-4 text-center text-sm text-muted-foreground lg:text-start">{tr("Quick answers to the most common questions about our services, payments and delivery.")}</p>
+          <div className="glass flex items-center gap-3 rounded-xl p-3 text-start">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <Headset className="h-4 w-4" />
             </span>
-            <p className="label-premium text-sm">{tr("Didn't find your answer?")}</p>
-            <p className="mb-4 mt-1 text-xs text-muted-foreground">{tr("Our support team is here for you 24/7.")}</p>
+            <div className="min-w-0 flex-1">
+              <p className="label-premium text-xs">{tr("Didn't find your answer?")}</p>
+              <p className="text-[11px] text-muted-foreground">{tr("Our support team is here for you 24/7.")}</p>
+            </div>
             {waSupport ? (
-              <Button asChild className="w-full gap-2">
-                <a href={waSupport} target="_blank" rel="noreferrer"><WhatsAppIcon className="h-4 w-4" /> {tr("Chat with Support")}</a>
+              <Button asChild size="sm" className="shrink-0 gap-1.5">
+                <a href={waSupport} target="_blank" rel="noreferrer"><WhatsAppIcon className="h-3.5 w-3.5" /> {tr("Chat with Support")}</a>
               </Button>
             ) : (
-              <Button asChild variant="outline" className="w-full gap-2">
+              <Button asChild size="sm" variant="outline" className="shrink-0 gap-1.5">
                 <Link to="/qna">{tr("Contact Support")}</Link>
               </Button>
             )}
