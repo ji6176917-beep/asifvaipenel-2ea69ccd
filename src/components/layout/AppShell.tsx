@@ -310,13 +310,6 @@ function Shell({ children }: { children: ReactNode }) {
       )}
 
 
-      {!cookieOk && settings?.cookie_notice !== false && (
-        <div className="glass fixed bottom-24 left-4 right-20 z-40 flex items-center gap-3 rounded-2xl p-3 text-xs sm:right-auto sm:max-w-sm">
-          <span>{t("footer.cookie")}</span>
-          <button className="btn-glow !px-3 !py-1.5 text-xs" onClick={() => { localStorage.setItem("cookie_ok", "1"); setCookieOk(true); }}>{t("footer.cookie_ok")}</button>
-        </div>
-      )}
-
       <nav className="home-bottom-nav glass fixed inset-x-0 bottom-0 z-40 rounded-none border-x-0 border-b-0" aria-label="Shortcuts">
         <div className="mx-auto grid max-w-lg" style={{ gridTemplateColumns: `repeat(${Math.max(1, (path === "/" ? bottom : bottom.filter(visible)).length)}, minmax(0, 1fr))` }}>
           {(path === "/" ? bottom : bottom.filter(visible)).map((b) => {

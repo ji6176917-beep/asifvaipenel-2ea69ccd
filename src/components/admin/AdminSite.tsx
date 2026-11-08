@@ -606,7 +606,6 @@ export function GeneralSettings() {
       {sw("api_global_enabled", "Allow API orders")}
       {sw("require_verified_email", "Require email verification before ordering")}
       {sw("require_screenshot", "Require payment screenshot")}
-      {sw("cookie_notice", "Cookie notice")}
       <div className="space-y-3 pt-3">
         <div><label className={labelCls}>Blocked email domains</label><textarea rows={2} className={inputCls} placeholder="mailinator.com, tempmail.com, 10minutemail.com" value={f.blocked_email_domains} onChange={(e) => setF({ ...f, blocked_email_domains: e.target.value })} /></div>
         <div><label className={labelCls}>SEO title</label><input className={inputCls} value={f.seo_title} placeholder={f.site_name} onChange={(e) => setF({ ...f, seo_title: e.target.value })} /></div>
