@@ -168,7 +168,6 @@ function Shell({ children }: { children: ReactNode }) {
   });
   const [menuOpen, setMenuOpen] = useState(false);
   const [bannerClosed, setBannerClosed] = useState(false);
-  const [cookieOk, setCookieOk] = useState(true);
   const navigate = useNavigate();
   const qc = useQueryClient();
   // Shell styling follows the committed page, not the still-loading destination.
