@@ -1,14 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Headset, MessageCircleQuestion } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import ReactMarkdown from "react-markdown";
 import { useI18n, pickLang } from "@/lib/i18n";
 import { useStorageUrl } from "@/lib/storage-url";
 import { platformsQuery, settingsQuery } from "@/lib/queries";
 import { homeConfig, type HomeSectionId } from "@/lib/site-config";
-import { PlatformIcon } from "@/lib/brand";
+import { PlatformIcon, WhatsAppIcon } from "@/lib/brand";
+import { whatsappUrl } from "@/lib/format";
 import { Skeleton } from "@/components/ui/skeleton";
 import { HomeShowcase } from "@/components/HomeShowcase";
 import { LiveStats } from "@/components/LiveStats";
@@ -65,6 +66,7 @@ function Home() {
   });
   const { data: platforms, isLoading } = useQuery(platformsQuery);
   const { data: settings } = useQuery(settingsQuery);
+  const waSupport = whatsappUrl(settings?.whatsapp);
   const cfg = homeConfig(settings?.home_config, (platforms ?? []).map((p) => p.slug));
   const shown = cfg.platforms.filter((c) => c.on).flatMap((c) => {
     const p = platforms?.find((p) => p.slug === c.slug);
@@ -98,18 +100,45 @@ function Home() {
     qna: homeQna.length ? (
       <section className="home-qna mx-auto max-w-2xl lg:grid lg:max-w-6xl lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:items-start lg:gap-10">
         <div className="lg:sticky lg:top-24">
-          <h2 className="label-premium mb-4 text-center text-2xl lg:text-start lg:text-3xl">{t("home.qna_title")}</h2>
+          <p className="mb-3 text-center lg:text-start">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-primary">
+              <MessageCircleQuestion className="h-3.5 w-3.5" /> {tr("FAQ & Help")}
+            </span>
+          </p>
+          <h2 className="label-premium mb-3 text-center text-2xl lg:text-start lg:text-3xl">{t("home.qna_title")}</h2>
+          <p className="mb-6 text-center text-sm text-muted-foreground lg:text-start">{tr("Quick answers to the most common questions about our services, payments and delivery.")}</p>
+          <div className="glass rounded-2xl p-5 text-center lg:text-start">
+            <span className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-primary/10 text-primary lg:mx-0">
+              <Headset className="h-5 w-5" />
+            </span>
+            <p className="label-premium text-sm">{tr("Didn't find your answer?")}</p>
+            <p className="mb-4 mt-1 text-xs text-muted-foreground">{tr("Our support team is here for you 24/7.")}</p>
+            {waSupport ? (
+              <Button asChild className="w-full gap-2">
+                <a href={waSupport} target="_blank" rel="noreferrer"><WhatsAppIcon className="h-4 w-4" /> {tr("Chat with Support")}</a>
+              </Button>
+            ) : (
+              <Button asChild variant="outline" className="w-full gap-2">
+                <Link to="/qna">{tr("Contact Support")}</Link>
+              </Button>
+            )}
+          </div>
         </div>
-        <div className="space-y-2">
+        <div className="mt-6 space-y-2 lg:mt-0">
           {homeQna.map((q) => {
             const isOpen = openQ === q.id;
             return (
               <div key={q.id} className="glass rounded-2xl">
                 <Button variant="ghost" aria-expanded={isOpen} onClick={() => setOpenQ(isOpen ? null : q.id)} className="h-auto w-full justify-between gap-3 whitespace-normal p-4 text-start">
-                  <span className="label-premium">{pickLang(q.question, lang)}</span>
+                  <span className="flex items-center gap-3">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                      <MessageCircleQuestion className="h-4 w-4" />
+                    </span>
+                    <span className="label-premium">{pickLang(q.question, lang)}</span>
+                  </span>
                   <ChevronDown className={`h-5 w-5 shrink-0 text-primary transition ${isOpen ? "rotate-180" : ""}`} />
                 </Button>
-                {isOpen && <div className="md-content px-4 pb-4 text-sm text-muted-foreground"><ReactMarkdown>{pickLang(q.answer, lang)}</ReactMarkdown></div>}
+                {isOpen && <div className="md-content px-4 pb-4 ps-[3.75rem] text-sm text-muted-foreground"><ReactMarkdown>{pickLang(q.answer, lang)}</ReactMarkdown></div>}
               </div>
             );
           })}
