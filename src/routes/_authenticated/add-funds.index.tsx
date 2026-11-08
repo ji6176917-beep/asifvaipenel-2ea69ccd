@@ -151,9 +151,9 @@ function AddFunds() {
 
       <div className="funds-method-grid">
           {groups.map((g) => (
-            <Button variant="ghost" key={g} onClick={() => pickGroup(g)} aria-label={g === "p2p" ? "P2P" : g === "usdt" ? "USDT" : "Binance Pay"} aria-pressed={group === g} className={`funds-method funds-method--${g}`}>
+            <Button variant="ghost" key={g} onClick={() => pickGroup(g)} aria-label={g === "p2p" ? tr("BDT P2P") : g === "usdt" ? "USDT" : "Binance Pay"} aria-pressed={group === g} className={`funds-method funds-method--${g}`}>
               {g === "p2p" ? (
-                <><strong className="funds-p2p-title">P2P</strong><div className="funds-local-logos">{p2p.slice(0, 3).map((x) => <div key={x.id}><DepositMethodLogo name={x.name} kind="p2p" logo={x.logo_url} className="funds-local-logo" /></div>)}</div></>
+                <><strong className="funds-p2p-title">{tr("BDT P2P")}</strong><div className="funds-local-logos">{p2p.slice(0, 3).map((x) => <div key={x.id}><DepositMethodLogo name={x.name} kind="p2p" logo={x.logo_url} className="funds-local-logo" /></div>)}</div></>
               ) : <><span className={`funds-crypto-logo funds-crypto-logo--${g}`}>{g === "binance" ? <SiBinance aria-hidden /> : <SiTether aria-hidden />}</span><div className="funds-method-copy"><strong>{g === "usdt" ? "USDT" : tr("Binance Pay")}</strong><span>{g === "usdt" ? tr("Crypto Wallet Transfer") : tr("Instant & Secure")}</span></div></>}
               <span className="funds-method-arrow"><ArrowRight aria-hidden /></span>
             </Button>
