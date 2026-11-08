@@ -592,7 +592,7 @@
 .funds-section-heading svg { width: 26px; height: 26px; }
 .funds-section-heading h2 { font-size: 22px; font-weight: 800; font-family: var(--font-sans); letter-spacing: 0; }
 .funds-section-heading p { font-size: 13px; color: var(--funds-muted); margin-top: 2px; }
-.funds-method-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 16px; }
+.funds-method-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; }
 .funds-method { position: relative; display: flex; justify-content: flex-start; align-items: center; gap: 16px; width: 100%; height: 140px; min-width: 0; padding: 20px; border: 1px solid var(--border); border-radius: 8px; text-align: left; white-space: normal; color: var(--funds-ink); box-shadow: var(--funds-shadow); overflow: hidden; transition: transform .18s ease, box-shadow .18s ease; background: linear-gradient(130deg,var(--funds-white) 25%,var(--funds-mint-surface)); }
 .funds-method::after { content: ''; position: absolute; width: 120px; height: 220px; right: -55px; bottom: -115px; transform: rotate(40deg); background: color-mix(in oklch,var(--funds-green) 5%,transparent); pointer-events: none; }
 .funds-method--usdt { background: linear-gradient(130deg,var(--funds-white) 25%,var(--funds-blue-surface)); }
