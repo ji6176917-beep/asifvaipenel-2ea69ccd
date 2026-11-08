@@ -648,7 +648,7 @@
   .funds-local-chip { width: 32px; height: 26px; padding: 2px 3px; border-radius: 5px; }
   .funds-method-grid > :nth-child(odd):last-child { grid-column: 1 / -1; flex-direction: row; align-items: center; justify-content: flex-start; gap: 12px; min-height: 72px; }
   .funds-method-grid > :nth-child(odd):last-child .funds-method-copy { flex: 1; min-width: 0; }
-  .funds-method-grid > :nth-child(odd):last-child .funds-local-logos { width: auto; }
+  .funds-method-grid > :nth-child(odd):last-child .funds-local-logos { width: 100%; justify-content: space-between; }
   .funds-social-banner { aspect-ratio: 2.9; object-position: 44% center; }
   .funds-form-section { padding: 18px 0; }
 }
