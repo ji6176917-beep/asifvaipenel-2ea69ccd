@@ -3,7 +3,7 @@ import { useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { submitCustomerDeposit } from "@/lib/customer-activity.functions";
-import { ArrowLeft, ArrowRight, Clock, ImagePlus, ShieldCheck, Wallet } from "lucide-react";
+import { ArrowLeft, ArrowRight, Clock, Globe, ImagePlus, ShieldCheck, Wallet } from "lucide-react";
 import { SiBinance, SiTether } from "react-icons/si";
 import { Button } from "@/components/ui/button";
 import fundsHeader from "@/assets/funds-header.jpg";
@@ -12,9 +12,9 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { settingsQuery } from "@/lib/queries";
-import { MethodLogo, TelegramIcon } from "@/lib/brand";
+import { MethodLogo, TelegramIcon, WhatsAppIcon } from "@/lib/brand";
 import { SupportAdminButton } from "@/components/SupportAdmin";
-import { friendlyError, money, newIdemKey } from "@/lib/format";
+import { friendlyError, money, newIdemKey, whatsappUrl } from "@/lib/format";
 import { Copyable, Empty, ErrorState, Spinner, inputCls, labelCls } from "@/components/ui-kit";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
@@ -79,6 +79,9 @@ function AddFunds() {
   });
   const [group, setGroup] = useState<"binance" | "usdt" | "p2p" | null>(null);
   const [m, setM] = useState<PM | null>(null);
+  const [othersOpen, setOthersOpen] = useState(false);
+  const waBase = whatsappUrl(s?.whatsapp);
+  const waOthers = waBase ? `${waBase}?text=${encodeURIComponent("Hello Admin, I want to add funds using other payment methods. Please help me.")}` : null;
   const [amount, setAmount] = useState("");
   const [txn, setTxn] = useState("");
   const [file, setFile] = useState<File | null>(null);
@@ -158,7 +161,25 @@ function AddFunds() {
               <span className="funds-method-arrow"><ArrowRight aria-hidden /></span>
             </Button>
           ))}
+          {groups.length > 0 && (
+            <Button variant="ghost" onClick={() => setOthersOpen(true)} aria-label={tr("Other Payments")} className="funds-method funds-method--others">
+              <span className="funds-crypto-logo funds-crypto-logo--others"><Globe aria-hidden /></span><div className="funds-method-copy"><strong>{tr("Other Payments")}</strong></div>
+              <span className="funds-method-arrow"><ArrowRight aria-hidden /></span>
+            </Button>
+          )}
       </div>
+      <Dialog open={othersOpen} onOpenChange={setOthersOpen}>
+        <DialogContent className="max-w-sm rounded-2xl p-6 text-center">
+          <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-primary/10 text-primary"><Globe className="h-9 w-9" aria-hidden /></div>
+          <DialogTitle className="text-xl font-extrabold">{tr("Other Payments")}</DialogTitle>
+          <p className="text-sm leading-relaxed text-muted-foreground">{tr("You can add funds using any local payment method from any country in the world. Just contact our admin — it's 100% safe and reliable.")}</p>
+          {waOthers ? (
+            <a href={waOthers} target="_blank" rel="noreferrer" className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-full bg-success px-5 py-3 font-bold text-primary-foreground shadow-glow transition hover:opacity-90">
+              <WhatsAppIcon className="h-5 w-5" /> {tr("Connect Admin on WhatsApp")}
+            </a>
+          ) : <p className="text-xs text-muted-foreground">{tr("WhatsApp support is not available right now.")}</p>}
+        </DialogContent>
+      </Dialog>
       </>}
 
       {group && (
