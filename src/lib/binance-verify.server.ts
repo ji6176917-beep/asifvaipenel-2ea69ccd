@@ -36,7 +36,7 @@ async function findPay(txn: string): Promise<Match> {
 }
 
 /** Returns the outcome; never throws. Only touches deposits of kind binance/usdt that are still pending. */
-export async function autoVerifyDeposit(code: string): Promise<"approved" | "rejected" | "pending"> {
+export async function autoVerifyDeposit(code: string, opts: { quick?: boolean } = {}): Promise<"approved" | "rejected" | "pending"> {
   const { supabaseAdmin: db } = await import("@/integrations/supabase/client.server");
   const { data: dep } = await db.from("deposits").select("id, status, amount, txn_id, method_kind").eq("code", code).maybeSingle();
   if (!dep || dep.status !== "pending" || !["binance", "usdt"].includes(String(dep.method_kind))) return "pending";
@@ -49,12 +49,15 @@ export async function autoVerifyDeposit(code: string): Promise<"approved" | "rej
       return "rejected";
     }
     let m: Match = { found: false, amount: 0 };
-    for (let i = 0; i < 2 && !m.found; i++) {
+    // Binance can take a few seconds to list a fresh payment; the minute-by-minute
+    // background check (/api/public/deposit-auto-verify) catches anything slower.
+    const attempts = opts.quick ? 1 : 4;
+    for (let i = 0; i < attempts && !m.found; i++) {
+      if (i > 0) await new Promise((r) => setTimeout(r, 3000));
       m = dep.method_kind === "usdt" ? await findOnChain(dep.txn_id) : await findPay(dep.txn_id);
       if (!m.found && dep.method_kind === "binance") m = await findOnChain(dep.txn_id).catch(() => m);
-      if (!m.found && i === 0) await new Promise((r) => setTimeout(r, 2500));
     }
-    if (!m.found) return "pending"; // not yet visible (e.g. waiting for confirmations) — admin/next check decides
+    if (!m.found) return "pending"; // not yet visible — the background check retries every minute
     if (m.amount + 0.01 < Number(dep.amount)) {
       await db.rpc("admin_review_deposit", { _deposit_id: dep.id, _action: "reject", _note: `Auto: received ${m.amount} USDT, less than claimed ${dep.amount}` });
       return "rejected";
