@@ -29,6 +29,7 @@ import { Route as PSlugRouteImport } from './routes/p/$slug'
 import { Route as AuthenticatedAddFundsIndexRouteImport } from './routes/_authenticated/add-funds.index'
 import { Route as AuthenticatedAddFundsHistoryRouteImport } from './routes/_authenticated/add-funds.history'
 import { Route as AuthenticatedServicePlatformRouteImport } from './routes/_authenticated/service.$platform'
+import { Route as ApiPublicDepositAutoVerifyRouteImport } from './routes/api/public/deposit-auto-verify'
 import { Route as ApiPublicOrderStatusSyncRouteImport } from './routes/api/public/order-status-sync'
 import { Route as ApiPublicPaymentlyWebhookRouteImport } from './routes/api/public/paymently-webhook'
 import { Route as ApiPublicProviderCatalogSyncRouteImport } from './routes/api/public/provider-catalog-sync'
@@ -140,6 +141,12 @@ const AuthenticatedServicePlatformRoute =
     path: '/service/$platform',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiPublicDepositAutoVerifyRoute =
+  ApiPublicDepositAutoVerifyRouteImport.update({
+    id: '/api/public/deposit-auto-verify',
+    path: '/api/public/deposit-auto-verify',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicOrderStatusSyncRoute =
   ApiPublicOrderStatusSyncRouteImport.update({
     id: '/api/public/order-status-sync',
@@ -199,6 +206,7 @@ export interface FileRoutesByFullPath {
   '/p/$slug': typeof PSlugRoute
   '/add-funds/history': typeof AuthenticatedAddFundsHistoryRoute
   '/service/$platform': typeof AuthenticatedServicePlatformRoute
+  '/api/public/deposit-auto-verify': typeof ApiPublicDepositAutoVerifyRoute
   '/api/public/order-status-sync': typeof ApiPublicOrderStatusSyncRoute
   '/api/public/paymently-webhook': typeof ApiPublicPaymentlyWebhookRoute
   '/api/public/provider-catalog-sync': typeof ApiPublicProviderCatalogSyncRoute
@@ -227,6 +235,7 @@ export interface FileRoutesByTo {
   '/p/$slug': typeof PSlugRoute
   '/add-funds/history': typeof AuthenticatedAddFundsHistoryRoute
   '/service/$platform': typeof AuthenticatedServicePlatformRoute
+  '/api/public/deposit-auto-verify': typeof ApiPublicDepositAutoVerifyRoute
   '/api/public/order-status-sync': typeof ApiPublicOrderStatusSyncRoute
   '/api/public/paymently-webhook': typeof ApiPublicPaymentlyWebhookRoute
   '/api/public/provider-catalog-sync': typeof ApiPublicProviderCatalogSyncRoute
@@ -257,6 +266,7 @@ export interface FileRoutesById {
   '/p/$slug': typeof PSlugRoute
   '/_authenticated/add-funds/history': typeof AuthenticatedAddFundsHistoryRoute
   '/_authenticated/service/$platform': typeof AuthenticatedServicePlatformRoute
+  '/api/public/deposit-auto-verify': typeof ApiPublicDepositAutoVerifyRoute
   '/api/public/order-status-sync': typeof ApiPublicOrderStatusSyncRoute
   '/api/public/paymently-webhook': typeof ApiPublicPaymentlyWebhookRoute
   '/api/public/provider-catalog-sync': typeof ApiPublicProviderCatalogSyncRoute
@@ -287,6 +297,7 @@ export interface FileRouteTypes {
     | '/p/$slug'
     | '/add-funds/history'
     | '/service/$platform'
+    | '/api/public/deposit-auto-verify'
     | '/api/public/order-status-sync'
     | '/api/public/paymently-webhook'
     | '/api/public/provider-catalog-sync'
@@ -315,6 +326,7 @@ export interface FileRouteTypes {
     | '/p/$slug'
     | '/add-funds/history'
     | '/service/$platform'
+    | '/api/public/deposit-auto-verify'
     | '/api/public/order-status-sync'
     | '/api/public/paymently-webhook'
     | '/api/public/provider-catalog-sync'
@@ -344,6 +356,7 @@ export interface FileRouteTypes {
     | '/p/$slug'
     | '/_authenticated/add-funds/history'
     | '/_authenticated/service/$platform'
+    | '/api/public/deposit-auto-verify'
     | '/api/public/order-status-sync'
     | '/api/public/paymently-webhook'
     | '/api/public/provider-catalog-sync'
@@ -367,6 +380,7 @@ export interface RootRouteChildren {
   SignInRoute: typeof SignInRoute
   SignUpRoute: typeof SignUpRoute
   PSlugRoute: typeof PSlugRoute
+  ApiPublicDepositAutoVerifyRoute: typeof ApiPublicDepositAutoVerifyRoute
   ApiPublicOrderStatusSyncRoute: typeof ApiPublicOrderStatusSyncRoute
   ApiPublicPaymentlyWebhookRoute: typeof ApiPublicPaymentlyWebhookRoute
   ApiPublicProviderCatalogSyncRoute: typeof ApiPublicProviderCatalogSyncRoute
@@ -518,6 +532,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedServicePlatformRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/deposit-auto-verify': {
+      id: '/api/public/deposit-auto-verify'
+      path: '/api/public/deposit-auto-verify'
+      fullPath: '/api/public/deposit-auto-verify'
+      preLoaderRoute: typeof ApiPublicDepositAutoVerifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/order-status-sync': {
       id: '/api/public/order-status-sync'
       path: '/api/public/order-status-sync'
@@ -608,6 +629,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignInRoute: SignInRoute,
   SignUpRoute: SignUpRoute,
   PSlugRoute: PSlugRoute,
+  ApiPublicDepositAutoVerifyRoute: ApiPublicDepositAutoVerifyRoute,
   ApiPublicOrderStatusSyncRoute: ApiPublicOrderStatusSyncRoute,
   ApiPublicPaymentlyWebhookRoute: ApiPublicPaymentlyWebhookRoute,
   ApiPublicProviderCatalogSyncRoute: ApiPublicProviderCatalogSyncRoute,
