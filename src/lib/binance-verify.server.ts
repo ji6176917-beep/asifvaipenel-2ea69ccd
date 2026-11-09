@@ -19,19 +19,19 @@ const norm = (s: unknown) => String(s ?? "").trim().toLowerCase();
 async function findOnChain(txn: string): Promise<Match> {
   const rows = (await signedGet("/sapi/v1/capital/deposit/hisrec", { coin: "USDT", limit: "1000" })) as Array<Record<string, unknown>>;
   const t = norm(txn);
-  const hit = rows.find((r) => norm(r.txId) === t || norm(r.txId).replace(/^0x/, "") === t.replace(/^0x/, ""));
+  const hit = rows.find((r) => norm(r["txId"]) === t || norm(r["txId"]).replace(/^0x/, "") === t.replace(/^0x/, ""));
   // status 1 = success, 6 = credited but not yet withdrawable
-  if (!hit || ![1, 6].includes(Number(hit.status))) return { found: false, amount: 0 };
-  return { found: true, amount: Number(hit.amount) };
+  if (!hit || ![1, 6].includes(Number(hit["status"]))) return { found: false, amount: 0 };
+  return { found: true, amount: Number(hit["amount"]) };
 }
 
 async function findPay(txn: string): Promise<Match> {
   const r = (await signedGet("/sapi/v1/pay/transactions", { limit: "100" })) as { data?: Array<Record<string, unknown>> };
   const t = norm(txn);
-  const hit = (r.data ?? []).find((x) => norm(x.orderId) === t || norm(x.transactionId) === t);
+  const hit = (r.data ?? []).find((x) => norm(x["orderId"]) === t || norm(x["transactionId"]) === t);
   if (!hit) return { found: false, amount: 0 };
-  const amt = Number(hit.amount);
-  if (!(amt > 0) || !["usdt", "usdc", "fdusd"].includes(norm(hit.currency))) return { found: false, amount: 0 };
+  const amt = Number(hit["amount"]);
+  if (!(amt > 0) || !["usdt", "usdc", "fdusd"].includes(norm(hit["currency"]))) return { found: false, amount: 0 };
   return { found: true, amount: amt };
 }
 
