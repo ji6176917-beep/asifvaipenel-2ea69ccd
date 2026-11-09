@@ -274,7 +274,7 @@ function Shell({ children }: { children: ReactNode }) {
       </main>
 
       {path !== "/order" && !(path === "/" && home.sections.find((x) => x.id === "footer")?.on === false) && (() => {
-        const full = path === "/";
+        const full = true; // same full footer on every page
         const contacts = fc.info ? footInfo.filter(visible).map((m) => {
           const txt = m.target_type === "whatsapp" ? tr("WhatsApp Support")
             : m.target_type === "telegram" ? tr("Telegram Support")
