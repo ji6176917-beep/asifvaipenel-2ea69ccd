@@ -76,9 +76,16 @@ function Badge({ name, kind, className }: { name: string; kind: string; classNam
   );
 }
 
+// Bundled CDN copies of current uploaded method logos so they paint instantly; a newly uploaded logo (new path) falls back to the signed URL.
+const cachedLogoFiles = import.meta.glob<{ url: string }>("../assets/payments/cached/*.asset.json", { eager: true, import: "default" });
+const CACHED_METHOD_LOGOS: Record<string, string> = Object.fromEntries(
+  Object.entries(cachedLogoFiles).map(([p, a]) => [`methods/${p.split("/").pop()!.replace(".webp.asset.json", ".jpeg")}`, a.url]),
+);
+
 /** Payment method logo: uploaded image (square, contain, white tile) → brand icon → coloured name badge. */
 export function MethodLogo({ name, kind, logo, officialLogo, className = "h-10 w-10" }: { name: string; kind: string; logo?: string | null | undefined; officialLogo?: string | undefined; className?: string }) {
-  const url = useStorageUrl("logos", logo);
+  const cached = logo ? CACHED_METHOD_LOGOS[logo] : undefined;
+  const url = useStorageUrl("logos", cached ? null : logo) ?? cached;
   const [failed, setFailed] = useState(false);
   if (officialLogo) {
     return <img src={officialLogo} alt={`${name} logo`} className={`${className} shrink-0 object-contain`} />;
