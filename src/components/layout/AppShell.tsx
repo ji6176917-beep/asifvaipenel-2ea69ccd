@@ -303,19 +303,19 @@ function Shell({ children }: { children: ReactNode }) {
           </div>
         </div>;
         return <footer className="mt-16 border-t border-border bg-card sm:mt-20 -mb-[calc(4rem+env(safe-area-inset-bottom,0px))] pb-[calc(4rem+env(safe-area-inset-bottom,0px))]">
-          {full ? <div className="mx-auto max-w-5xl px-4 pt-10 pb-1 sm:pb-10">
-            <div className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-[1.4fr_1fr_1.2fr]">
+          {full ? <div className="mx-auto max-w-5xl px-4 pt-8 pb-1 sm:pt-10 sm:pb-10">
+            <div className="grid grid-cols-2 gap-x-6 gap-y-6 sm:gap-y-8 sm:grid-cols-[1.4fr_1fr_1.2fr]">
               <div className="col-span-2 space-y-3 sm:col-span-1">{brand}<p className="max-w-xs text-sm text-muted-foreground">{tr("Fast, reliable social media growth services trusted worldwide.")}</p>
                 <div className="hidden sm:block">{socials}</div>
               </div>
               <div><h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("footer.quick_links")}</h3><div className="flex flex-col gap-1.5 text-sm text-foreground/80 sm:gap-2">{links}</div></div>
-              <div className="space-y-5">
+              <div className="space-y-4 sm:space-y-5">
                 <div className="sm:hidden">{socials}</div>
                 <div><h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{tr("Support")}</h3><div className="flex flex-wrap gap-2">{contacts}</div>
                   {fc.hours && settings?.support_hours && <p className="mt-3 text-xs text-muted-foreground">{t("footer.hours", "Support hours")}: {settings.support_hours}</p>}</div>
               </div>
             </div>
-            {copy && <p className="mt-4 border-t border-border pt-4 text-center sm:mt-8 sm:pt-5 text-xs text-muted-foreground">{copy}</p>}
+            {copy && <p className="mt-2 border-t border-border pt-3 text-center sm:mt-8 sm:pt-5 text-xs text-muted-foreground">{copy}</p>}
           </div> : <div className="mx-auto flex max-w-5xl flex-col items-center gap-3 px-4 py-5 text-center sm:flex-row sm:justify-between sm:text-left">
             {brand}
             <div className="flex flex-wrap justify-center gap-x-4 gap-y-1.5 text-xs text-muted-foreground">{links}</div>
