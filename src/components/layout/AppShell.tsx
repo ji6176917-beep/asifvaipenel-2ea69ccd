@@ -308,11 +308,7 @@ function Shell({ children }: { children: ReactNode }) {
               <div className="col-span-2 space-y-3 sm:col-span-1">{brand}<p className="max-w-xs text-sm text-muted-foreground">{tr("Fast, reliable social media growth services trusted worldwide.")}</p>
                 <div className="hidden sm:block">{socials}</div>
               </div>
-              <div><h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("footer.quick_links")}</h3><div className="flex flex-col gap-1.5 text-sm text-foreground/80 sm:gap-2">{links}</div>
-                <button type="button" onClick={() => setLangOpen(true)} className="mt-3 inline-flex items-center gap-2 rounded-full border border-border bg-card px-3.5 py-2 text-xs font-semibold text-foreground transition-colors hover:border-primary hover:text-primary sm:hidden">
-                  <Languages className="h-4 w-4 shrink-0 text-primary" /><span>{tr("Language")}</span>
-                </button>
-              </div>
+              <div><h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("footer.quick_links")}</h3><div className="flex flex-col gap-1.5 text-sm text-foreground/80 gap-y-[8.9px] sm:gap-2">{links}</div></div>
               <div className="space-y-4 sm:space-y-5">
                 <div className="sm:hidden">{socials}</div>
                 <div><h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{tr("Support")}</h3><div className="flex flex-wrap gap-2">{contacts}</div>
