@@ -281,6 +281,13 @@
       "when": 1792605483060,
       "tag": "0039_manual_control_orders_stay_manual",
       "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1794193225516,
+      "tag": "0040_add_refund_policy_footer_link",
+      "breakpoints": true
     }
   ]
 }
