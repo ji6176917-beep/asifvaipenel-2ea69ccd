@@ -287,29 +287,33 @@ function Shell({ children }: { children: ReactNode }) {
         </>;
         const copy = fc.copyright ? (settings?.footer_copyright || `© ${new Date().getFullYear()} ${siteName}. ${t("footer.rights")}`) : null;
         const brand = <div className="flex items-center gap-2.5"><img src={siteLogo.url} alt={siteName} width={32} height={32} className="h-8 w-auto object-contain" /><span className="text-base font-bold text-foreground">{siteName}</span></div>;
+        const socials = <div>
+          <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{tr("Follow Us")}</h3>
+          <div className="flex items-center gap-2">
+            {([
+              { slug: "facebook", label: "Facebook", url: "https://www.facebook.com/share/1NLNd912Fg/" },
+              { slug: "youtube", label: "YouTube", url: "https://youtube.com/@apexsmmworld" },
+              { slug: "tiktok", label: "TikTok", url: "https://tiktok.com/@apexsmmworld" },
+            ]).map((s) => (
+              <a key={s.slug} href={s.url} target="_blank" rel="noreferrer" aria-label={s.label} title={s.label}
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background transition-all hover:-translate-y-0.5 hover:border-primary hover:shadow-md">
+                <PlatformIcon slug={s.slug} name={s.label} className="h-4.5 w-4.5" />
+              </a>
+            ))}
+          </div>
+        </div>;
         return <footer className="mt-16 border-t border-border bg-card sm:mt-20">
           {full ? <div className="mx-auto max-w-5xl px-4 py-10">
-            <div className="grid gap-8 sm:grid-cols-[1.4fr_1fr_1.2fr]">
-              <div className="space-y-3">{brand}<p className="max-w-xs text-sm text-muted-foreground">{tr("Fast, reliable social media growth services trusted worldwide.")}</p>
-                <div>
-                  <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{tr("Follow Us")}</h3>
-                  <div className="flex items-center gap-2">
-                    {([
-                      { slug: "facebook", label: "Facebook", url: "https://www.facebook.com/share/1NLNd912Fg/" },
-                      { slug: "youtube", label: "YouTube", url: "https://youtube.com/@apexsmmworld" },
-                      { slug: "tiktok", label: "TikTok", url: "https://tiktok.com/@apexsmmworld" },
-                    ]).map((s) => (
-                      <a key={s.slug} href={s.url} target="_blank" rel="noreferrer" aria-label={s.label} title={s.label}
-                        className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background transition-all hover:-translate-y-0.5 hover:border-primary hover:shadow-md">
-                        <PlatformIcon slug={s.slug} name={s.label} className="h-4.5 w-4.5" />
-                      </a>
-                    ))}
-                  </div>
-                </div>
+            <div className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-[1.4fr_1fr_1.2fr]">
+              <div className="col-span-2 space-y-3 sm:col-span-1">{brand}<p className="max-w-xs text-sm text-muted-foreground">{tr("Fast, reliable social media growth services trusted worldwide.")}</p>
+                <div className="hidden sm:block">{socials}</div>
               </div>
               <div><h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("footer.quick_links")}</h3><div className="flex flex-col gap-2 text-sm text-foreground/80">{links}</div></div>
-              <div><h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{tr("Support")}</h3><div className="flex flex-wrap gap-2">{contacts}</div>
-                {fc.hours && settings?.support_hours && <p className="mt-3 text-xs text-muted-foreground">{t("footer.hours", "Support hours")}: {settings.support_hours}</p>}</div>
+              <div className="space-y-5">
+                <div className="sm:hidden">{socials}</div>
+                <div><h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{tr("Support")}</h3><div className="flex flex-wrap gap-2">{contacts}</div>
+                  {fc.hours && settings?.support_hours && <p className="mt-3 text-xs text-muted-foreground">{t("footer.hours", "Support hours")}: {settings.support_hours}</p>}</div>
+              </div>
             </div>
             {copy && <p className="mt-8 border-t border-border pt-5 text-center text-xs text-muted-foreground">{copy}</p>}
           </div> : <div className="mx-auto flex max-w-5xl flex-col items-center gap-3 px-4 py-5 text-center sm:flex-row sm:justify-between sm:text-left">
