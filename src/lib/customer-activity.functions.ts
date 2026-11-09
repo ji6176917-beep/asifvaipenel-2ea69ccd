@@ -25,5 +25,7 @@ export const submitCustomerDeposit = createServerFn({ method: 'POST' })
     const deposit = z.object({ code: z.string() }).parse(result)
     const { sendAdminActivityAlert } = await import('./admin-alerts.server')
     await sendAdminActivityAlert('deposit', deposit.code, context.userId)
-    return { result: deposit, error: null }
+    const { autoVerifyDeposit } = await import('./binance-verify.server')
+    const autoStatus = await autoVerifyDeposit(deposit.code)
+    return { result: { ...deposit, autoStatus }, error: null }
   })
