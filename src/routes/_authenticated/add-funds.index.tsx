@@ -171,6 +171,7 @@ function AddFunds() {
     const auto = (data as { autoStatus?: string }).autoStatus;
     if (auto === "approved") toast.success(tr("Payment verified — balance added instantly"));
     else if (auto === "rejected") toast.error(tr("Payment could not be verified — request rejected"));
+    else if (auto === "pending") toast.info(tr("Verifying your payment — balance will be added automatically within a few minutes"));
     setDone((data as { code: string }).code);
   };
 
