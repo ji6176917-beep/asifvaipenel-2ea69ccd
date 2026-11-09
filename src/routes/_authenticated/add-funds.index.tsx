@@ -135,7 +135,7 @@ function AddFunds() {
   const pickGroup = (g: "binance" | "usdt" | "p2p") => {
     setGroup(g);
     const list = methods?.filter((x) => x.kind === g) ?? [];
-    setM(list.length === 1 ? list[0] ?? null : null);
+    setM(g === "p2p" || list.length === 1 ? list[0] ?? null : null);
     window.scrollTo({ top: 0, behavior: "instant" });
   };
 
