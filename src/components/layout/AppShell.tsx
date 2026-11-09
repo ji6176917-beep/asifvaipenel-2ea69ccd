@@ -287,35 +287,36 @@ function Shell({ children }: { children: ReactNode }) {
         </>;
         const copy = fc.copyright ? (settings?.footer_copyright || `© ${new Date().getFullYear()} ${siteName}. ${t("footer.rights")}`) : null;
         const brand = <div className="flex items-center gap-2.5"><img src={siteLogo.url} alt={siteName} width={32} height={32} className="h-8 w-auto object-contain" /><span className="text-base font-bold text-foreground">{siteName}</span></div>;
-        const socials = <div>
+        const socials = (wide = false) => <div>
           <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{tr("Follow Us")}</h3>
-          <div className="flex items-center gap-2">
+          <div className={wide ? "flex flex-col gap-2" : "flex items-center gap-2"}>
             {([
               { slug: "facebook", label: "Facebook", url: (settings?.social_facebook as string | undefined) ?? "https://www.facebook.com/share/1NLNd912Fg/" },
               { slug: "youtube", label: "YouTube", url: (settings?.social_youtube as string | undefined) ?? "https://youtube.com/@apexsmmworld" },
               { slug: "tiktok", label: "TikTok", url: (settings?.social_tiktok as string | undefined) ?? "https://tiktok.com/@apexsmmworld" },
             ]).filter((s) => s.url).map((s) => (
               <a key={s.slug} href={s.url} target="_blank" rel="noreferrer" aria-label={s.label} title={s.label}
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background transition-all hover:-translate-y-0.5 hover:border-primary hover:shadow-md">
-                <PlatformIcon slug={s.slug} name={s.label} className="h-4.5 w-4.5" />
+                className={wide ? "group flex w-fit items-center gap-2.5 text-sm text-foreground/80 transition-colors hover:text-primary" : "flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background transition-all hover:-translate-y-0.5 hover:border-primary hover:shadow-md"}>
+                {wide ? <span className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-background transition-all group-hover:border-primary"><PlatformIcon slug={s.slug} name={s.label} className="h-4 w-4" /></span> : <PlatformIcon slug={s.slug} name={s.label} className="h-4.5 w-4.5" />}
+                {wide && <span>{s.label}</span>}
               </a>
             ))}
           </div>
         </div>;
         return <footer className="mt-16 border-t border-border bg-card sm:mt-20 -mb-[calc(4rem+env(safe-area-inset-bottom,0px))] pb-[calc(4rem+env(safe-area-inset-bottom,0px))]">
-          {full ? <div className="mx-auto max-w-5xl px-4 pt-8 pb-1 sm:pt-10 sm:pb-10">
+          {full ? <div className="mx-auto max-w-5xl px-4 pt-8 pb-1 sm:pt-10 sm:pb-3">
             <div className="grid grid-cols-2 gap-x-6 gap-y-6 sm:gap-y-8 sm:grid-cols-[1.4fr_1fr_1.2fr]">
               <div className="col-span-2 space-y-3 sm:col-span-1">{brand}<p className="max-w-xs text-sm text-muted-foreground">{tr("Fast, reliable social media growth services trusted worldwide.")}</p>
-                <div className="hidden sm:block">{socials}</div>
+                <div className="hidden sm:block">{socials(true)}</div>
               </div>
               <div><h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("footer.quick_links")}</h3><div className="flex flex-col gap-1.5 text-sm text-foreground/80 gap-y-[8.9px] sm:gap-2">{links}</div></div>
               <div className="space-y-4 sm:space-y-5">
-                <div className="sm:hidden">{socials}</div>
-                <div><h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{tr("Support")}</h3><div className="flex flex-wrap gap-2">{contacts}</div>
+                <div className="sm:hidden">{socials()}</div>
+                <div><h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{tr("Support")}</h3><div className="flex flex-wrap gap-2 sm:flex-col sm:items-start sm:gap-2.5">{contacts}</div>
                   {fc.hours && settings?.support_hours && <p className="mt-3 text-xs text-muted-foreground">{t("footer.hours", "Support hours")}: {settings.support_hours}</p>}</div>
               </div>
             </div>
-            {copy && <p className="mt-2 border-t border-border pt-3 text-center sm:mt-8 sm:pt-5 text-xs text-muted-foreground">{copy}</p>}
+            {copy && <p className="mt-2 border-t border-border pt-3 text-center sm:mt-6 sm:pt-3 text-xs text-muted-foreground">{copy}</p>}
           </div> : <div className="mx-auto flex max-w-5xl flex-col items-center gap-3 px-4 py-5 text-center sm:flex-row sm:justify-between sm:text-left">
             {brand}
             <div className="flex flex-wrap justify-center gap-x-4 gap-y-1.5 text-xs text-muted-foreground">{links}</div>
