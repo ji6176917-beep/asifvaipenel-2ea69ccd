@@ -302,7 +302,7 @@ function Shell({ children }: { children: ReactNode }) {
             ))}
           </div>
         </div>;
-        return <footer className="mt-16 border-t border-border bg-card sm:mt-20">
+        return <footer className="mt-16 border-t border-border bg-card sm:mt-20 -mb-[calc(4rem+env(safe-area-inset-bottom,0px))] pb-[calc(4rem+env(safe-area-inset-bottom,0px))]">
           {full ? <div className="mx-auto max-w-5xl px-4 pt-10 pb-1 sm:pb-10">
             <div className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-[1.4fr_1fr_1.2fr]">
               <div className="col-span-2 space-y-3 sm:col-span-1">{brand}<p className="max-w-xs text-sm text-muted-foreground">{tr("Fast, reliable social media growth services trusted worldwide.")}</p>
