@@ -303,7 +303,7 @@ function Shell({ children }: { children: ReactNode }) {
           </div>
         </div>;
         return <footer className="mt-16 border-t border-border bg-card sm:mt-20">
-          {full ? <div className="mx-auto max-w-5xl px-4 py-10">
+          {full ? <div className="mx-auto max-w-5xl px-4 pt-10 pb-1 sm:pb-10">
             <div className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-[1.4fr_1fr_1.2fr]">
               <div className="col-span-2 space-y-3 sm:col-span-1">{brand}<p className="max-w-xs text-sm text-muted-foreground">{tr("Fast, reliable social media growth services trusted worldwide.")}</p>
                 <div className="hidden sm:block">{socials}</div>
@@ -315,7 +315,7 @@ function Shell({ children }: { children: ReactNode }) {
                   {fc.hours && settings?.support_hours && <p className="mt-3 text-xs text-muted-foreground">{t("footer.hours", "Support hours")}: {settings.support_hours}</p>}</div>
               </div>
             </div>
-            {copy && <p className="mt-8 border-t border-border pt-5 text-center text-xs text-muted-foreground">{copy}</p>}
+            {copy && <p className="mt-6 border-t border-border pt-4 text-center sm:mt-8 sm:pt-5 text-xs text-muted-foreground">{copy}</p>}
           </div> : <div className="mx-auto flex max-w-5xl flex-col items-center gap-3 px-4 py-5 text-center sm:flex-row sm:justify-between sm:text-left">
             {brand}
             <div className="flex flex-wrap justify-center gap-x-4 gap-y-1.5 text-xs text-muted-foreground">{links}</div>
