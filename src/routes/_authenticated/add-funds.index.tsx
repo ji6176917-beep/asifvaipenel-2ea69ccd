@@ -225,7 +225,7 @@ function AddFunds() {
         <section className="funds-form-section">
           <Button variant="ghost" onClick={() => { setGroup(null); setM(null); window.scrollTo({ top: 0, behavior: "instant" }); }} className="mb-4 gap-1 text-sm text-muted-foreground"><ArrowLeft className="h-4 w-4" /> {tr("Change method")}</Button>
 
-          {(methods?.filter((x) => x.kind === group).length ?? 0) > 1 && (
+          {group !== "p2p" && (methods?.filter((x) => x.kind === group).length ?? 0) > 1 && (
             <div className="mb-5 grid grid-cols-3 gap-2">
               {methods?.filter((x) => x.kind === group).map((x) => (
                 <Button variant="outline" key={x.id} onClick={() => setM(x)} aria-pressed={m?.id === x.id} className={`h-auto flex-col gap-1.5 rounded-lg border p-3 transition ${m?.id === x.id ? "border-primary bg-primary/10 shadow-glow" : "border-border"}`}>
@@ -237,7 +237,8 @@ function AddFunds() {
           )}
 
           {m && (
-            <form onSubmit={submit} className="space-y-4">
+            <form onSubmit={m.kind === "p2p" ? (e) => { e.preventDefault(); payAuto(); } : submit} className="space-y-4">
+              {m.kind !== "p2p" && <>
               <div className="flex items-center gap-3 rounded-2xl bg-muted/60 p-4">
                 <DepositMethodLogo name={m.name} kind={m.kind} logo={m.logo_url} className="h-12 w-12" />
                 <div className="min-w-0">
@@ -247,6 +248,7 @@ function AddFunds() {
                 </div>
               </div>
               {m.instructions && <p className="whitespace-pre-line rounded-2xl bg-muted/40 p-3 text-sm text-muted-foreground">{m.instructions}</p>}
+              </>}
               <div>
                 <label className={labelCls} htmlFor="amt">{tr("Amount (USD)")}</label>
                 <input id="amt" inputMode="decimal" className={inputCls} value={amount} onChange={(e) => setAmount(e.target.value.replace(/[^\d.]/g, ""))} />
@@ -254,25 +256,26 @@ function AddFunds() {
               </div>
               {m.kind === "p2p" && (
                 <div className="rounded-2xl border border-primary/40 bg-primary/5 p-4 text-center">
-                  <div className="text-xs text-muted-foreground">{tr("Send exactly (rate")} ৳{rate}/USD)</div>
+                  <div className="text-xs text-muted-foreground">{tr("You will pay (rate")} ৳{rate}/USD)</div>
                   <div className="text-gradient font-display text-4xl font-extrabold">৳{(Math.round(amt * rate * 100) / 100).toFixed(2)}</div>
-                  <p className="mt-1 text-xs text-muted-foreground">{tr("Send exactly this amount via Send Money, then enter the Transaction ID.")}</p>
-                </div>
+                                  </div>
               )}
-              {m.kind === "p2p" && (
+              {m.kind === "p2p" ? (
                 <>
-                  <Button type="button" onClick={payAuto} disabled={autoBusy || busy} className="btn-glow h-auto w-full gap-2 !py-4">
-                    {autoBusy ? <Spinner /> : <Zap className="h-4 w-4" aria-hidden />} {tr("Pay Now — Instant Auto Payment")}
+                  <Button type="submit" disabled={autoBusy} className="btn-glow h-auto w-full gap-2 !py-5 text-lg">
+                    {autoBusy ? <Spinner /> : <Zap className="h-5 w-5" aria-hidden />} {tr("Pay Now")}
                   </Button>
                   <p className="text-center text-xs text-muted-foreground">{tr("Pay securely with bKash, Nagad or Rocket — balance is added automatically.")}</p>
-                  <div className="flex items-center gap-3 text-xs text-muted-foreground"><span className="h-px flex-1 bg-border" />{tr("or pay manually")}<span className="h-px flex-1 bg-border" /></div>
+                </>
+              ) : (
+                <>
+                  <div>
+                    <label className={labelCls} htmlFor="txn">{tr("Transaction ID")}</label>
+                    <input id="txn" className={inputCls} value={txn} onChange={(e) => setTxn(e.target.value)} />
+                  </div>
+                  <Button type="submit" disabled={busy} className="btn-glow h-auto w-full !py-4">{busy && <Spinner />} {tr("Add Funds")}</Button>
                 </>
               )}
-              <div>
-                <label className={labelCls} htmlFor="txn">{tr("Transaction ID")}</label>
-                <input id="txn" className={inputCls} value={txn} onChange={(e) => setTxn(e.target.value)} />
-              </div>
-              <Button type="submit" disabled={busy} className="btn-glow h-auto w-full !py-4">{busy && <Spinner />} {m.kind === "p2p" ? tr("Confirm Add Funds") : tr("Add Funds")}</Button>
             </form>
           )}
         </section>
