@@ -31,7 +31,10 @@ const norm = (s: unknown) => String(s ?? "").trim().toLowerCase();
 async function findOnChain(txn: string): Promise<Match> {
   const rows = (await signedGet("/sapi/v1/capital/deposit/hisrec", { coin: "USDT", limit: "1000" })) as Array<Record<string, unknown>>;
   const t = norm(txn);
-  const hit = rows.find((r) => norm(r["txId"]) === t || norm(r["txId"]).replace(/^0x/, "") === t.replace(/^0x/, ""));
+  // Binance-to-Binance sends are listed as "Off-chain transfer <id>"; customers type only the id.
+  const clean = (s: unknown) => norm(s).replace(/^(off-chain|internal) transfer\s*/, "").replace(/^0x/, "");
+  const tc = clean(t);
+  const hit = rows.find((r) => clean(r["txId"]) === tc || norm(r["id"]) === t);
   // status 1 = success, 6 = credited but not yet withdrawable
   if (!hit || ![1, 6].includes(Number(hit["status"]))) return { found: false, amount: 0 };
   return { found: true, amount: Number(hit["amount"]) };
