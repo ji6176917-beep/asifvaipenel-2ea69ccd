@@ -87,6 +87,7 @@ function AddFunds() {
   const [file, setFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState<string | null>(null);
+  const [doneStatus, setDoneStatus] = useState<string>("pending");
   const idem = useRef(newIdemKey());
   const startAuto = useServerFn(startAutoPayment);
   const confirmAuto = useServerFn(confirmAutoPayment);
@@ -172,6 +173,8 @@ function AddFunds() {
     if (auto === "approved") toast.success(tr("Payment verified — balance added instantly"));
     else if (auto === "rejected") toast.error(tr("Payment could not be verified — request rejected"));
     else if (auto === "pending") toast.info(tr("Verifying your payment — balance will be added automatically within a few minutes"));
+    setDoneStatus(auto ?? "pending");
+    if (auto === "approved") void qc.invalidateQueries();
     setDone((data as { code: string }).code);
   };
 
@@ -285,10 +288,10 @@ function AddFunds() {
 
       <Dialog open={!!done} onOpenChange={(o) => !o && setDone(null)}>
         <DialogContent className="text-center">
-          <Clock className="mx-auto h-14 w-14 text-warning" />
-          <DialogTitle className="text-gradient text-2xl">{tr("Add Funds Submitted – Pending")}</DialogTitle>
+          {doneStatus === "approved" ? <CheckCircle2 className="mx-auto h-14 w-14 text-success" /> : doneStatus === "rejected" ? <XCircle className="mx-auto h-14 w-14 text-destructive" /> : <Clock className="mx-auto h-14 w-14 text-warning" />}
+          <DialogTitle className="text-gradient text-2xl">{doneStatus === "approved" ? tr("Payment Verified – Balance Added") : doneStatus === "rejected" ? tr("Payment Could Not Be Verified") : tr("Add Funds Submitted – Pending")}</DialogTitle>
           {done && <Copyable value={done} className="mx-auto text-lg font-bold" />}
-          <p className="text-sm text-muted-foreground">{tr("Your request is pending admin approval.")}</p>
+          <p className="text-sm text-muted-foreground">{doneStatus === "approved" ? tr("Your payment was verified automatically and the balance has been added to your account.") : doneStatus === "rejected" ? tr("We could not match this transaction. Please check the Transaction ID or contact support.") : tr("Your payment is being verified — balance will be added automatically within a few minutes.")}</p>
           <div className="mt-2 grid gap-2">
             <Link to="/" className="btn-glow">{tr("Go to Home")}</Link>
             {s?.telegram && <SupportAdminButton className="btn-ghost-glow"><TelegramIcon className="h-4 w-4" /> {tr("Support Admin")}</SupportAdminButton>}
