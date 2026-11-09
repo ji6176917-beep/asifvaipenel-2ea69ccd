@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useRef, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useRef, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { submitCustomerDeposit } from "@/lib/customer-activity.functions";
-import { ArrowLeft, ArrowRight, Clock, Globe, ShieldCheck, Wallet } from "lucide-react";
+import { confirmAutoPayment, startAutoPayment, submitCustomerDeposit } from "@/lib/customer-activity.functions";
+import { ArrowLeft, ArrowRight, Clock, Globe, ShieldCheck, Wallet, Zap } from "lucide-react";
 import { SiBinance, SiTether } from "react-icons/si";
 import { Button } from "@/components/ui/button";
 import fundsHeader from "@/assets/funds-header.jpg";
@@ -88,6 +88,41 @@ function AddFunds() {
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState<string | null>(null);
   const idem = useRef(newIdemKey());
+  const startAuto = useServerFn(startAutoPayment);
+  const confirmAuto = useServerFn(confirmAutoPayment);
+  const qc = useQueryClient();
+  const [autoBusy, setAutoBusy] = useState(false);
+
+  // Returning from the bKash/Nagad/Rocket gateway: confirm the invoice server-side.
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    const flag = q.get("paymently");
+    if (!flag) return;
+    const invoice = q.get("invoice_id");
+    window.history.replaceState(null, "", window.location.pathname);
+    if (flag === "cancel" || !invoice) { toast.error(tr("Payment was cancelled")); return; }
+    const id = toast.loading(tr("Verifying your payment..."));
+    void confirmAuto({ data: { invoiceId: invoice } }).then((r) => {
+      toast.dismiss(id);
+      if (r.status === "approved") { toast.success(tr("Payment verified — balance added instantly")); void qc.invalidateQueries(); }
+      else if (r.status === "pending") toast.message(tr("Payment is still processing. Your balance will update automatically."));
+      else toast.error(tr("Payment could not be verified"));
+    }).catch(() => { toast.dismiss(id); toast.error(friendlyError()); });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const payAuto = async () => {
+    if (!m) return;
+    if (!verified) { toast.error(tr("Please verify your email first.")); return; }
+    if (!(amt >= minA && amt <= maxA)) { toast.error(`${tr("Amount must be")} ${money(minA)}–${money(maxA)}`); return; }
+    setAutoBusy(true);
+    try {
+      const r = await startAuto({ data: { methodId: m.id, amount: amt, origin: window.location.origin } });
+      if (r.url) { window.location.href = r.url; return; }
+      toast.error(friendlyError(r.error ?? undefined));
+    } catch { toast.error(friendlyError()); }
+    setAutoBusy(false);
+  };
 
   const rate = Number(s?.bdt_rate ?? 130);
   const amt = Number(amount || 0);
@@ -222,6 +257,15 @@ function AddFunds() {
                   <div className="text-gradient font-display text-4xl font-extrabold">৳{(Math.round(amt * rate * 100) / 100).toFixed(2)}</div>
                   <p className="mt-1 text-xs text-muted-foreground">{tr("Send exactly this amount via Send Money, then enter the Transaction ID.")}</p>
                 </div>
+              )}
+              {m.kind === "p2p" && (
+                <>
+                  <Button type="button" onClick={payAuto} disabled={autoBusy || busy} className="btn-glow h-auto w-full gap-2 !py-4">
+                    {autoBusy ? <Spinner /> : <Zap className="h-4 w-4" aria-hidden />} {tr("Pay Now — Instant Auto Payment")}
+                  </Button>
+                  <p className="text-center text-xs text-muted-foreground">{tr("Pay securely with bKash, Nagad or Rocket — balance is added automatically.")}</p>
+                  <div className="flex items-center gap-3 text-xs text-muted-foreground"><span className="h-px flex-1 bg-border" />{tr("or pay manually")}<span className="h-px flex-1 bg-border" /></div>
+                </>
               )}
               <div>
                 <label className={labelCls} htmlFor="txn">{tr("Transaction ID")}</label>
