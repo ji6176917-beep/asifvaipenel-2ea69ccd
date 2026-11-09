@@ -133,6 +133,9 @@ function AddFunds() {
     if (error) { toast.error(friendlyError(error)); return; }
     if (!data) return;
     idem.current = newIdemKey();
+    const auto = (data as { autoStatus?: string }).autoStatus;
+    if (auto === "approved") toast.success(tr("Payment verified — balance added instantly"));
+    else if (auto === "rejected") toast.error(tr("Payment could not be verified — request rejected"));
     setDone((data as { code: string }).code);
   };
 
