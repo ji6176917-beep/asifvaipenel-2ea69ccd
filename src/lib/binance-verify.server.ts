@@ -9,9 +9,21 @@ async function signedGet(path: string, params: Record<string, string>) {
   const k = await crypto.subtle.importKey("raw", new TextEncoder().encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
   const sig = Array.from(new Uint8Array(await crypto.subtle.sign("HMAC", k, new TextEncoder().encode(qs))))
     .map((b) => b.toString(16).padStart(2, "0")).join("");
-  const res = await fetch(`https://api.binance.com${path}?${qs}&signature=${sig}`, { headers: { "X-MBX-APIKEY": key } });
-  if (!res.ok) throw new Error(`BINANCE_HTTP_${res.status}`);
-  return res.json() as Promise<unknown>;
+  // Binance's main host sometimes refuses (403) requests from the live server's
+  // network, so fall back through its official alternative hosts.
+  const hosts = ["api.binance.com", "api-gcp.binance.com", "api1.binance.com", "api2.binance.com", "api3.binance.com", "api4.binance.com"];
+  let last = "";
+  for (const h of hosts) {
+    try {
+      const res = await fetch(`https://${h}${path}?${qs}&signature=${sig}`, { headers: { "X-MBX-APIKEY": key } });
+      if (res.ok) return res.json() as Promise<unknown>;
+      last = `BINANCE_HTTP_${res.status} ${h} ${(await res.text()).slice(0, 160)}`;
+      if (res.status !== 403 && res.status !== 451 && res.status < 500) break;
+    } catch (e) {
+      last = `BINANCE_FETCH ${h} ${e instanceof Error ? e.message : e}`;
+    }
+  }
+  throw new Error(last);
 }
 
 const norm = (s: unknown) => String(s ?? "").trim().toLowerCase();
