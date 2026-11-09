@@ -3,7 +3,7 @@ import { useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { submitCustomerDeposit } from "@/lib/customer-activity.functions";
-import { ArrowLeft, ArrowRight, Clock, Globe, ImagePlus, ShieldCheck, Wallet } from "lucide-react";
+import { ArrowLeft, ArrowRight, Clock, Globe, ShieldCheck, Wallet } from "lucide-react";
 import { SiBinance, SiTether } from "react-icons/si";
 import { Button } from "@/components/ui/button";
 import fundsHeader from "@/assets/funds-header.jpg";
