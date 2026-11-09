@@ -3,7 +3,7 @@ import { useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { submitCustomerDeposit } from "@/lib/customer-activity.functions";
-import { ArrowLeft, ArrowRight, Clock, Globe, ImagePlus, ShieldCheck, Wallet } from "lucide-react";
+import { ArrowLeft, ArrowRight, Clock, Globe, ShieldCheck, Wallet } from "lucide-react";
 import { SiBinance, SiTether } from "react-icons/si";
 import { Button } from "@/components/ui/button";
 import fundsHeader from "@/assets/funds-header.jpg";
@@ -93,7 +93,7 @@ function AddFunds() {
   const amt = Number(amount || 0);
   const minA = Math.max(Number(m?.min_amount ?? 0), Number(s?.deposit_min ?? 0));
   const maxA = Math.min(Number(m?.max_amount ?? Infinity), Number(s?.deposit_max ?? Infinity));
-  const needShot = !!s?.require_screenshot;
+  const needShot = false;
   const groups = (["binance", "usdt", "p2p"] as const).filter((g) => methods?.some((x) => x.kind === g));
   const p2p = methods?.filter((x) => x.kind === "p2p") ?? [];
 
@@ -227,11 +227,6 @@ function AddFunds() {
                 <label className={labelCls} htmlFor="txn">{tr("Transaction ID")}</label>
                 <input id="txn" className={inputCls} value={txn} onChange={(e) => setTxn(e.target.value)} />
               </div>
-              <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-dashed border-border p-4 text-sm text-muted-foreground hover:border-primary">
-                <ImagePlus className="h-5 w-5 text-primary" />
-                {file ? file.name : `${tr("Upload payment screenshot")}${needShot ? ` (${tr("required")})` : ` (${tr("optional")})`}`}
-                <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
-              </label>
               <Button type="submit" disabled={busy} className="btn-glow h-auto w-full !py-4">{busy && <Spinner />} {m.kind === "p2p" ? tr("Confirm Add Funds") : tr("Add Funds")}</Button>
             </form>
           )}
