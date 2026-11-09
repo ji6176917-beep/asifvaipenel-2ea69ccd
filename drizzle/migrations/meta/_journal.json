@@ -295,6 +295,13 @@
       "when": 1794193689242,
       "tag": "0041_add_social_links",
       "breakpoints": true
+    },
+    {
+      "idx": 42,
+      "version": "7",
+      "when": 1794219988494,
+      "tag": "0042_deposit_no_screenshot",
+      "breakpoints": true
     }
   ]
 }
