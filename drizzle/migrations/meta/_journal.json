@@ -288,6 +288,13 @@
       "when": 1794193225516,
       "tag": "0040_add_refund_policy_footer_link",
       "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1794193689242,
+      "tag": "0041_add_social_links",
+      "breakpoints": true
     }
   ]
 }

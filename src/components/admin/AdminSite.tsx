@@ -202,8 +202,8 @@ export function AdminSupport() {
   const { icon } = useI18n();
   const setIcon = useServerFn(adminSetIcon);
   const qc = useQueryClient();
-  const [f, setF] = useState({ telegram: "", whatsapp: "", email: "", support_hours: "" });
-  useEffect(() => { if (site) setF({ telegram: site.telegram ?? "", whatsapp: site.whatsapp ?? "", email: site.email ?? "", support_hours: site.support_hours ?? "" }); }, [site]);
+  const [f, setF] = useState({ telegram: "", whatsapp: "", email: "", support_hours: "", social_facebook: "", social_youtube: "", social_tiktok: "" });
+  useEffect(() => { if (site) setF({ telegram: site.telegram ?? "", whatsapp: site.whatsapp ?? "", email: site.email ?? "", support_hours: site.support_hours ?? "", social_facebook: site.social_facebook ?? "", social_youtube: site.social_youtube ?? "", social_tiktok: site.social_tiktok ?? "" }); }, [site]);
   if (loading || !site) return <Loading />;
   const tg = telegramUrl(f.telegram); const wa = whatsappUrl(f.whatsapp);
   const item = (key: keyof typeof f, label: string, hint: string, test: string | null) => (
@@ -228,6 +228,10 @@ export function AdminSupport() {
       {item("telegram", "Support Telegram username", "Used by every Support Admin button and Forgot Password. Opens t.me/<username>.", tg)}
       {item("whatsapp", "WhatsApp number", `Digits only are kept (country code first). Opens ${wa ?? "wa.me/<digits>"}. Leave empty to hide WhatsApp.`, wa)}
       {item("email", "Support email", "Shown in the footer.", f.email ? `mailto:${f.email}` : null)}
+      <h2 className="label-premium pt-2 text-lg">Social media links (footer "Follow Us")</h2>
+      {item("social_facebook", "Facebook page link", "Full link starting with https://. Leave empty to hide the icon.", f.social_facebook || null)}
+      {item("social_youtube", "YouTube channel link", "Full link starting with https://. Leave empty to hide the icon.", f.social_youtube || null)}
+      {item("social_tiktok", "TikTok profile link", "Full link starting with https://. Leave empty to hide the icon.", f.social_tiktok || null)}
       <Card>
         <label className={labelCls} htmlFor="sup-hours">Working hours</label>
         <input id="sup-hours" className={inputCls} placeholder="e.g. Every day 10:00–22:00 (GMT+6)" value={f.support_hours} onChange={(e) => setF({ ...f, support_hours: e.target.value })} />

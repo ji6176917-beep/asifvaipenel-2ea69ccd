@@ -291,10 +291,10 @@ function Shell({ children }: { children: ReactNode }) {
           <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{tr("Follow Us")}</h3>
           <div className="flex items-center gap-2">
             {([
-              { slug: "facebook", label: "Facebook", url: "https://www.facebook.com/share/1NLNd912Fg/" },
-              { slug: "youtube", label: "YouTube", url: "https://youtube.com/@apexsmmworld" },
-              { slug: "tiktok", label: "TikTok", url: "https://tiktok.com/@apexsmmworld" },
-            ]).map((s) => (
+              { slug: "facebook", label: "Facebook", url: (settings?.social_facebook as string | undefined) ?? "https://www.facebook.com/share/1NLNd912Fg/" },
+              { slug: "youtube", label: "YouTube", url: (settings?.social_youtube as string | undefined) ?? "https://youtube.com/@apexsmmworld" },
+              { slug: "tiktok", label: "TikTok", url: (settings?.social_tiktok as string | undefined) ?? "https://tiktok.com/@apexsmmworld" },
+            ]).filter((s) => s.url).map((s) => (
               <a key={s.slug} href={s.url} target="_blank" rel="noreferrer" aria-label={s.label} title={s.label}
                 className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background transition-all hover:-translate-y-0.5 hover:border-primary hover:shadow-md">
                 <PlatformIcon slug={s.slug} name={s.label} className="h-4.5 w-4.5" />

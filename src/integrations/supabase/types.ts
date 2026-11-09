@@ -1080,6 +1080,9 @@ export type Database = {
           session_timeout_min: number
           share_image_url: string | null
           site_name: string
+          social_facebook: string
+          social_tiktok: string
+          social_youtube: string
           support_hours: string
           tagline: string
           telegram: string | null
@@ -1137,6 +1140,9 @@ export type Database = {
           session_timeout_min?: number
           share_image_url?: string | null
           site_name?: string
+          social_facebook?: string
+          social_tiktok?: string
+          social_youtube?: string
           support_hours?: string
           tagline?: string
           telegram?: string | null
@@ -1194,6 +1200,9 @@ export type Database = {
           session_timeout_min?: number
           share_image_url?: string | null
           site_name?: string
+          social_facebook?: string
+          social_tiktok?: string
+          social_youtube?: string
           support_hours?: string
           tagline?: string
           telegram?: string | null
