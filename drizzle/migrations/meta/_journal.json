@@ -302,6 +302,13 @@
       "when": 1794219988494,
       "tag": "0042_deposit_no_screenshot",
       "breakpoints": true
+    },
+    {
+      "idx": 43,
+      "version": "7",
+      "when": 1794404969563,
+      "tag": "0043_restrict_settings_and_logos",
+      "breakpoints": true
     }
   ]
 }
