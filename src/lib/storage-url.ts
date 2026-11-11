@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { signLogoUrl } from "@/lib/storage-sign.functions";
 
 /** Signed URL for a file in a private bucket (cached ~50 min). Full http(s) URLs pass through. */
 export function useStorageUrl(bucket: "avatars" | "logos", path?: string | null) {
@@ -8,6 +9,7 @@ export function useStorageUrl(bucket: "avatars" | "logos", path?: string | null)
     enabled: !!path && !/^https?:/.test(path),
     staleTime: 50 * 60_000,
     queryFn: async () => {
+      if (bucket === "logos") return await signLogoUrl({ data: { path: path! } });
       const { data, error } = await supabase.storage.from(bucket).createSignedUrl(path!, 3600);
       if (error) throw error;
       return data.signedUrl;

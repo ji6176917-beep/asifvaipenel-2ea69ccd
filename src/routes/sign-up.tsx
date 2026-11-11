@@ -55,12 +55,8 @@ function SignUp() {
       return;
     }
     setErrors({});
-    const { data: set } = await supabase.from("site_settings").select("allow_signups, blocked_email_domains").eq("id", 1).maybeSingle();
+    const { data: set } = await supabase.from("site_settings").select("allow_signups").eq("id", 1).maybeSingle();
     if (set && !set.allow_signups) { toast.error(tr("New sign-ups are closed right now. Please try again later.")); return; }
-    const dom = r.data.email.split("@")[1]?.toLowerCase() ?? "";
-    if (set && set.blocked_email_domains.toLowerCase().split(/[\s,;]+/).filter(Boolean).includes(dom)) {
-      setErrors({ email: tr("This email provider is not allowed. Please use another email.") }); return;
-    }
     setBusy(true);
     const { data, error } = await supabase.auth.signUp({
       email: r.data.email,
@@ -73,6 +69,7 @@ function SignUp() {
     setBusy(false);
     if (error) {
       const m = error.message.toLowerCase();
+      if (m.includes("email_domain_blocked")) { setErrors({ email: tr("This email provider is not allowed. Please use another email.") }); return; }
       toast.error(m.includes("database") ? tr("That phone number is already registered.") : error.message);
       return;
     }
