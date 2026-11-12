@@ -351,7 +351,9 @@
     "A refill is already in progress": "একটি রিফিল ইতিমধ্যে চলছে",
     "You can request a refill once every 24 hours": "প্রতি ২৪ ঘণ্টায় একবার রিফিল চাওয়া যাবে",
     "Provider did not respond, please try again later": "সরবরাহকারী সাড়া দেয়নি, পরে আবার চেষ্টা করুন",
-    "Refill rejected by provider": "সরবরাহকারী রিফিল প্রত্যাখ্যান করেছে"
+    "Refill rejected by provider": "সরবরাহকারী রিফিল প্রত্যাখ্যান করেছে",
+    "Rating": "রেটিং",
+    "Rate Now": "রেটিং দিন"
   },
   "hi": {
     "API Policy": "API पॉलिसी",

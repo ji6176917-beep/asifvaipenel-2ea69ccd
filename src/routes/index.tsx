@@ -2,7 +2,7 @@ import { DesktopDashboard } from "@/components/DesktopDashboard";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { ChevronDown, Headset, MessageCircleQuestion } from "lucide-react";
+import { ChevronDown, Headset, MessageCircleQuestion, Star } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import ReactMarkdown from "react-markdown";
 import { useI18n, pickLang } from "@/lib/i18n";
@@ -104,7 +104,7 @@ function Home() {
     order: null,
     qna: homeQna.length ? (
       <section className="home-qna mx-auto max-w-2xl lg:grid lg:max-w-6xl lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:items-stretch lg:gap-10">
-        <div className="lg:flex lg:flex-col lg:justify-between">
+        <div className="lg:flex lg:flex-col lg:justify-start">
           <div>
             <p className="mb-3 text-center lg:text-start">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-primary">
@@ -114,7 +114,7 @@ function Home() {
             <h2 className="label-premium mb-2 text-center text-2xl lg:text-start lg:text-3xl">{t("home.qna_title")}</h2>
             <p className="text-center text-sm text-muted-foreground lg:text-start">{tr("Quick answers to the most common questions about our services, payments and delivery.")}</p>
           </div>
-          <div className="glass mt-6 rounded-xl p-4 text-start lg:mt-0">
+          <div className="glass mt-6 rounded-xl p-4 text-start lg:mt-4">
             <div className="flex items-center gap-3">
               <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
                 <Headset className="h-5 w-5" />
@@ -133,6 +133,9 @@ function Home() {
                 <Link to="/qna">{tr("Contact Support")}</Link>
               </Button>
             )}
+            <Button asChild variant="outline" className="mt-2 w-full justify-center gap-2 border-primary/40 text-primary hover:bg-primary/10">
+              <a href="https://www.trustpilot.com/review/apexsmmworld.com" target="_blank" rel="noreferrer"><Star className="h-4 w-4 fill-current" /> 4.5 · {tr("Rate Now")}</a>
+            </Button>
           </div>
         </div>
         <div className="mt-6 space-y-2 lg:mt-0">

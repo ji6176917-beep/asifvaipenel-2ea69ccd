@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { ArrowUpRight, Gift, Layers, ShoppingCart, UserRound, Wallet } from "lucide-react";
+import { ArrowUpRight, Gift, Star, Layers, ShoppingCart, UserRound, Wallet } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/lib/auth";
 import { useTr } from "@/lib/i18n";
@@ -51,6 +51,10 @@ export function DesktopDashboard({ orderPage = false }: { orderPage?: boolean })
         <img src={welcomeArt} alt="" width={816} height={816} className="welcome-art" />
         <h1>{tr("Hello")}, {name} 👋</h1>
         <p>{tr("Welcome, We are ready to provide you with the best social media services on the market.")}</p>
+        <a href="https://www.trustpilot.com/review/apexsmmworld.com" target="_blank" rel="noreferrer" className="mt-3 inline-flex items-center gap-2 rounded-full bg-primary-foreground/20 px-3 py-1.5 text-sm font-bold text-primary-foreground backdrop-blur transition hover:bg-primary-foreground/30">
+          <span className="flex">{[0, 1, 2, 3].map((i) => <Star key={i} className="h-4 w-4 fill-current" />)}<Star className="h-4 w-4 fill-current opacity-50" /></span>
+          4.5 <span className="font-medium opacity-90">{tr("Rating")}</span>
+        </a>
         {!user && <div className="mt-4 flex gap-2"><Button asChild variant="secondary"><Link to="/sign-in">{tr("Sign In")}</Link></Button><Button asChild variant="outline" className="border-primary-foreground/40 bg-transparent text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"><Link to="/sign-up">{tr("Sign Up")}</Link></Button></div>}
       </div>
       <Link to="/giveaway" className="desktop-giveaway">
