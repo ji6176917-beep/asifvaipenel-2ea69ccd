@@ -29,7 +29,7 @@ import ReactMarkdown from "react-markdown";
 import { FONTS, homeConfig, themeConfig, themeIsCustom, type HomeConfig, type ThemeConfig } from "@/lib/site-config";
 import siteLogo from "@/assets/apex-header-logo.png.asset.json";
 import { Button } from "@/components/ui/button";
-import { CalendarDays } from "lucide-react";
+import { ArrowLeft, CalendarDays } from "lucide-react";
 import { RouteTransition } from "@/components/layout/RouteTransition";
 import { DESKTOP_MENU_BREAKPOINT, desktopMenuDestination, isSettingsItem, showDesktopMenu } from "@/components/layout/desktop-menu";
 
@@ -254,10 +254,13 @@ function Shell({ children }: { children: ReactNode }) {
 
       <header className={`glass sticky top-0 z-40 rounded-none border-x-0 border-t-0 ${path === "/" ? "home-header" : ""}`}>
         <div className="home-header-inner mx-auto grid max-w-5xl lg:max-w-none lg:px-6 lg:py-1.5 grid-cols-[minmax(0,1fr)_auto] items-center gap-2 px-4 py-2 lg:flex">
-          <Link to="/" className={`flex min-w-0 items-center gap-2 ${desktopSidebar ? "lg:hidden" : ""}`}>
+          <div className={`flex min-w-0 items-center gap-1.5 ${desktopSidebar ? "lg:hidden" : ""}`}>
+          {path !== "/" && <button type="button" aria-label={tr("Back")} title={tr("Back")} onClick={() => { if (window.history.length > 1) window.history.back(); else navigate({ to: "/" }); }} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border bg-card text-foreground shadow-sm lg:hidden"><ArrowLeft className="h-4 w-4" /></button>}
+          <Link to="/" className="flex min-w-0 items-center gap-2">
             <img src={siteLogo.url} alt={`${siteName} - Global Social Media Growth Logo`} width={36} height={36} className="h-9 w-auto shrink-0 object-contain" />
             <span className="home-brand-copy min-w-0"><span className="home-brand-name block truncate font-display text-base font-bold sm:text-lg">{headerName}</span>{path === "/" && <span className="home-brand-tagline">{tr("Social Media Growth Partner")}</span>}</span>
           </Link>
+          </div>
           {desktopSidebar && <div className="header-page-title hidden min-w-0 items-center gap-3 lg:flex"><span className="header-date-pill"><CalendarDays className="h-4 w-4" />{new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}</span></div>}
           <div className="home-header-tools ml-auto flex shrink-0 items-center gap-1.5">
             {desktopSidebar && <Button variant="ghost" size="icon" aria-label={desktopMenuOpen ? tr("Close menu") : t("header.open_menu")} title={desktopMenuOpen ? tr("Close menu") : t("header.open_menu")} aria-expanded={desktopMenuOpen} onClick={() => setDesktopMenuOpen((open) => !open)}>{desktopMenuOpen ? <PanelLeftClose /> : <PanelLeftOpen />}</Button>}

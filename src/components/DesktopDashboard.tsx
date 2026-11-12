@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { OrderForm } from "@/components/OrderForm";
 import welcomeArt from "@/assets/welcome-social.png";
 
-export function DesktopDashboard() {
+export function DesktopDashboard({ orderPage = false }: { orderPage?: boolean }) {
   const tr = useTr();
   const { user, profile } = useAuth();
   const { data: platforms } = useQuery(platformsQuery);
@@ -37,8 +37,16 @@ export function DesktopDashboard() {
     { icon: Layers, label: tr("All Services"), value: (serviceCount ?? 0).toLocaleString(), to: user ? "/order" : "/sign-in" },
     { icon: Wallet, label: tr("My Balance"), value: user ? money(profile?.balance ?? 0) : tr("Sign In"), to: user ? "/balance" : "/sign-in" },
   ];
+  const mobileOnlyOrder = orderPage ? "dd-order-desktop-only" : "";
   return <div className="desktop-dashboard">
-    <section className="desktop-welcome-grid">
+    {orderPage && <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary to-primary/70 p-5 text-primary-foreground shadow-lg lg:hidden">
+      <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-primary-foreground/15" aria-hidden />
+      <div className="absolute -bottom-10 right-10 h-24 w-24 rounded-full bg-primary-foreground/10" aria-hidden />
+      <span className="inline-flex items-center gap-1 rounded-full bg-primary-foreground/20 px-2.5 py-1 text-[11px] font-bold">🚀 {tr("Fast delivery")}</span>
+      <h1 className="mt-2 font-display text-2xl font-bold">{tr("New Order")}</h1>
+      <p className="mt-1 max-w-[16rem] text-sm opacity-90">{tr("Choose a platform below and grow your social media in minutes.")}</p>
+    </section>}
+    <section className={`desktop-welcome-grid ${mobileOnlyOrder}`}>
       <div className="desktop-welcome-copy">
         <img src={welcomeArt} alt="" width={816} height={816} className="welcome-art" />
         <h1>{tr("Hello")}, {name} 👋</h1>
@@ -51,7 +59,7 @@ export function DesktopDashboard() {
         <p>{tr("Complete social tasks and submit your proof for a balance reward.")}</p>
       </Link>
     </section>
-    <section className="desktop-stat-grid">
+    <section className={`desktop-stat-grid ${mobileOnlyOrder}`}>
       {stats.map((s) => <Link key={s.label} to={s.to} className="desktop-stat"><span className="desktop-stat-icon"><s.icon /></span><span className="desktop-stat-label">{s.label}</span><strong title={s.value}>{s.value}</strong></Link>)}
     </section>
     <div className="desktop-platform-grid" aria-label={tr("All Services")}>

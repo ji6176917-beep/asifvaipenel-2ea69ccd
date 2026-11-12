@@ -41,7 +41,7 @@ function OrderPage() {
   }).filter((p) => p.name.toLowerCase().includes(query));
   return (
     <div className="order-reference-page">
-      <DesktopDashboard />
+      <DesktopDashboard orderPage />
       <div className="hidden">
       <section className="order-welcome">
         <img className="order-banner-art" src={orderBanner} alt="" width={1280} height={560} />
