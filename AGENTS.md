@@ -35,5 +35,3 @@
 - Home-screen install and offline support come from vite-plugin-pwa (worker emitted to the published static root) and are registered only from src/lib/pwa-registration.ts, which refuses dev, iframes and Lovable preview hosts; the manifest and icons stay hand-maintained public files and the Account page install card is src/components/InstallAppCard.tsx. Why: preview browsers must never hold a stale app-shell cache while the published site stays installable.
 - Notification worker registration goes through src/lib/notification-worker.ts with scope /notifications/; system notifications use that registration, never a script-URL getRegistration lookup. Why: the notification worker must not replace the root-scoped offline worker.
 - Binance/USDT deposits: verify on submit, then deposit-auto-verify schedule re-checks pending ones each minute. Why: Binance lists payments late.
-
-- Customer refills use provider `refill` via refill.functions.ts with server-side checks. Why: no upstream key exposure.
