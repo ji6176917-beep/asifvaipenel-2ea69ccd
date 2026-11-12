@@ -1,3 +1,3 @@
 # Component rules
 
-- Desktop reference dashboard shares OrderForm with the protected platform route; desktop styling is scoped to lg and music controls share the existing audio context. Why: preserve mobile layout, ledger submission, catalog refresh and a single playback source.
+- The reference dashboard (DesktopDashboard + shared OrderForm) renders on every screen size with compact phone sizing; the mobile bottom bar shows only in installed-app standalone mode. Why: one design everywhere while keeping app navigation, ledger submission and catalog refresh.

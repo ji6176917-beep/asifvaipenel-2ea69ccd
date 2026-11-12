@@ -37,7 +37,7 @@ export function DesktopDashboard() {
     { icon: Layers, label: tr("All Services"), value: (serviceCount ?? 0).toLocaleString(), to: user ? "/order" : "/sign-in" },
     { icon: Wallet, label: tr("My Balance"), value: user ? money(profile?.balance ?? 0) : tr("Sign In"), to: user ? "/balance" : "/sign-in" },
   ];
-  return <div className="desktop-dashboard hidden lg:block">
+  return <div className="desktop-dashboard">
     <section className="desktop-welcome-grid">
       <div className="desktop-welcome-copy">
         <img src={welcomeArt} alt="" width={816} height={816} className="welcome-art" />

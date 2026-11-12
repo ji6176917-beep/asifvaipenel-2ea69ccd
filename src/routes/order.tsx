@@ -42,7 +42,7 @@ function OrderPage() {
   return (
     <div className="order-reference-page">
       <DesktopDashboard />
-      <div className="lg:hidden">
+      <div className="hidden">
       <section className="order-welcome">
         <img className="order-banner-art" src={orderBanner} alt="" width={1280} height={560} />
         <div className="order-welcome-copy">

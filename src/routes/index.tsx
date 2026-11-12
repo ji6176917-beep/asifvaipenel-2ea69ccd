@@ -158,7 +158,7 @@ function Home() {
   return (
     <div className="home-reference-content">
       <DesktopDashboard />
-      {cfg.sections.filter((x) => x.on && blocks[x.id]).map((x) => <div key={x.id} className={x.id === "hero" || x.id === "services" ? "lg:hidden" : undefined}>{blocks[x.id]}</div>)}
+      {cfg.sections.filter((x) => x.on && blocks[x.id]).map((x) => <div key={x.id} className={x.id === "hero" || x.id === "services" ? "hidden" : undefined}>{blocks[x.id]}</div>)}
       <div className="home-mobile-only"><LiveStats /></div>
     </div>
   );
