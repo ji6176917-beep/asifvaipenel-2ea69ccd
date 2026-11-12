@@ -309,6 +309,13 @@
       "when": 1794404969563,
       "tag": "0043_restrict_settings_and_logos",
       "breakpoints": true
+    },
+    {
+      "idx": 44,
+      "version": "7",
+      "when": 1794467207207,
+      "tag": "0044_community_giveaways_tickets",
+      "breakpoints": true
     }
   ]
 }

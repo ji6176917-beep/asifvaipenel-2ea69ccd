@@ -43,10 +43,10 @@ export function DesktopDashboard() {
         <p>{tr("Welcome, We are ready to provide you with the best social media services on the market.")}</p>
         {!user && <div className="mt-4 flex gap-2"><Button asChild variant="secondary"><Link to="/sign-in">{tr("Sign In")}</Link></Button><Button asChild variant="outline" className="border-primary-foreground/40 bg-transparent text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"><Link to="/sign-up">{tr("Sign Up")}</Link></Button></div>}
       </div>
-      <Link to={user ? "/add-funds" : "/sign-in"} className="desktop-giveaway">
+      <Link to="/giveaway" className="desktop-giveaway">
         <div className="flex items-center justify-between"><Gift className="h-9 w-9" /><ArrowUpRight className="h-6 w-6" /></div>
         <h2>{tr("Giveaway")}</h2>
-        <p>{tr("Add funds, place orders and watch for special bonus offers from Apex SMM World.")}</p>
+        <p>{tr("Complete social tasks and submit your proof for a balance reward.")}</p>
       </Link>
     </section>
     <section className="desktop-stat-grid">

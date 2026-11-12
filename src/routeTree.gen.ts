@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as GiveawayRouteImport } from './routes/giveaway'
 import { Route as OrderRouteImport } from './routes/order'
 import { Route as PolicyRouteImport } from './routes/policy'
 import { Route as QnaRouteImport } from './routes/qna'
@@ -25,6 +26,7 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedOrdersRouteImport } from './routes/_authenticated/orders'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedResellerApiRouteImport } from './routes/_authenticated/reseller-api'
+import { Route as AuthenticatedTicketsRouteImport } from './routes/_authenticated/tickets'
 import { Route as PSlugRouteImport } from './routes/p/$slug'
 import { Route as AuthenticatedAddFundsIndexRouteImport } from './routes/_authenticated/add-funds.index'
 import { Route as AuthenticatedAddFundsHistoryRouteImport } from './routes/_authenticated/add-funds.history'
@@ -60,6 +62,11 @@ const AdminRoute = AdminRouteImport.update({
 const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
   id: '/forgot-password',
   path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GiveawayRoute = GiveawayRouteImport.update({
+  id: '/giveaway',
+  path: '/giveaway',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OrderRoute = OrderRouteImport.update({
@@ -118,6 +125,11 @@ const AuthenticatedResellerApiRoute =
     path: '/reseller-api',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedTicketsRoute = AuthenticatedTicketsRouteImport.update({
+  id: '/tickets',
+  path: '/tickets',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const PSlugRoute = PSlugRouteImport.update({
   id: '/p/$slug',
   path: '/p/$slug',
@@ -192,6 +204,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/giveaway': typeof GiveawayRoute
   '/order': typeof OrderRoute
   '/policy': typeof PolicyRoute
   '/qna': typeof QnaRoute
@@ -203,6 +216,7 @@ export interface FileRoutesByFullPath {
   '/orders': typeof AuthenticatedOrdersRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/reseller-api': typeof AuthenticatedResellerApiRoute
+  '/tickets': typeof AuthenticatedTicketsRoute
   '/p/$slug': typeof PSlugRoute
   '/add-funds/history': typeof AuthenticatedAddFundsHistoryRoute
   '/service/$platform': typeof AuthenticatedServicePlatformRoute
@@ -221,6 +235,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/giveaway': typeof GiveawayRoute
   '/order': typeof OrderRoute
   '/policy': typeof PolicyRoute
   '/qna': typeof QnaRoute
@@ -232,6 +247,7 @@ export interface FileRoutesByTo {
   '/orders': typeof AuthenticatedOrdersRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/reseller-api': typeof AuthenticatedResellerApiRoute
+  '/tickets': typeof AuthenticatedTicketsRoute
   '/p/$slug': typeof PSlugRoute
   '/add-funds/history': typeof AuthenticatedAddFundsHistoryRoute
   '/service/$platform': typeof AuthenticatedServicePlatformRoute
@@ -252,6 +268,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/giveaway': typeof GiveawayRoute
   '/order': typeof OrderRoute
   '/policy': typeof PolicyRoute
   '/qna': typeof QnaRoute
@@ -263,6 +280,7 @@ export interface FileRoutesById {
   '/_authenticated/orders': typeof AuthenticatedOrdersRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/reseller-api': typeof AuthenticatedResellerApiRoute
+  '/_authenticated/tickets': typeof AuthenticatedTicketsRoute
   '/p/$slug': typeof PSlugRoute
   '/_authenticated/add-funds/history': typeof AuthenticatedAddFundsHistoryRoute
   '/_authenticated/service/$platform': typeof AuthenticatedServicePlatformRoute
@@ -283,6 +301,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/forgot-password'
+    | '/giveaway'
     | '/order'
     | '/policy'
     | '/qna'
@@ -294,6 +313,7 @@ export interface FileRouteTypes {
     | '/orders'
     | '/profile'
     | '/reseller-api'
+    | '/tickets'
     | '/p/$slug'
     | '/add-funds/history'
     | '/service/$platform'
@@ -312,6 +332,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/forgot-password'
+    | '/giveaway'
     | '/order'
     | '/policy'
     | '/qna'
@@ -323,6 +344,7 @@ export interface FileRouteTypes {
     | '/orders'
     | '/profile'
     | '/reseller-api'
+    | '/tickets'
     | '/p/$slug'
     | '/add-funds/history'
     | '/service/$platform'
@@ -342,6 +364,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/forgot-password'
+    | '/giveaway'
     | '/order'
     | '/policy'
     | '/qna'
@@ -353,6 +376,7 @@ export interface FileRouteTypes {
     | '/_authenticated/orders'
     | '/_authenticated/profile'
     | '/_authenticated/reseller-api'
+    | '/_authenticated/tickets'
     | '/p/$slug'
     | '/_authenticated/add-funds/history'
     | '/_authenticated/service/$platform'
@@ -373,6 +397,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
+  GiveawayRoute: typeof GiveawayRoute
   OrderRoute: typeof OrderRoute
   PolicyRoute: typeof PolicyRoute
   QnaRoute: typeof QnaRoute
@@ -425,6 +450,13 @@ declare module '@tanstack/react-router' {
       path: '/forgot-password'
       fullPath: '/forgot-password'
       preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/giveaway': {
+      id: '/giveaway'
+      path: '/giveaway'
+      fullPath: '/giveaway'
+      preLoaderRoute: typeof GiveawayRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/order': {
@@ -502,6 +534,13 @@ declare module '@tanstack/react-router' {
       path: '/reseller-api'
       fullPath: '/reseller-api'
       preLoaderRoute: typeof AuthenticatedResellerApiRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/tickets': {
+      id: '/_authenticated/tickets'
+      path: '/tickets'
+      fullPath: '/tickets'
+      preLoaderRoute: typeof AuthenticatedTicketsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/p/$slug': {
@@ -597,6 +636,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedOrdersRoute: typeof AuthenticatedOrdersRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedResellerApiRoute: typeof AuthenticatedResellerApiRoute
+  AuthenticatedTicketsRoute: typeof AuthenticatedTicketsRoute
   AuthenticatedAddFundsHistoryRoute: typeof AuthenticatedAddFundsHistoryRoute
   AuthenticatedServicePlatformRoute: typeof AuthenticatedServicePlatformRoute
   AuthenticatedAddFundsIndexRoute: typeof AuthenticatedAddFundsIndexRoute
@@ -608,6 +648,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedOrdersRoute: AuthenticatedOrdersRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedResellerApiRoute: AuthenticatedResellerApiRoute,
+  AuthenticatedTicketsRoute: AuthenticatedTicketsRoute,
   AuthenticatedAddFundsHistoryRoute: AuthenticatedAddFundsHistoryRoute,
   AuthenticatedServicePlatformRoute: AuthenticatedServicePlatformRoute,
   AuthenticatedAddFundsIndexRoute: AuthenticatedAddFundsIndexRoute,
@@ -622,6 +663,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AdminRoute: AdminRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
+  GiveawayRoute: GiveawayRoute,
   OrderRoute: OrderRoute,
   PolicyRoute: PolicyRoute,
   QnaRoute: QnaRoute,

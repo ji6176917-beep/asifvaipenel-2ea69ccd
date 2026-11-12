@@ -3,7 +3,7 @@ import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Home, User, Wallet, ShoppingCart, History, PlusCircle, ReceiptText, ShieldCheck, HelpCircle, Info,
-  LogOut, Bell, X, Mail, Sparkles, Code2, LayoutDashboard, Languages, Music, Check, Settings2, ChevronDown, PanelLeftClose, PanelLeftOpen, LogIn,
+  LogOut, Bell, X, Mail, Sparkles, Code2, LayoutDashboard, Languages, Music, Check, Settings2, ChevronDown, PanelLeftClose, PanelLeftOpen, LogIn, Gift, Ticket,
 
 } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -377,8 +377,7 @@ function Shell({ children }: { children: ReactNode }) {
               <Avatar path={profile?.avatar_url ?? null} name={profile?.full_name ?? ""} className="h-11 w-11 shrink-0" />
               <div className={desktopMenuOpen ? "min-w-0" : "sr-only"}><div className="truncate text-sm font-semibold">{profile?.full_name || profile?.username || tr("Account")}</div><div className="mt-1 font-mono text-xs text-muted-foreground">ID {profile?.public_id ?? "—"}</div></div>
             </Link>
-            <Button asChild variant="secondary" className={`mt-4 h-auto w-full py-3 ${desktopMenuOpen ? "justify-between" : "justify-center px-0"}`}><Link to="/balance" title={`${t("header.balance")}: ${money(profile?.balance ?? 0)}`}><span className="flex items-center gap-2"><Wallet className="shrink-0" /><span className={desktopMenuOpen ? "" : "sr-only"}>{t("header.balance")}</span></span><span className={desktopMenuOpen ? "font-bold text-primary" : "sr-only"}>{money(profile?.balance ?? 0)}</span></Link></Button>
-            {desktopMenuOpen && <Button asChild className="mt-2 w-full"><Link to="/add-funds"><PlusCircle />{t("menu.add_funds", "Add Funds")}</Link></Button>}
+            <div className={`desktop-profile-wallet ${desktopMenuOpen ? "" : "is-collapsed"}`}><Button asChild variant="secondary" className="h-7 rounded-full px-3 text-xs"><Link to="/balance" title={`${t("header.balance")}: ${money(profile?.balance ?? 0)}`}><Wallet className={desktopMenuOpen ? "sr-only" : "h-4 w-4"} /><span className={desktopMenuOpen ? "font-bold text-primary" : "sr-only"}>{money(profile?.balance ?? 0)}</span></Link></Button>{desktopMenuOpen && <Button asChild size="icon" className="h-6 w-6 rounded-full"><Link to="/add-funds" aria-label={t("menu.add_funds", "Add Funds")} title={t("menu.add_funds", "Add Funds")}><PlusCircle className="h-4 w-4" /></Link></Button>}</div>
           </div> : <div className={`desktop-profile mb-5 ${desktopMenuOpen ? "is-expanded" : ""}`}>
             {desktopMenuOpen && <p className="mb-3 px-2 text-sm font-semibold">{tr("Welcome, Guest")}</p>}
             <Button asChild className={`w-full ${desktopMenuOpen ? "" : "px-0"}`}><Link to="/sign-in" title={tr("Sign In")}><LogIn className="shrink-0" /><span className={desktopMenuOpen ? "" : "sr-only"}>{tr("Sign In")}</span></Link></Button>
@@ -387,6 +386,8 @@ function Shell({ children }: { children: ReactNode }) {
           {desktopMenuOpen && <DesktopMusicPlayer />}
           {desktopMenuOpen && <div className="desktop-menu-group"><ShoppingCart className="h-4 w-4" />{tr("ORDER & SERVICES")}</div>}
           <nav className="flex flex-col gap-1" aria-label={tr("Menu")}>
+            <Link to="/tickets" title={tr("My Tickets")} aria-current={path === "/tickets" ? "page" : undefined} className={`flex min-h-11 items-center gap-3 rounded-md py-2 text-sm font-semibold hover:bg-sidebar-accent ${desktopMenuOpen ? "px-3" : "justify-center"} ${path === "/tickets" ? "bg-sidebar-accent text-primary" : ""}`}><Ticket className="h-4.5 w-4.5 shrink-0 text-primary" /><span className={desktopMenuOpen ? "" : "sr-only"}>{tr("My Tickets")}</span></Link>
+            <Link to="/giveaway" title={tr("Giveaway")} aria-current={path === "/giveaway" ? "page" : undefined} className={`flex min-h-11 items-center gap-3 rounded-md py-2 text-sm font-semibold hover:bg-sidebar-accent ${desktopMenuOpen ? "px-3" : "justify-center"} ${path === "/giveaway" ? "bg-sidebar-accent text-primary" : ""}`}><Gift className="h-4.5 w-4.5 shrink-0 text-primary" /><span className={desktopMenuOpen ? "" : "sr-only"}>{tr("Giveaway")}</span></Link>
             {menu.filter((m) => !isSettingsItem(m)).map((m) => {
               const active = m.target_type === "internal_route" && (m.target_value === "/" ? path === "/" : path === m.target_value || path.startsWith(`${m.target_value}/`));
               return <NavItem key={m.id} m={m} active={active} desktopSignedIn={!!user} settings={settings} onAction={onAction} iconClass="h-4.5 w-4.5 shrink-0 text-primary" className={`flex min-h-11 items-center gap-3 rounded-md py-2 text-sm font-semibold transition-colors hover:bg-sidebar-accent ${desktopMenuOpen ? "px-3" : "justify-center px-0"} ${active ? "bg-sidebar-accent text-sidebar-primary" : "text-sidebar-foreground"}`}><span className={desktopMenuOpen ? "min-w-0 break-words" : "sr-only"}>{pickLang(m.label, lang, m.system_key ?? "")}</span></NavItem>;

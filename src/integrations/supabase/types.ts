@@ -301,6 +301,24 @@ export type Database = {
           },
         ]
       }
+      giveaway_settings: {
+        Row: {
+          config: Json
+          id: number
+          updated_at: string
+        }
+        Insert: {
+          config?: Json
+          id?: number
+          updated_at?: string
+        }
+        Update: {
+          config?: Json
+          id?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       menu_items: {
         Row: {
           created_at: string
@@ -1284,6 +1302,54 @@ export type Database = {
         }
         Relationships: []
       }
+      support_tickets: {
+        Row: {
+          created_at: string
+          deleted_at: string | null
+          id: string
+          idempotency_key: string
+          messages: Json
+          order_codes: string[]
+          status: string
+          subcategory: string
+          subject: string
+          task_id: string | null
+          ticket_no: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          idempotency_key: string
+          messages?: Json
+          order_codes?: string[]
+          status?: string
+          subcategory?: string
+          subject: string
+          task_id?: string | null
+          ticket_no?: never
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          idempotency_key?: string
+          messages?: Json
+          order_codes?: string[]
+          status?: string
+          subcategory?: string
+          subject?: string
+          task_id?: string | null
+          ticket_no?: never
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       telegram_config: {
         Row: {
           bot_token: string | null
@@ -1509,12 +1575,74 @@ export type Database = {
         }
         Returns: Json
       }
+      reply_support_ticket: {
+        Args: {
+          _admin?: boolean
+          _attachments: Json
+          _body: string
+          _id: string
+          _status?: string
+        }
+        Returns: {
+          created_at: string
+          deleted_at: string | null
+          id: string
+          idempotency_key: string
+          messages: Json
+          order_codes: string[]
+          status: string
+          subcategory: string
+          subject: string
+          task_id: string | null
+          ticket_no: number
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "support_tickets"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       service_source_enabled: { Args: { _provider: string }; Returns: boolean }
       set_my_avatar: { Args: { _path: string }; Returns: undefined }
       set_my_language: { Args: { _lang: string }; Returns: undefined }
       set_provider_markup: {
         Args: { _markup: number; _provider: string }
         Returns: undefined
+      }
+      submit_support_ticket: {
+        Args: {
+          _attachments: Json
+          _body: string
+          _idem: string
+          _orders: string[]
+          _subcategory: string
+          _subject: string
+          _task: string
+        }
+        Returns: {
+          created_at: string
+          deleted_at: string | null
+          id: string
+          idempotency_key: string
+          messages: Json
+          order_codes: string[]
+          status: string
+          subcategory: string
+          subject: string
+          task_id: string | null
+          ticket_no: number
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "support_tickets"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       sync_provider_catalog: {
         Args: { _provider: string; _rows: Json }

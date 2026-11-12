@@ -26,6 +26,7 @@ import { AdminContent } from "@/components/admin/AdminContent";
 import { AdminMenu } from "@/components/admin/AdminMenu";
 import { AdminBackupHealth, AdminActivityLog, AdminTrash } from "@/components/admin/AdminSystem";
 import { AdminHome, AdminSupport, AdminQnaPages, AdminLanguages, AdminNotifications, AdminTheme, GeneralSettings } from "@/components/admin/AdminSite";
+import { AdminGiveaway, AdminTickets } from "@/components/admin/AdminCommunity";
 
 const search = z.object({
   section: z.string().optional(),
@@ -63,6 +64,8 @@ const NAV = [
   { id: "menu", label: "Menu & Navigation", icon: MenuIcon, ready: true },
   { id: "home", label: "Home Page", icon: Home, ready: true },
   { id: "support", label: "Support & Contacts", icon: LifeBuoy, ready: true },
+  { id: "tickets", label: "Support Tickets", icon: LifeBuoy, ready: true },
+  { id: "giveaway", label: "Giveaway", icon: BellRing, ready: true },
   { id: "qna", label: "QnA, Policies & Pages", icon: HelpCircle, ready: true },
   { id: "languages", label: "Languages", icon: Languages, ready: true },
   { id: "notifications", label: "Notifications & Popups", icon: BellRing, ready: true },
@@ -159,6 +162,8 @@ function AdminLayout() {
           : section === "menu" ? <AdminMenu />
           : section === "home" ? <AdminHome />
           : section === "support" ? <AdminSupport />
+          : section === "tickets" ? <AdminTickets />
+          : section === "giveaway" ? <AdminGiveaway />
           : section === "qna" ? <AdminQnaPages />
           : section === "languages" ? <AdminLanguages />
           : section === "notifications" ? <AdminNotifications />
