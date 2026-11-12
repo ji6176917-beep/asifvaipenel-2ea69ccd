@@ -10,7 +10,8 @@ const item = (overrides: Partial<MenuItem> = {}): MenuItem => ({
 
 describe("Desktop menu", () => {
   it("shows the permanent menu only after sign-in on desktop", () => {
-    expect(showDesktopMenu(false, 1146)).toBe(false);
+    expect(showDesktopMenu(false, 1146)).toBe(true);
+    expect(showDesktopMenu(false, 390)).toBe(false);
     expect(showDesktopMenu(true, 1146)).toBe(true);
   });
   it("keeps the permanent menu off mobile even after sign-in", () => {

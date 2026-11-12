@@ -3,7 +3,7 @@ import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Home, User, Wallet, ShoppingCart, History, PlusCircle, ReceiptText, ShieldCheck, HelpCircle, Info,
-  LogOut, Bell, X, Mail, Sparkles, Code2, LayoutDashboard, Languages, Music, Check, Settings2, ChevronDown, PanelLeftClose, PanelLeftOpen,
+  LogOut, Bell, X, Mail, Sparkles, Code2, LayoutDashboard, Languages, Music, Check, Settings2, ChevronDown, PanelLeftClose, PanelLeftOpen, LogIn,
 
 } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -233,7 +233,7 @@ function Shell({ children }: { children: ReactNode }) {
   };
 
   return (
-    <div className={`relative flex min-h-screen flex-col pb-[calc(4rem+env(safe-area-inset-bottom,0px))] lg:pb-0 ${user ? desktopMenuOpen ? "lg:pl-64" : "lg:pl-16" : ""} ${path === "/" ? "home-reference-shell" : path === "/order" ? "order-reference-shell" : ""}`}>
+    <div className={`relative flex min-h-screen flex-col pb-[calc(4rem+env(safe-area-inset-bottom,0px))] lg:pb-0 ${desktopMenuOpen ? "lg:pl-64" : "lg:pl-16"} ${path === "/" ? "home-reference-shell" : path === "/order" ? "order-reference-shell" : ""}`}>
       <ThemeApplier t={theme} />
       {path !== "/" && path !== "/order" && <FloatingBackground cfg={home.bg} glowOn={theme.bg3d} />}
       <WelcomePopup s={settings as Settings | null | undefined} />
@@ -367,33 +367,37 @@ function Shell({ children }: { children: ReactNode }) {
         </div>
       </nav>
 
-      {user && <aside aria-label={tr("Menu")} className={`fixed inset-y-0 left-0 z-40 hidden flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground lg:flex ${desktopMenuOpen ? "w-64" : "w-16"}`}>
+      <aside aria-label={tr("Menu")} className={`fixed inset-y-0 left-0 z-40 hidden flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground lg:flex ${desktopMenuOpen ? "w-64" : "w-16"}`}>
         <div className={`flex h-[60px] shrink-0 items-center gap-2 border-b border-sidebar-border ${desktopMenuOpen ? "px-5" : "justify-center px-2"}`}>
           <Link to="/" title={siteName} className="flex min-w-0 items-center gap-2"><img src={siteLogo.url} alt={siteName} width={28} height={28} className="h-7 w-7 shrink-0 object-contain" /><span className={desktopMenuOpen ? "truncate font-display text-sm font-bold" : "sr-only"}>{siteName}</span></Link>
         </div>
         <div className={`min-h-0 flex-1 overflow-y-auto overscroll-contain py-5 ${desktopMenuOpen ? "px-3" : "px-2"}`}>
-          <div className="mb-5 border-b border-sidebar-border pb-5">
+          {user ? <div className="mb-5 border-b border-sidebar-border pb-5">
             <Link to="/profile" title={tr("Account")} className={`flex min-w-0 items-center gap-3 ${desktopMenuOpen ? "px-2" : "justify-center"}`}>
               <Avatar path={profile?.avatar_url ?? null} name={profile?.full_name ?? ""} className="h-11 w-11 shrink-0" />
               <div className={desktopMenuOpen ? "min-w-0" : "sr-only"}><div className="truncate text-sm font-semibold">{profile?.full_name || profile?.username || tr("Account")}</div><div className="mt-1 font-mono text-xs text-muted-foreground">ID {profile?.public_id ?? "—"}</div></div>
             </Link>
             <Button asChild variant="secondary" className={`mt-4 h-auto w-full py-3 ${desktopMenuOpen ? "justify-between" : "justify-center px-0"}`}><Link to="/balance" title={`${t("header.balance")}: ${money(profile?.balance ?? 0)}`}><span className="flex items-center gap-2"><Wallet className="shrink-0" /><span className={desktopMenuOpen ? "" : "sr-only"}>{t("header.balance")}</span></span><span className={desktopMenuOpen ? "font-bold text-primary" : "sr-only"}>{money(profile?.balance ?? 0)}</span></Link></Button>
             {desktopMenuOpen && <Button asChild className="mt-2 w-full"><Link to="/add-funds"><PlusCircle />{t("menu.add_funds", "Add Funds")}</Link></Button>}
-          </div>
+          </div> : <div className="mb-5 border-b border-sidebar-border pb-5">
+            {desktopMenuOpen && <p className="mb-3 px-2 text-sm font-semibold">{tr("Welcome, Guest")}</p>}
+            <Button asChild className={`w-full ${desktopMenuOpen ? "" : "px-0"}`}><Link to="/sign-in" title={tr("Sign In")}><LogIn className="shrink-0" /><span className={desktopMenuOpen ? "" : "sr-only"}>{tr("Sign In")}</span></Link></Button>
+            {desktopMenuOpen && <Button asChild variant="secondary" className="mt-2 w-full"><Link to="/sign-up">{tr("Sign Up")}</Link></Button>}
+          </div>}
           <nav className="flex flex-col gap-1" aria-label={tr("Menu")}>
             {menu.filter(visible).filter((m) => !isSettingsItem(m)).map((m) => {
               const active = m.target_type === "internal_route" && (m.target_value === "/" ? path === "/" : path === m.target_value || path.startsWith(`${m.target_value}/`));
-              return <NavItem key={m.id} m={m} active={active} desktopSignedIn={true} settings={settings} onAction={onAction} iconClass="h-4.5 w-4.5 shrink-0 text-primary" className={`flex min-h-11 items-center gap-3 rounded-md py-2 text-sm font-semibold transition-colors hover:bg-sidebar-accent ${desktopMenuOpen ? "px-3" : "justify-center px-0"} ${active ? "bg-sidebar-accent text-sidebar-primary" : "text-sidebar-foreground"}`}><span className={desktopMenuOpen ? "min-w-0 break-words" : "sr-only"}>{pickLang(m.label, lang, m.system_key ?? "")}</span></NavItem>;
+              return <NavItem key={m.id} m={m} active={active} desktopSignedIn={!!user} settings={settings} onAction={onAction} iconClass="h-4.5 w-4.5 shrink-0 text-primary" className={`flex min-h-11 items-center gap-3 rounded-md py-2 text-sm font-semibold transition-colors hover:bg-sidebar-accent ${desktopMenuOpen ? "px-3" : "justify-center px-0"} ${active ? "bg-sidebar-accent text-sidebar-primary" : "text-sidebar-foreground"}`}><span className={desktopMenuOpen ? "min-w-0 break-words" : "sr-only"}>{pickLang(m.label, lang, m.system_key ?? "")}</span></NavItem>;
             })}
           </nav>
-          {menu.filter(visible).some(isSettingsItem) && <div className="mt-5 border-t border-sidebar-border pt-3">
+          {menu.filter(visible).filter((m) => user || m.target_value !== "logout").some(isSettingsItem) && <div className="mt-5 border-t border-sidebar-border pt-3">
             <Button variant="ghost" title={tr("Settings")} className={`w-full ${desktopMenuOpen ? "justify-start" : "justify-center px-0"}`} aria-expanded={settingsOpen} aria-controls="desktop-menu-settings" onClick={() => { setDesktopMenuOpen(true); setSettingsOpen((open) => !open); }}><Settings2 className="shrink-0 text-primary" /><span className={desktopMenuOpen ? "" : "sr-only"}>{tr("Settings")}</span>{desktopMenuOpen && <ChevronDown className={`ml-auto transition-transform motion-reduce:transition-none ${settingsOpen ? "rotate-180" : ""}`} />}</Button>
             {settingsOpen && <div id="desktop-menu-settings" className="mt-2 flex flex-col gap-1">
-              {menu.filter(visible).filter(isSettingsItem).map((m) => <NavItem key={m.id} m={m} settings={settings} onAction={onAction} iconClass={`h-4 w-4 shrink-0 ${m.target_value === "logout" ? "text-destructive" : "text-primary"}`} className={`flex items-center gap-3 rounded-md px-3 py-2.5 text-sm ${m.target_value === "logout" ? "text-destructive" : "text-sidebar-foreground"}`} />)}
+              {menu.filter(visible).filter(isSettingsItem).filter((m) => user || m.target_value !== "logout").map((m) => <NavItem key={m.id} m={m} settings={settings} onAction={onAction} iconClass={`h-4 w-4 shrink-0 ${m.target_value === "logout" ? "text-destructive" : "text-primary"}`} className={`flex items-center gap-3 rounded-md px-3 py-2.5 text-sm ${m.target_value === "logout" ? "text-destructive" : "text-sidebar-foreground"}`} />)}
             </div>}
           </div>}
         </div>
-      </aside>}
+      </aside>
 
       <Sheet open={menuOpen && !isDesktop} onOpenChange={setMenuOpen}>
         <SheetContent side={isMobile ? "bottom" : "right"} className={isMobile ? "max-h-[85vh] overflow-y-auto rounded-t-3xl" : "w-80 overflow-y-auto"}>

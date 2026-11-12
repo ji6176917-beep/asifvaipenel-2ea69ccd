@@ -8,6 +8,7 @@ import { Empty, ErrorState } from "@/components/ui-kit";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTr } from "@/lib/i18n";
+import { DesktopDashboard } from "@/components/DesktopDashboard";
 import orderBanner from "@/assets/order-banner.jpg";
 import orderGrowth from "@/assets/order-growth.jpg";
 
@@ -40,6 +41,7 @@ function OrderPage() {
   }).filter((p) => p.name.toLowerCase().includes(query));
   return (
     <div className="order-reference-page">
+      <DesktopDashboard />
       <section className="order-welcome">
         <img className="order-banner-art" src={orderBanner} alt="" width={1280} height={560} />
         <div className="order-welcome-copy">
