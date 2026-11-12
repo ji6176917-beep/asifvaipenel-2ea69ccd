@@ -11,6 +11,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { grownValue } from "@/components/LiveStats";
 import { Button } from "@/components/ui/button";
 import { OrderForm } from "@/components/OrderForm";
+import welcomeArt from "@/assets/welcome-social.png";
+import { AccountLevelButton } from "@/components/AccountLevels";
 
 export function DesktopDashboard() {
   const tr = useTr();
@@ -39,7 +41,9 @@ export function DesktopDashboard() {
   return <div className="desktop-dashboard hidden lg:block">
     <section className="desktop-welcome-grid">
       <div className="desktop-welcome-copy">
+        <img src={welcomeArt} alt="" width={816} height={816} className="welcome-art" />
         <h1>{tr("Hello")}, {name} 👋</h1>
+        {user && <div className="mt-2"><AccountLevelButton /></div>}
         <p>{tr("Welcome, We are ready to provide you with the best social media services on the market.")}</p>
         {!user && <div className="mt-4 flex gap-2"><Button asChild variant="secondary"><Link to="/sign-in">{tr("Sign In")}</Link></Button><Button asChild variant="outline" className="border-primary-foreground/40 bg-transparent text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"><Link to="/sign-up">{tr("Sign Up")}</Link></Button></div>}
       </div>

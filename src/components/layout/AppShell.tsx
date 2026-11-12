@@ -1,3 +1,4 @@
+import { AccountLevelButton } from "@/components/AccountLevels";
 import { useEffect, useState, type ReactNode } from "react";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -379,6 +380,7 @@ function Shell({ children }: { children: ReactNode }) {
               <Avatar path={profile?.avatar_url ?? null} name={profile?.full_name ?? ""} className="h-11 w-11 shrink-0" />
               <div className={desktopMenuOpen ? "min-w-0" : "sr-only"}><div className="truncate text-sm font-semibold">{profile?.full_name || profile?.username || tr("Account")}</div><div className="mt-1 font-mono text-xs text-muted-foreground">ID {profile?.public_id ?? "—"}</div></div>
             </Link>
+            <div className={desktopMenuOpen ? "mt-2 px-2" : "mt-2 flex justify-center"}><AccountLevelButton compact={!desktopMenuOpen} /></div>
             <div className={`desktop-profile-wallet ${desktopMenuOpen ? "" : "is-collapsed"}`}><Button asChild variant="secondary" className="h-7 rounded-full px-3 text-xs"><Link to="/balance" title={`${t("header.balance")}: ${money(profile?.balance ?? 0)}`}><Wallet className={desktopMenuOpen ? "sr-only" : "h-4 w-4"} /><span className={desktopMenuOpen ? "font-bold text-primary" : "sr-only"}>{money(profile?.balance ?? 0)}</span></Link></Button>{desktopMenuOpen && <Button asChild size="icon" className="h-6 w-6 rounded-full"><Link to="/add-funds" aria-label={t("menu.add_funds", "Add Funds")} title={t("menu.add_funds", "Add Funds")}><PlusCircle className="h-4 w-4" /></Link></Button>}</div>
           </div> : <div className={`desktop-profile mb-5 ${desktopMenuOpen ? "is-expanded" : ""}`}>
             {desktopMenuOpen && <p className="mb-3 px-2 text-sm font-semibold">{tr("Welcome, Guest")}</p>}

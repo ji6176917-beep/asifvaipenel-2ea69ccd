@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { TicketConversation } from "@/components/TicketConversation";
 import headset from "@/assets/support-headset.png";
+import ordersArt from "@/assets/orders-box.png";
 
 export const Route = createFileRoute("/_authenticated/tickets")({
   validateSearch: (s) => z.object({ task: z.string().max(80).optional() }).parse(s),
@@ -70,7 +71,7 @@ function Tickets() {
       <div className="relative mb-4"><Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" /><Input aria-label={tr("Search tickets or orders")} placeholder={tr("Search tickets or orders")} value={q} onChange={(e) => setQ(e.target.value)} className="pl-9" /></div>
       {view === "tickets" && <select aria-label={tr("Status")} className="mb-4" value={status} onChange={(e) => setStatus(e.target.value)}>{["all", "new", "pending", "answered", "closed"].map((s) => <option key={s} value={s}>{tr(s)}</option>)}</select>}
       <div className="overflow-x-auto"><table className="ticket-table"><thead><tr><th>{tr("ID")}</th><th>{tr("Subject")}</th><th>{tr("Status")}</th><th>{tr("Last update")}</th></tr></thead><tbody>{view === "tickets" ? rows.map((r) => <tr key={r.id}><td><Button variant="link" className="px-0" onClick={() => setSelected(r.id)}>#{r.ticket_no}</Button></td><td>{tr(r.subject)}<small>{tr(r.subcategory)}</small></td><td><span className={`ticket-status ticket-status-${r.status}`}>{tr(r.status)}</span></td><td>{new Date(r.updated_at).toLocaleString()}</td></tr>) : orders.map((o) => <tr key={o.order_code}><td><Link to="/orders" search={{ q: o.order_code }} className="font-semibold text-primary">#{o.order_code}</Link></td><td>{o.service_name}<small>{o.delivered_qty ?? 0}/{o.quantity}</small></td><td><span className="ticket-status">{tr(o.status)}</span></td><td>{new Date(o.updated_at).toLocaleString()}</td></tr>)}</tbody></table></div>
-      {!(view === "tickets" ? rows.length : orders.length) && <p className="py-8 text-center text-sm text-muted-foreground">{tr("No results found")}</p>}
+      {!(view === "tickets" ? rows.length : orders.length) && <div className="tracking-empty"><img src={ordersArt} alt="" width={816} height={816} loading="lazy" /><strong>{tr(q ? "No results found" : view === "tickets" ? "No tickets yet" : "No orders to track yet")}</strong><p className="text-xs text-muted-foreground">{tr("Your tickets and order progress will appear here.")}</p><div className="tracking-tips"><div><TicketIcon className="h-4 w-4 shrink-0 text-primary" />{tr("Create a ticket on the left for refill, cancel or speed up requests.")}</div><div><PackageSearch className="h-4 w-4 shrink-0 text-primary" />{tr("Every order status updates here automatically.")}</div></div>{view === "orders" && <Button asChild size="sm"><Link to="/order">{tr("New Order")}</Link></Button>}</div>}
     </div></section></div>
     <TicketConversation key={selected} ticket={data.tickets.find((t) => t.id === selected)} onClose={() => setSelected(undefined)} onReply={async (body) => { if (!selected) return; await reply({ data: { id: selected, body, attachments: [] } }); await qc.invalidateQueries({ queryKey: ticketsQuery.queryKey }); }} />
   </div>;

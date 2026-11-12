@@ -7,11 +7,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { PlatformIcon } from "@/lib/brand";
 import { friendlyError, money } from "@/lib/format";
-import { Empty, ErrorState, PageTitle, inputCls } from "@/components/ui-kit";
+import { Empty, ErrorState, inputCls } from "@/components/ui-kit";
 import { Button } from "@/components/ui/button";
 import { HistoryCard } from "@/components/HistoryCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTr } from "@/lib/i18n";
+import ordersArt from "@/assets/orders-box.png";
 
 export const Route = createFileRoute("/_authenticated/orders")({
   head: () => ({
@@ -88,7 +89,7 @@ function Orders() {
 
   return (
     <div className="space-y-4">
-      <PageTitle>{tr("Order History")}</PageTitle>
+      <section className="page-banner"><div className="relative z-10"><h1>{tr("Order History")}</h1><p>{tr("Track every order and its delivery status in real time.")}</p><div className="page-banner-stats"><span>{tr("Live status")}</span><span>{tr("Auto refund")}</span><span>{tr("24/7 support")}</span></div></div><img src={ordersArt} alt="" width={816} height={816} /></section>
       <div className="relative"><Search className="absolute left-4 top-3.5 h-5 w-5 text-muted-foreground" /><input className={`${inputCls} pl-12`} aria-label={tr("Search by Order ID, service or link")} placeholder={tr("Search by Order ID, service or link")} value={q} onChange={(e) => setQ(e.target.value)} /></div>
       <div className="flex gap-2 overflow-x-auto pb-1">
         {TABS.map((t) => <Button variant="ghost" key={t.k} onClick={() => setTab(t.k)} className={`shrink-0 rounded-full border px-4 py-1.5 text-sm font-semibold ${tab === t.k ? "border-primary bg-primary text-primary-foreground" : "border-border"}`}>{tr(t.l)}</Button>)}

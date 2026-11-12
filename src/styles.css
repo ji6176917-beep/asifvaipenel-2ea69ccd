@@ -920,3 +920,39 @@
   .giveaway-steps p { font-size: 11px; }
   .tickets-layout { grid-template-columns: 1fr; }
 }
+
+/* Account levels */
+:root { --level-beginner: oklch(0.6 0.15 290); --level-silver: oklch(0.7 0.01 250); --level-gold: oklch(0.78 0.16 80); --level-diamond: oklch(0.65 0.15 230); --level-vip: oklch(0.62 0.2 340); --level-master: oklch(0.65 0.18 40); --level-legend: oklch(0.6 0.17 150); }
+.level-badge { display: inline-grid; place-items: center; border-radius: 9999px; color: var(--primary-foreground); background: radial-gradient(circle at 30% 25%, color-mix(in oklab, var(--lvl) 55%, var(--background)), var(--lvl)); box-shadow: 0 0 0 2px var(--background), 0 4px 10px -2px color-mix(in oklab, var(--lvl) 60%, transparent); flex-shrink: 0; }
+.level-badge-md { width: 34px; height: 34px; } .level-badge-md svg { width: 18px; height: 18px; }
+.level-badge-sm { width: 20px; height: 20px; } .level-badge-sm svg { width: 12px; height: 12px; }
+.level-chip { display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px 2px 2px; border-radius: 9999px; font-size: 11px; font-weight: 700; color: var(--lvl); background: color-mix(in oklab, var(--lvl) 12%, var(--background)); border: 1px solid color-mix(in oklab, var(--lvl) 35%, transparent); }
+.levels-head { padding: 18px 22px; background: var(--primary); color: var(--primary-foreground); border-radius: 8px 8px 0 0; }
+.levels-head h2 { font-size: 20px; font-weight: 800; } .levels-head p { font-size: 12px; opacity: .9; }
+.levels-scroll { overflow-x: auto; padding: 18px; }
+.levels-grid { display: grid; gap: 8px; min-width: 860px; }
+.levels-label-col, .levels-col { position: relative; border: 1px solid var(--border); border-radius: 10px; background: var(--card); }
+.levels-col.is-current { border: 2px solid var(--lvl); }
+.levels-current { position: absolute; top: -9px; left: 50%; transform: translateX(-50%); font-size: 9px; font-weight: 800; text-transform: uppercase; padding: 1px 8px; border-radius: 9999px; background: var(--lvl); color: var(--primary-foreground); }
+.levels-cell-head { display: flex; flex-direction: column; align-items: center; gap: 4px; min-height: 92px; justify-content: center; padding: 8px; font-weight: 800; font-size: 13px; text-align: center; }
+.levels-label-col .levels-cell-head { color: var(--primary); font-size: 16px; }
+.levels-cell-head small { color: var(--lvl); font-size: 11px; font-weight: 700; }
+.levels-perk { display: flex; align-items: center; min-height: 40px; padding: 0 12px; font-size: 12px; border-top: 1px solid var(--border); }
+
+/* Page banners */
+.page-banner { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 22px 26px; border-radius: 14px; overflow: hidden; color: var(--primary-foreground); background: linear-gradient(120deg, var(--primary), color-mix(in oklab, var(--primary) 65%, var(--foreground))); box-shadow: 0 12px 30px -16px color-mix(in oklab, var(--primary) 70%, transparent); }
+.page-banner::after { content: ""; position: absolute; right: -60px; top: -60px; width: 220px; height: 220px; border-radius: 9999px; background: color-mix(in oklab, var(--primary-foreground) 12%, transparent); }
+.page-banner h1 { font-size: 24px; font-weight: 800; } .page-banner p { margin-top: 6px; font-size: 13px; line-height: 1.6; opacity: .92; max-width: 520px; }
+.page-banner img { position: relative; z-index: 1; width: 120px; height: 120px; object-fit: contain; flex-shrink: 0; }
+.page-banner-stats { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.page-banner-stats span { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 9999px; background: color-mix(in oklab, var(--primary-foreground) 18%, transparent); }
+@media (max-width: 640px) { .page-banner { padding: 18px; } .page-banner h1 { font-size: 20px; } .page-banner img { width: 84px; height: 84px; } }
+.welcome-art { position: absolute; right: 12px; bottom: -6px; width: 150px; height: 150px; object-fit: contain; pointer-events: none; }
+.desktop-welcome-copy { position: relative; overflow: hidden; padding-right: 170px !important; }
+.qna-item { border: 1px solid var(--border); border-radius: 12px; background: var(--card); transition: box-shadow .2s, border-color .2s; }
+.qna-item[data-open="true"] { border-color: color-mix(in oklab, var(--primary) 45%, transparent); box-shadow: 0 10px 24px -18px var(--primary); }
+.qna-num { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 8px; font-size: 13px; font-weight: 800; color: var(--primary); background: color-mix(in oklab, var(--primary) 12%, var(--background)); flex-shrink: 0; }
+.tracking-empty { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 26px 12px; text-align: center; }
+.tracking-empty img { width: 120px; height: 120px; object-fit: contain; }
+.tracking-tips { display: grid; gap: 8px; width: 100%; max-width: 360px; text-align: left; margin-top: 6px; }
+.tracking-tips div { display: flex; gap: 8px; align-items: flex-start; font-size: 12px; padding: 8px 10px; border-radius: 8px; background: var(--secondary); }

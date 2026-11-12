@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, MessageCircleQuestion } from "lucide-react";
+import qnaArt from "@/assets/qna-help.png";
 import ReactMarkdown from "react-markdown";
 import { supabase } from "@/integrations/supabase/client";
 import { useI18n, pickLang } from "@/lib/i18n";
-import { Empty, PageTitle } from "@/components/ui-kit";
+import { Empty } from "@/components/ui-kit";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export const Route = createFileRoute("/qna")({
@@ -35,19 +36,19 @@ function Page() {
     },
   });
   return (
-    <div className="mx-auto max-w-2xl">
-      <PageTitle>{t("qna.title", "QnA")}</PageTitle>
+    <div className="mx-auto max-w-3xl space-y-5">
+      <section className="page-banner"><div className="relative z-10"><h1>{t("qna.title", "QnA")}</h1><p>{tr("Answers to the most common questions about orders and payments.")}</p><div className="page-banner-stats"><span><MessageCircleQuestion className="mr-1 inline h-3 w-3" />{data?.length ?? 0} {tr("questions")}</span></div></div><img src={qnaArt} alt="" width={816} height={816} /></section>
       {isLoading ? <Skeleton className="h-48 rounded-3xl" /> : !data?.length ? <Empty text={tr("No questions yet.")} /> : (
         <div className="space-y-3">
-          {data.map((q) => {
+          {data.map((q, i) => {
             const isOpen = open === q.id;
             return (
-              <div key={q.id} className="glass rounded-3xl">
+              <div key={q.id} className="qna-item" data-open={isOpen}>
                 <button aria-expanded={isOpen} onClick={() => setOpen(isOpen ? null : q.id)} className="flex w-full items-center justify-between gap-3 p-5 text-left">
-                  <span className="label-premium text-lg">{pickLang(q.question, lang)}</span>
+                  <span className="flex items-center gap-3"><span className="qna-num">{i + 1}</span><span className="font-semibold">{pickLang(q.question, lang)}</span></span>
                   <ChevronDown className={`h-5 w-5 shrink-0 text-primary transition ${isOpen ? "rotate-180" : ""}`} />
                 </button>
-                {isOpen && <div className="md-content px-5 pb-5 text-muted-foreground"><ReactMarkdown>{pickLang(q.answer, lang)}</ReactMarkdown></div>}
+                {isOpen && <div className="md-content border-t px-5 pb-5 pt-4 text-sm text-muted-foreground"><ReactMarkdown>{pickLang(q.answer, lang)}</ReactMarkdown></div>}
               </div>
             );
           })}
