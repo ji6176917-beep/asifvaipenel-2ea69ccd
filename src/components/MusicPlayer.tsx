@@ -4,10 +4,29 @@ import { useServerFn } from "@tanstack/react-start";
 import { Music, Pause, Play, Volume2, VolumeX, X, Power } from "lucide-react";
 import { getWelcomeSong } from "@/lib/music.functions";
 import { settingsQuery } from "@/lib/queries";
+import { Button } from "@/components/ui/button";
+import { useTr } from "@/lib/i18n";
 
-type Ctx = { toggleOpen: () => void; available: boolean };
+type Ctx = { toggleOpen: () => void; available: boolean; title?: string; cover?: string | null; playing?: boolean; volume?: number; togglePlayback?: () => void; changeVolume?: (v: number) => void; restart?: () => void };
 const MusicCtx = createContext<Ctx>({ toggleOpen: () => {}, available: false });
 export const useMusic = () => useContext(MusicCtx);
+
+export function DesktopMusicPlayer() {
+  const music = useMusic();
+  const tr = useTr();
+  return <div className="desktop-music">
+    <div className="desktop-music-cover">{music.cover ? <img src={music.cover} alt="" /> : <Music className="h-6 w-6" />}</div>
+    <div className="desktop-music-controls">
+      <p className="desktop-music-title">{music.title || tr("Music")}</p>
+      <div className="flex items-center justify-between">
+        <Button variant="ghost" size="icon" className="h-7 w-7" title={tr("Restart")} aria-label={tr("Restart")} disabled={!music.available} onClick={music.restart}><Music className="h-3 w-3" /></Button>
+        <Button size="icon" className="h-7 w-7 rounded-full" title={music.playing ? tr("Pause") : tr("Play")} aria-label={music.playing ? tr("Pause") : tr("Play")} disabled={!music.available} onClick={music.togglePlayback}>{music.playing ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}</Button>
+        <Button variant="ghost" size="icon" className="h-7 w-7" title={tr("Music")} aria-label={tr("Music")} onClick={music.toggleOpen}><Volume2 className="h-3 w-3" /></Button>
+      </div>
+      <input type="range" aria-label={tr("Volume")} min={0} max={1} step={0.05} value={music.volume ?? 0.7} disabled={!music.available} onChange={(e) => music.changeVolume?.(Number(e.target.value))} />
+    </div>
+  </div>;
+}
 
 const fmt = (t: number) => (isFinite(t) ? `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, "0")}` : "0:00");
 
@@ -65,7 +84,7 @@ export function MusicProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <MusicCtx.Provider value={{ toggleOpen: () => setOpen((o) => !o), available: !!song?.url }}>
+    <MusicCtx.Provider value={{ toggleOpen: () => setOpen((o) => !o), available: !!song?.url, title: song?.title ?? "", cover: song?.cover ?? null, playing, volume, togglePlayback: () => { if (off) setPower(true); else toggle(); }, changeVolume: (v) => { setVolume(v); localStorage.setItem("music_vol", String(v)); }, restart: () => { if (audio.current) audio.current.currentTime = 0; } }}>
       {children}
       {song?.url && (
         <audio ref={audio} src={song.url} loop={song.loop} preload="auto"

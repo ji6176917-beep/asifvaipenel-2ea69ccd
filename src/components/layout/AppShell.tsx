@@ -17,7 +17,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { UserInbox } from "@/components/UserInbox";
 import { PlatformIcon, TelegramIcon, WhatsAppIcon } from "@/lib/brand";
 import { toast } from "sonner";
-import { MusicProvider, useMusic } from "@/components/MusicPlayer";
+import { MusicProvider, useMusic, DesktopMusicPlayer } from "@/components/MusicPlayer";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useI18n, LANGUAGES, pickLang } from "@/lib/i18n";
 import { useMenu, MenuIcon, type MenuItem } from "@/lib/menu";
@@ -367,25 +367,27 @@ function Shell({ children }: { children: ReactNode }) {
         </div>
       </nav>
 
-      <aside aria-label={tr("Menu")} className={`fixed inset-y-0 left-0 z-40 hidden flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground lg:flex ${desktopMenuOpen ? "w-64" : "w-16"}`}>
+      <aside aria-label={tr("Menu")} className={`desktop-sidebar fixed inset-y-0 left-0 z-40 hidden flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground lg:flex ${desktopMenuOpen ? "w-64" : "w-16"}`}>
         <div className={`flex h-[60px] shrink-0 items-center gap-2 border-b border-sidebar-border ${desktopMenuOpen ? "px-5" : "justify-center px-2"}`}>
           <Link to="/" title={siteName} className="flex min-w-0 items-center gap-2"><img src={siteLogo.url} alt={siteName} width={28} height={28} className="h-7 w-7 shrink-0 object-contain" /><span className={desktopMenuOpen ? "truncate font-display text-sm font-bold" : "sr-only"}>{siteName}</span></Link>
         </div>
         <div className={`min-h-0 flex-1 overflow-y-auto overscroll-contain py-5 ${desktopMenuOpen ? "px-3" : "px-2"}`}>
-          {user ? <div className="mb-5 border-b border-sidebar-border pb-5">
+          {user ? <div className={`desktop-profile mb-5 ${desktopMenuOpen ? "is-expanded" : ""}`}>
             <Link to="/profile" title={tr("Account")} className={`flex min-w-0 items-center gap-3 ${desktopMenuOpen ? "px-2" : "justify-center"}`}>
               <Avatar path={profile?.avatar_url ?? null} name={profile?.full_name ?? ""} className="h-11 w-11 shrink-0" />
               <div className={desktopMenuOpen ? "min-w-0" : "sr-only"}><div className="truncate text-sm font-semibold">{profile?.full_name || profile?.username || tr("Account")}</div><div className="mt-1 font-mono text-xs text-muted-foreground">ID {profile?.public_id ?? "—"}</div></div>
             </Link>
             <Button asChild variant="secondary" className={`mt-4 h-auto w-full py-3 ${desktopMenuOpen ? "justify-between" : "justify-center px-0"}`}><Link to="/balance" title={`${t("header.balance")}: ${money(profile?.balance ?? 0)}`}><span className="flex items-center gap-2"><Wallet className="shrink-0" /><span className={desktopMenuOpen ? "" : "sr-only"}>{t("header.balance")}</span></span><span className={desktopMenuOpen ? "font-bold text-primary" : "sr-only"}>{money(profile?.balance ?? 0)}</span></Link></Button>
             {desktopMenuOpen && <Button asChild className="mt-2 w-full"><Link to="/add-funds"><PlusCircle />{t("menu.add_funds", "Add Funds")}</Link></Button>}
-          </div> : <div className="mb-5 border-b border-sidebar-border pb-5">
+          </div> : <div className={`desktop-profile mb-5 ${desktopMenuOpen ? "is-expanded" : ""}`}>
             {desktopMenuOpen && <p className="mb-3 px-2 text-sm font-semibold">{tr("Welcome, Guest")}</p>}
             <Button asChild className={`w-full ${desktopMenuOpen ? "" : "px-0"}`}><Link to="/sign-in" title={tr("Sign In")}><LogIn className="shrink-0" /><span className={desktopMenuOpen ? "" : "sr-only"}>{tr("Sign In")}</span></Link></Button>
             {desktopMenuOpen && <Button asChild variant="secondary" className="mt-2 w-full"><Link to="/sign-up">{tr("Sign Up")}</Link></Button>}
           </div>}
+          {desktopMenuOpen && <DesktopMusicPlayer />}
+          {desktopMenuOpen && <div className="desktop-menu-group"><ShoppingCart className="h-4 w-4" />{tr("ORDER & SERVICES")}</div>}
           <nav className="flex flex-col gap-1" aria-label={tr("Menu")}>
-            {menu.filter(visible).filter((m) => !isSettingsItem(m)).map((m) => {
+            {menu.filter((m) => !isSettingsItem(m)).map((m) => {
               const active = m.target_type === "internal_route" && (m.target_value === "/" ? path === "/" : path === m.target_value || path.startsWith(`${m.target_value}/`));
               return <NavItem key={m.id} m={m} active={active} desktopSignedIn={!!user} settings={settings} onAction={onAction} iconClass="h-4.5 w-4.5 shrink-0 text-primary" className={`flex min-h-11 items-center gap-3 rounded-md py-2 text-sm font-semibold transition-colors hover:bg-sidebar-accent ${desktopMenuOpen ? "px-3" : "justify-center px-0"} ${active ? "bg-sidebar-accent text-sidebar-primary" : "text-sidebar-foreground"}`}><span className={desktopMenuOpen ? "min-w-0 break-words" : "sr-only"}>{pickLang(m.label, lang, m.system_key ?? "")}</span></NavItem>;
             })}
