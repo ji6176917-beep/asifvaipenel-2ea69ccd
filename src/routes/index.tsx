@@ -1,3 +1,4 @@
+import { DesktopDashboard } from "@/components/DesktopDashboard";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -156,7 +157,8 @@ function Home() {
 
   return (
     <div className="home-reference-content">
-      {cfg.sections.filter((x) => x.on && blocks[x.id]).map((x) => <div key={x.id}>{blocks[x.id]}</div>)}
+      <div className="hidden px-6 pt-6 lg:block"><DesktopDashboard /></div>
+      {cfg.sections.filter((x) => x.on && blocks[x.id]).map((x) => <div key={x.id} className={x.id === "hero" ? "lg:hidden" : undefined}>{blocks[x.id]}</div>)}
       <div className="home-mobile-only"><LiveStats /></div>
     </div>
   );
