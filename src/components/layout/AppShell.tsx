@@ -29,6 +29,7 @@ import ReactMarkdown from "react-markdown";
 import { FONTS, homeConfig, themeConfig, themeIsCustom, type HomeConfig, type ThemeConfig } from "@/lib/site-config";
 import siteLogo from "@/assets/apex-header-logo.png.asset.json";
 import { Button } from "@/components/ui/button";
+import { CalendarDays } from "lucide-react";
 import { RouteTransition } from "@/components/layout/RouteTransition";
 import { DESKTOP_MENU_BREAKPOINT, desktopMenuDestination, isSettingsItem, showDesktopMenu } from "@/components/layout/desktop-menu";
 
@@ -257,6 +258,7 @@ function Shell({ children }: { children: ReactNode }) {
             <img src={siteLogo.url} alt={`${siteName} - Global Social Media Growth Logo`} width={36} height={36} className="h-9 w-auto shrink-0 object-contain" />
             <span className="home-brand-copy min-w-0"><span className="home-brand-name block truncate font-display text-base font-bold sm:text-lg">{headerName}</span>{path === "/" && <span className="home-brand-tagline">{tr("Social Media Growth Partner")}</span>}</span>
           </Link>
+          {desktopSidebar && <div className="header-page-title hidden min-w-0 items-center gap-3 lg:flex"><h1>{tr(pageTitle(path))}</h1><span className="header-date-pill"><CalendarDays className="h-4 w-4" />{new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}</span></div>}
           <div className="home-header-tools ml-auto flex shrink-0 items-center gap-1.5">
             {desktopSidebar && <Button variant="ghost" size="icon" aria-label={desktopMenuOpen ? tr("Close menu") : t("header.open_menu")} title={desktopMenuOpen ? tr("Close menu") : t("header.open_menu")} aria-expanded={desktopMenuOpen} onClick={() => setDesktopMenuOpen((open) => !open)}>{desktopMenuOpen ? <PanelLeftClose /> : <PanelLeftOpen />}</Button>}
             {user ? (<>
@@ -446,4 +448,14 @@ function Shell({ children }: { children: ReactNode }) {
       </Dialog>
     </div>
   );
+}
+
+const PAGE_TITLES: [string, string][] = [
+  ["/add-funds/history", "Add Funds History"], ["/add-funds", "Add Funds"], ["/orders", "Order History"], ["/order", "New order"],
+  ["/service/", "New order"], ["/dashboard", "Dashboard"], ["/profile", "My Account"], ["/balance", "Balance"], ["/tickets", "My Tickets"],
+  ["/giveaway", "Giveaway"], ["/reseller-api", "API"], ["/qna", "QnA"], ["/about", "About Us"], ["/policy", "Policy"],
+];
+function pageTitle(path: string) {
+  if (path === "/") return "Home";
+  return PAGE_TITLES.find(([p]) => path.startsWith(p))?.[1] ?? "Apex SMM World";
 }

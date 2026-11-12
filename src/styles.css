@@ -977,3 +977,5 @@
 .qna-grid { display: grid; gap: 12px; align-items: start; }
 @media (min-width: 768px) { .qna-grid { grid-template-columns: 1fr 1fr; } }
 .qna-index { font-weight: 700; color: var(--primary); }
+.header-page-title h1 { font-family: var(--font-display, inherit); font-size: 26px; font-weight: 800; color: var(--primary); white-space: nowrap; }
+.header-date-pill { display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 14px; border-radius: 999px; border: 1.5px solid color-mix(in oklab, var(--primary) 45%, transparent); color: var(--primary); font-size: 14px; font-weight: 600; white-space: nowrap; }
