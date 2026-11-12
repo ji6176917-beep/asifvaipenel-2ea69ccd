@@ -8,6 +8,7 @@ import { Card, PageTitle, Spinner, inputCls, labelCls } from "@/components/ui-ki
 import { StrengthBar } from "@/components/StrengthBar";
 import { OAuthButtons } from "@/components/OAuthButtons";
 import { useTr } from "@/lib/i18n";
+import { checkEmailDomainAllowed } from "@/lib/sign-in.functions";
 
 export const Route = createFileRoute("/sign-up")({
   head: () => ({
@@ -58,6 +59,8 @@ function SignUp() {
     const { data: set } = await supabase.from("site_settings").select("allow_signups").eq("id", 1).maybeSingle();
     if (set && !set.allow_signups) { toast.error(tr("New sign-ups are closed right now. Please try again later.")); return; }
     setBusy(true);
+    const dom = await checkEmailDomainAllowed({ data: { email: r.data.email } }).catch(() => ({ allowed: true }));
+    if (!dom.allowed) { setBusy(false); setErrors({ email: tr("This email provider is not allowed. Please use another email.") }); return; }
     const { data, error } = await supabase.auth.signUp({
       email: r.data.email,
       password: r.data.password,

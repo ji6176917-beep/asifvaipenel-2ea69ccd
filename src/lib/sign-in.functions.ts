@@ -37,3 +37,16 @@ export const signInWithIdentifier = createServerFn({ method: "POST" })
     }
     return { ok: true as const, access_token: res.session.access_token, refresh_token: res.session.refresh_token };
   });
+
+/** Server-side check of the admin blocked-email-domain list (list itself is not readable by clients). */
+export const checkEmailDomainAllowed = createServerFn({ method: "POST" })
+  .inputValidator((d) => z.object({ email: z.string().trim().toLowerCase().email().max(255) }).parse(d))
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const domain = data.email.split("@")[1] ?? "";
+    const { data: s } = await supabaseAdmin.from("site_settings").select("blocked_email_domains").eq("id", 1).maybeSingle();
+    const raw = (s as { blocked_email_domains?: unknown } | null)?.blocked_email_domains;
+    const list: string[] = Array.isArray(raw) ? raw.map(String) : typeof raw === "string" ? raw.split(/[\s,]+/) : [];
+    const blocked = list.map((x) => x.trim().toLowerCase().replace(/^@/, "")).filter(Boolean);
+    return { allowed: !blocked.includes(domain) };
+  });
