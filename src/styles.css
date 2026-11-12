@@ -1111,7 +1111,7 @@
 
 /* Auth 3D flip */
 .auth-stage { perspective: 1600px; }
-.auth-flip { transform-style: preserve-3d; animation-duration: .7s; animation-timing-function: cubic-bezier(.2,.8,.2,1); animation-fill-mode: both; }
+.auth-flip { transform-style: preserve-3d; animation-duration: .45s; animation-timing-function: cubic-bezier(.2,.8,.2,1); animation-fill-mode: both; }
 .auth-flip-left { animation-name: auth-flip-in-left; }
 .auth-flip-right { animation-name: auth-flip-in-right; }
 @keyframes auth-flip-in-left { from { opacity: 0; transform: rotateY(-75deg) translateX(-40px); } to { opacity: 1; transform: none; } }

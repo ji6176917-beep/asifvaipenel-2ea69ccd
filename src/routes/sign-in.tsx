@@ -78,7 +78,7 @@ function SignIn() {
           <button disabled={busy} className="btn-glow w-full">{busy && <Spinner />} {tr("Sign In")}</button>
         </form>
         <div className="mt-5"><OAuthButtons /></div>
-        <p className="mt-5 text-center text-sm text-muted-foreground">{tr("New here?")} <Link to="/sign-up" className="font-semibold text-primary">{tr("Create account")}</Link></p>
+        <p className="mt-5 text-center text-sm text-muted-foreground">{tr("New here?")} <Link to="/sign-up" preload="intent" className="font-semibold text-primary">{tr("Create account")}</Link></p>
     </AuthLayout>
   );
 }
