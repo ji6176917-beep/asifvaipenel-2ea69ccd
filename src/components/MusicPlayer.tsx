@@ -23,7 +23,7 @@ export function DesktopMusicPlayer() {
         <Button size="icon" className="h-7 w-7 rounded-full" title={music.playing ? tr("Pause") : tr("Play")} aria-label={music.playing ? tr("Pause") : tr("Play")} disabled={!music.available} onClick={music.togglePlayback}>{music.playing ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}</Button>
         <Button variant="ghost" size="icon" className="h-7 w-7" title={tr("Music")} aria-label={tr("Music")} onClick={music.toggleOpen}><Volume2 className="h-3 w-3" /></Button>
       </div>
-      <input type="range" aria-label={tr("Volume")} min={0} max={1} step={0.05} value={music.volume ?? 0.7} disabled={!music.available} onChange={(e) => music.changeVolume?.(Number(e.target.value))} />
+      <input type="range" aria-label={tr("Volume")} min={0} max={1} step={0.05} value={music.volume ?? 0.4} disabled={!music.available} onChange={(e) => music.changeVolume?.(Number(e.target.value))} />
     </div>
   </div>;
 }
@@ -40,20 +40,18 @@ export function MusicProvider({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(false);
-  const [volume, setVolume] = useState(0.7);
+  const [volume, setVolume] = useState(0.4);
   const [time, setTime] = useState(0);
   const [dur, setDur] = useState(0);
   const [off, setOff] = useState(true);
-  const [overlay, setOverlay] = useState(false);
 
   useEffect(() => {
     setOff(localStorage.getItem("music_off") === "1");
   }, []);
   useEffect(() => {
-    const saved = localStorage.getItem("music_vol");
+    const saved = localStorage.getItem("music_vol_user");
     const v = Number(saved);
-    if (saved !== null && v >= 0 && v <= 1) setVolume(v);
-    else if (song) setVolume(song.volume / 100);
+    setVolume(saved !== null && v >= 0 && v <= 1 ? v : 0.4);
   }, [song]);
 
   const play = () => { audio.current?.play().then(() => setPlaying(true)).catch(() => setPlaying(false)); };
@@ -63,9 +61,8 @@ export function MusicProvider({ children }: { children: ReactNode }) {
     if (!song?.url || off) { audio.current?.pause(); return; }
     if (!song.autoplay) return;
     const firstVisit = localStorage.getItem("music_entered") !== "1";
-    if (firstVisit) { setOverlay(true); return; }
-    if (song.show_for === "first") return;
-    const start = () => { play(); cleanup(); };
+    if (!firstVisit && song.show_for === "first") return;
+    const start = () => { localStorage.setItem("music_entered", "1"); play(); cleanup(); };
     const evs = ["pointerdown", "keydown", "scroll", "touchstart"] as const;
     const cleanup = () => evs.forEach((e) => window.removeEventListener(e, start));
     evs.forEach((e) => window.addEventListener(e, start, { once: true, passive: true }));
@@ -75,7 +72,6 @@ export function MusicProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => { if (audio.current) { audio.current.volume = volume; audio.current.muted = muted; } }, [volume, muted]);
 
-  const enter = () => { localStorage.setItem("music_entered", "1"); setOverlay(false); play(); };
   const toggle = () => { if (!audio.current) return; if (playing) { audio.current.pause(); setPlaying(false); } else play(); };
   const setPower = (on: boolean) => {
     localStorage.setItem("music_off", on ? "0" : "1");
@@ -84,25 +80,13 @@ export function MusicProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <MusicCtx.Provider value={{ toggleOpen: () => setOpen((o) => !o), available: !!song?.url, title: song?.title ?? "", cover: song?.cover ?? null, playing, volume, togglePlayback: () => { if (off) setPower(true); else toggle(); }, changeVolume: (v) => { setVolume(v); localStorage.setItem("music_vol", String(v)); }, restart: () => { if (audio.current) audio.current.currentTime = 0; } }}>
+    <MusicCtx.Provider value={{ toggleOpen: () => setOpen((o) => !o), available: !!song?.url, title: song?.title ?? "", cover: song?.cover ?? null, playing, volume, togglePlayback: () => { if (off) setPower(true); else toggle(); }, changeVolume: (v) => { setVolume(v); localStorage.setItem("music_vol_user", String(v)); }, restart: () => { if (audio.current) audio.current.currentTime = 0; } }}>
       {children}
       {song?.url && (
         <audio ref={audio} src={song.url} loop={song.loop} preload="auto"
           onTimeUpdate={(e) => setTime(e.currentTarget.currentTime)}
           onLoadedMetadata={(e) => setDur(e.currentTarget.duration)}
           onPause={() => setPlaying(false)} onPlay={() => setPlaying(true)} />
-      )}
-
-      {overlay && (
-        <button onClick={enter} className="fixed inset-0 z-[60] flex flex-col items-center justify-center gap-5 bg-background/85 backdrop-blur-xl">
-          <span className="bg-brand shadow-glow flex h-24 w-24 animate-pulse items-center justify-center rounded-full text-primary-foreground">
-            <Play className="ml-1 h-10 w-10" />
-          </span>
-          <span className="text-gradient font-display text-3xl font-bold">Tap to enter</span>
-          <span className="text-sm text-muted-foreground">♪ {song?.title}{song?.artist ? ` — ${song.artist}` : ""}</span>
-          <span onClick={(e) => { e.stopPropagation(); localStorage.setItem("music_entered", "1"); setPower(false); setOverlay(false); }}
-            className="mt-2 text-xs text-muted-foreground underline underline-offset-4">Enter without music</span>
-        </button>
       )}
 
       {open && (
@@ -130,7 +114,7 @@ export function MusicProvider({ children }: { children: ReactNode }) {
                   {muted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
                 </button>
                 <input aria-label="Volume" type="range" min={0} max={1} step={0.05} value={volume}
-                  onChange={(e) => { const v = Number(e.target.value); setVolume(v); localStorage.setItem("music_vol", String(v)); }} className="flex-1 accent-primary" />
+                  onChange={(e) => { const v = Number(e.target.value); setVolume(v); localStorage.setItem("music_vol_user", String(v)); }} className="flex-1 accent-primary" />
                 <button aria-label={off ? "Turn music on" : "Turn music off"} onClick={() => setPower(off)}
                   className={`rounded-full p-2 ${off ? "text-muted-foreground" : "text-primary"} hover:bg-accent`} title={off ? "Music is off" : "Music is on"}>
                   <Power className="h-5 w-5" />
