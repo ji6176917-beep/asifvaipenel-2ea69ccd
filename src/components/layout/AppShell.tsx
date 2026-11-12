@@ -435,6 +435,13 @@ function Shell({ children }: { children: ReactNode }) {
               </Link>
             </div>
           )}
+          {!user && (
+            <div className="mx-3 rounded-2xl border border-primary/20 bg-primary/5 p-3 shadow-sm">
+              <p className="mb-3 text-sm font-semibold">{tr("Welcome, Guest")}</p>
+              <Button asChild className="w-full"><Link to="/sign-in" onClick={() => setMenuOpen(false)}><LogIn className="shrink-0" />{tr("Sign In")}</Link></Button>
+              <Button asChild variant="secondary" className="mt-2 w-full"><Link to="/sign-up" onClick={() => setMenuOpen(false)}>{tr("Sign Up")}</Link></Button>
+            </div>
+          )}
           <div className="mx-3 mt-3"><DesktopMusicPlayer /></div>
           <div className="mt-3 flex flex-col gap-1.5 px-3 pb-6">
             {menu.filter(visible).filter((m) => m.system_key !== "music" && m.target_value !== "music").map((m) => (
