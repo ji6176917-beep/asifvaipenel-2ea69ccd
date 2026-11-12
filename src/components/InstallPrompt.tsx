@@ -53,23 +53,21 @@ export function InstallMenuButton({ className, iconClass, showLabel = true }: { 
   if (installed) return null;
   return (
     <>
-      <button type="button" title={tr("Install App")} className={className} onClick={() => { if (available) void installApp(); else setHelp(true); }}>
+      <button type="button" title={tr("Install App")} className={className} onClick={() => { if (available) void installApp(); else if (ios) setHelp(true); }}>
         <Download className={iconClass ?? "h-4.5 w-4.5 shrink-0 text-primary"} />
         <span className={showLabel ? "" : "sr-only"}>{tr("Install App")}</span>
       </button>
-      <Dialog open={help} onOpenChange={setHelp}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader><DialogTitle>{tr("Install App")}</DialogTitle></DialogHeader>
-          {ios ? (
+      {ios && (
+        <Dialog open={help} onOpenChange={setHelp}>
+          <DialogContent className="max-w-sm">
+            <DialogHeader><DialogTitle>{tr("Install App")}</DialogTitle></DialogHeader>
             <ol className="space-y-2 text-sm">
               <li className="flex items-center gap-2">1. {tr("Tap the Share button")} <Share className="h-4 w-4 text-primary" /></li>
               <li>2. {tr("Choose Add to Home Screen")}</li>
             </ol>
-          ) : (
-            <p className="text-sm text-muted-foreground">{tr("Open your browser menu (⋮) and choose Install app or Add to Home screen.")}</p>
-          )}
-        </DialogContent>
-      </Dialog>
+          </DialogContent>
+        </Dialog>
+      )}
     </>
   );
 }
