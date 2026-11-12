@@ -51,7 +51,7 @@ export function DesktopDashboard({ orderPage = false }: { orderPage?: boolean })
         <img src={welcomeArt} alt="" width={816} height={816} className="welcome-art" />
         <h1>{tr("Hello")}, {name} 👋</h1>
         <p>{tr("Welcome, We are ready to provide you with the best social media services on the market.")}</p>
-        <a href="https://www.trustpilot.com/review/apexsmmworld.com" target="_blank" rel="noreferrer" className="mt-3 inline-flex items-center gap-2 rounded-full bg-primary-foreground/20 px-3 py-1.5 text-sm font-bold text-primary-foreground backdrop-blur transition hover:bg-primary-foreground/30">
+        <a href="https://www.trustpilot.com/review/apexsmmworld.com" target="_blank" rel="noreferrer" className="rating-gold-pill mt-3 inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-bold transition">
           <span className="flex">{[0, 1, 2, 3].map((i) => <Star key={i} className="h-4 w-4 fill-current" />)}<Star className="h-4 w-4 fill-current opacity-50" /></span>
           4.5 <span className="font-medium opacity-90">{tr("Rating")}</span>
         </a>

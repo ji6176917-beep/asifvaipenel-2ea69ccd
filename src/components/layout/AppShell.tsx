@@ -8,6 +8,7 @@ import {
 
 } from "lucide-react";
 import { InstallPrompt, InstallMenuButton } from "@/components/InstallPrompt";
+import { RatingPrompt } from "@/components/RatingPrompt";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useAuth } from "@/lib/auth";
 import { settingsQuery } from "@/lib/queries";
@@ -241,6 +242,7 @@ function Shell({ children }: { children: ReactNode }) {
       {path !== "/" && path !== "/order" && <FloatingBackground cfg={home.bg} glowOn={theme.bg3d} />}
       <WelcomePopup s={settings as Settings | null | undefined} />
       <InstallPrompt />
+      <RatingPrompt />
 
       {annOn && !bannerClosed && (
         <div className="bg-brand flex items-center justify-center gap-3 px-4 py-2 text-sm text-primary-foreground" style={settings?.announcement_color ? { background: settings.announcement_color } : undefined}>

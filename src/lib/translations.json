@@ -353,7 +353,12 @@
     "Provider did not respond, please try again later": "সরবরাহকারী সাড়া দেয়নি, পরে আবার চেষ্টা করুন",
     "Refill rejected by provider": "সরবরাহকারী রিফিল প্রত্যাখ্যান করেছে",
     "Rating": "রেটিং",
-    "Rate Now": "রেটিং দিন"
+    "Rate Now": "রেটিং দিন",
+    "Rate us": "রেটিং দিন",
+    "Close": "বন্ধ করুন",
+    "Your order is complete!": "আপনার অর্ডার সম্পন্ন হয়েছে!",
+    "How was your experience with Apex SMM World? Tap a star to rate us.": "Apex SMM World-এ আপনার অভিজ্ঞতা কেমন ছিল? স্টারে চাপ দিয়ে রেটিং দিন।",
+    "Rate on Trustpilot": "Trustpilot-এ রেটিং দিন"
   },
   "hi": {
     "API Policy": "API पॉलिसी",

@@ -133,9 +133,7 @@ function Home() {
                 <Link to="/qna">{tr("Contact Support")}</Link>
               </Button>
             )}
-            <Button asChild variant="outline" className="mt-2 w-full justify-center gap-2 border-primary/40 text-primary hover:bg-primary/10">
-              <a href="https://www.trustpilot.com/review/apexsmmworld.com" target="_blank" rel="noreferrer"><Star className="h-4 w-4 fill-current" /> 4.5 · {tr("Rate Now")}</a>
-            </Button>
+            <a href="https://www.trustpilot.com/review/apexsmmworld.com" target="_blank" rel="noreferrer" className="rating-gold-btn mt-2 w-full"><Star className="h-4 w-4 fill-current" /> 4.5 · {tr("Rate Now")}</a>
           </div>
         </div>
         <div className="mt-6 space-y-2 lg:mt-0">
