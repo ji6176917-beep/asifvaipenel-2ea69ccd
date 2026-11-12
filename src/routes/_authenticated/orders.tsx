@@ -98,7 +98,7 @@ function Orders() {
       {query.isError && <ErrorState />}
       {query.isLoading && <Skeleton className="h-40 rounded-3xl" />}
       {query.isSuccess && list.length === 0 && <Empty text={tr("No orders found.")} />}
-      {query.isSuccess && list.length > 0 && <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">{[["Total", list.length], ["In progress", list.filter((o) => o.status === "pending" || o.status === "processing").length], ["Completed", list.filter((o) => o.status === "completed").length], ["Canceled/Rejected", list.filter((o) => o.status === "canceled" || o.status === "rejected").length]].map(([l, v]) => <div key={l as string} className="desktop-stat !min-h-0 !p-4"><span className="desktop-stat-label">{tr(l as string)}</span><strong>{v}</strong></div>)}</div>}
+      {query.isSuccess && list.length > 0 && <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">{[["Total", list.length], ["In progress", list.filter((o) => o.status === "pending" || o.status === "processing").length], ["Completed", list.filter((o) => o.status === "completed").length], ["Canceled/Rejected", list.filter((o) => o.status === "canceled" || o.status === "rejected").length]].map(([l, v]) => <div key={l as string} className="flex min-w-0 flex-col gap-1 rounded-2xl border border-border bg-card p-4 shadow-sm"><span className="text-xs font-semibold uppercase leading-tight tracking-wide text-muted-foreground">{tr(l as string)}</span><strong className="font-display text-2xl font-extrabold leading-none text-foreground">{v}</strong></div>)}</div>}
       <div className="grid gap-3">
         {list.map((o) => {
           const step = FLOW.indexOf(o.status);
