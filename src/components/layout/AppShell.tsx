@@ -6,6 +6,7 @@ import {
   LogOut, Bell, X, Mail, Sparkles, Code2, LayoutDashboard, Languages, Music, Check, Settings2, ChevronDown, PanelLeftClose, PanelLeftOpen, LogIn, Gift, Ticket,
 
 } from "lucide-react";
+import { InstallPrompt, InstallMenuButton } from "@/components/InstallPrompt";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useAuth } from "@/lib/auth";
 import { settingsQuery } from "@/lib/queries";
@@ -237,6 +238,7 @@ function Shell({ children }: { children: ReactNode }) {
       <ThemeApplier t={theme} />
       {path !== "/" && path !== "/order" && <FloatingBackground cfg={home.bg} glowOn={theme.bg3d} />}
       <WelcomePopup s={settings as Settings | null | undefined} />
+      <InstallPrompt />
 
       {annOn && !bannerClosed && (
         <div className="bg-brand flex items-center justify-center gap-3 px-4 py-2 text-sm text-primary-foreground" style={settings?.announcement_color ? { background: settings.announcement_color } : undefined}>
@@ -388,6 +390,7 @@ function Shell({ children }: { children: ReactNode }) {
           <nav className="flex flex-col gap-1" aria-label={tr("Menu")}>
             <Link to="/tickets" title={tr("My Tickets")} aria-current={path === "/tickets" ? "page" : undefined} className={`flex min-h-11 items-center gap-3 rounded-md py-2 text-sm font-semibold hover:bg-sidebar-accent ${desktopMenuOpen ? "px-3" : "justify-center"} ${path === "/tickets" ? "bg-sidebar-accent text-primary" : ""}`}><Ticket className="h-4.5 w-4.5 shrink-0 text-primary" /><span className={desktopMenuOpen ? "" : "sr-only"}>{tr("My Tickets")}</span></Link>
             <Link to="/giveaway" title={tr("Giveaway")} aria-current={path === "/giveaway" ? "page" : undefined} className={`flex min-h-11 items-center gap-3 rounded-md py-2 text-sm font-semibold hover:bg-sidebar-accent ${desktopMenuOpen ? "px-3" : "justify-center"} ${path === "/giveaway" ? "bg-sidebar-accent text-primary" : ""}`}><Gift className="h-4.5 w-4.5 shrink-0 text-primary" /><span className={desktopMenuOpen ? "" : "sr-only"}>{tr("Giveaway")}</span></Link>
+            <InstallMenuButton showLabel={desktopMenuOpen} className={`flex min-h-11 items-center gap-3 rounded-md py-2 text-left text-sm font-semibold text-sidebar-foreground hover:bg-sidebar-accent ${desktopMenuOpen ? "px-3" : "justify-center"}`} />
             {menu.filter((m) => !isSettingsItem(m)).map((m) => {
               const active = m.target_type === "internal_route" && (m.target_value === "/" ? path === "/" : path === m.target_value || path.startsWith(`${m.target_value}/`));
               return <NavItem key={m.id} m={m} active={active} desktopSignedIn={!!user} settings={settings} onAction={onAction} iconClass="h-4.5 w-4.5 shrink-0 text-primary" className={`flex min-h-11 items-center gap-3 rounded-md py-2 text-sm font-semibold transition-colors hover:bg-sidebar-accent ${desktopMenuOpen ? "px-3" : "justify-center px-0"} ${active ? "bg-sidebar-accent text-sidebar-primary" : "text-sidebar-foreground"}`}><span className={desktopMenuOpen ? "min-w-0 break-words" : "sr-only"}>{pickLang(m.label, lang, m.system_key ?? "")}</span></NavItem>;
@@ -421,6 +424,7 @@ function Shell({ children }: { children: ReactNode }) {
                 iconClass={`h-5 w-5 ${m.system_key === "logout" ? "" : "text-primary"}`}
                 className={`label-premium flex items-center gap-3 rounded-xl px-3 py-2.5 hover:bg-accent ${m.system_key === "logout" ? "text-destructive" : ""}`} />
             ))}
+            <InstallMenuButton iconClass="h-5 w-5 text-primary" className="label-premium flex items-center gap-3 rounded-xl px-3 py-2.5 text-left hover:bg-accent" />
           </div>
         </SheetContent>
       </Sheet>

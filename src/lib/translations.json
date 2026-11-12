@@ -306,7 +306,12 @@
     "Details": "বিস্তারিত",
     "View All Notifications": "সব নোটিফিকেশন দেখুন",
     "Show recent notifications": "সাম্প্রতিক নোটিফিকেশন দেখুন",
-    "Unread": "অপঠিত"
+    "Unread": "অপঠিত",
+    "Install App": "অ্যাপ ইনস্টল করুন",
+    "Install for faster ordering from your home screen.": "হোম স্ক্রিন থেকে দ্রুত অর্ডারের জন্য ইনস্টল করুন।",
+    "Tap the Share button": "Share বোতামে চাপ দিন",
+    "Choose Add to Home Screen": "Add to Home Screen বেছে নিন",
+    "Open your browser menu (⋮) and choose Install app or Add to Home screen.": "ব্রাউজারের মেনু (⋮) খুলে Install app বা Add to Home screen বেছে নিন।"
   },
   "hi": {
     "API Policy": "API पॉलिसी",

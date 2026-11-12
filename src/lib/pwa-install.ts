@@ -75,3 +75,20 @@ export function isIOS(): boolean {
 export function useInstallAvailable(): boolean {
   return useSyncExternalStore(subscribe, canInstallNow, () => false);
 }
+
+/** How long a dismissed install suggestion stays hidden. */
+export const INSTALL_SNOOZE_MS = 3 * 24 * 60 * 60 * 1000;
+const SNOOZE_KEY = "apex-install-snoozed-at";
+
+/** True when the suggestion was dismissed less than INSTALL_SNOOZE_MS ago. */
+export function isInstallSnoozed(dismissedAt: number | null, now = Date.now()): boolean {
+  return dismissedAt !== null && now - dismissedAt < INSTALL_SNOOZE_MS;
+}
+
+export function readInstallSnooze(): number | null {
+  try { const v = Number(localStorage.getItem(SNOOZE_KEY)); return v > 0 ? v : null; } catch { return null; }
+}
+
+export function snoozeInstall(): void {
+  try { localStorage.setItem(SNOOZE_KEY, String(Date.now())); } catch { /* ignore */ }
+}
