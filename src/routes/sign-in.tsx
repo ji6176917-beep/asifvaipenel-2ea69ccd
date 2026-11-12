@@ -1,3 +1,4 @@
+import { AuthLayout } from "@/components/AuthLayout";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { z } from "zod";
@@ -60,9 +61,7 @@ function SignIn() {
   };
 
   return (
-    <div className="mx-auto max-w-md">
-      <PageTitle sub={tr("Welcome back.")}>{tr("Sign In")}</PageTitle>
-      <Card>
+    <AuthLayout title={tr("Sign In")} sub={tr("Welcome back.")}>
         <form onSubmit={submit} className="space-y-4">
           <div>
             <label className={labelCls} htmlFor="id">{tr("Email / Phone / User ID / Username")}</label>
@@ -80,7 +79,6 @@ function SignIn() {
         </form>
         <div className="mt-5"><OAuthButtons /></div>
         <p className="mt-5 text-center text-sm text-muted-foreground">{tr("New here?")} <Link to="/sign-up" className="font-semibold text-primary">{tr("Create account")}</Link></p>
-      </Card>
-    </div>
+    </AuthLayout>
   );
 }
