@@ -122,7 +122,7 @@ function NavItem({ m, className, iconClass = "h-5 w-5 text-primary", onAction, s
     return <Link to={destination.to as never} title={label} aria-current={active ? "page" : undefined} className={className}>{inner}</Link>;
   }
   if (h.kind === "external") return <a href={h.to} target={h.to.startsWith("mailto:") ? undefined : "_blank"} rel="noreferrer" className={className}>{inner}</a>;
-  return <Button variant="ghost" type="button" onClick={() => (h.to === "support" ? tap() : onAction(h.to))} className={`${className} h-auto justify-start whitespace-normal text-left`}>{inner}</Button>;
+  return <Button variant="ghost" type="button" onClick={() => (h.to === "support" ? tap() : onAction(h.to))} className={`${className} h-auto justify-start whitespace-normal text-left ${showIcon ? "" : "!h-auto !p-0 !font-normal hover:!bg-transparent"}`}>{inner}</Button>;
 }
 
 function WelcomePopup({ s }: { s?: Settings | null | undefined }) {
@@ -253,12 +253,12 @@ function Shell({ children }: { children: ReactNode }) {
       )}
 
       <header className={`glass sticky top-0 z-40 rounded-none border-x-0 border-t-0 ${path === "/" ? "home-header" : ""}`}>
-        <div className="home-header-inner mx-auto grid max-w-5xl grid-cols-[minmax(0,1fr)_auto] items-center gap-2 px-4 py-2 lg:flex">
+        <div className="home-header-inner mx-auto grid max-w-5xl lg:max-w-none lg:px-6 lg:py-1.5 grid-cols-[minmax(0,1fr)_auto] items-center gap-2 px-4 py-2 lg:flex">
           <Link to="/" className={`flex min-w-0 items-center gap-2 ${desktopSidebar ? "lg:hidden" : ""}`}>
             <img src={siteLogo.url} alt={`${siteName} - Global Social Media Growth Logo`} width={36} height={36} className="h-9 w-auto shrink-0 object-contain" />
             <span className="home-brand-copy min-w-0"><span className="home-brand-name block truncate font-display text-base font-bold sm:text-lg">{headerName}</span>{path === "/" && <span className="home-brand-tagline">{tr("Social Media Growth Partner")}</span>}</span>
           </Link>
-          {desktopSidebar && <div className="header-page-title hidden min-w-0 items-center gap-3 lg:flex"><h1>{tr(pageTitle(path))}</h1><span className="header-date-pill"><CalendarDays className="h-4 w-4" />{new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}</span></div>}
+          {desktopSidebar && <div className="header-page-title hidden min-w-0 items-center gap-3 lg:flex"><span className="header-date-pill"><CalendarDays className="h-4 w-4" />{new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}</span></div>}
           <div className="home-header-tools ml-auto flex shrink-0 items-center gap-1.5">
             {desktopSidebar && <Button variant="ghost" size="icon" aria-label={desktopMenuOpen ? tr("Close menu") : t("header.open_menu")} title={desktopMenuOpen ? tr("Close menu") : t("header.open_menu")} aria-expanded={desktopMenuOpen} onClick={() => setDesktopMenuOpen((open) => !open)}>{desktopMenuOpen ? <PanelLeftClose /> : <PanelLeftOpen />}</Button>}
             {user ? (<>
@@ -377,14 +377,19 @@ function Shell({ children }: { children: ReactNode }) {
           <Link to="/" title={siteName} className="flex min-w-0 items-center gap-2"><img src={siteLogo.url} alt={siteName} width={28} height={28} className="h-7 w-7 shrink-0 object-contain" /><span className={desktopMenuOpen ? "truncate font-display text-sm font-bold" : "sr-only"}>{siteName}</span></Link>
         </div>
         <div className={`min-h-0 flex-1 overflow-y-auto overscroll-contain py-5 ${desktopMenuOpen ? "px-3" : "px-2"}`}>
-          {user ? <div className={`desktop-profile mb-5 ${desktopMenuOpen ? "is-expanded" : ""}`}>
-            <Link to="/profile" title={tr("Account")} className={`flex min-w-0 items-center gap-3 ${desktopMenuOpen ? "px-2" : "justify-center"}`}>
-              <Avatar path={profile?.avatar_url ?? null} name={profile?.full_name ?? ""} className="h-11 w-11 shrink-0" />
-              <div className={desktopMenuOpen ? "min-w-0" : "sr-only"}><div className="truncate text-sm font-semibold">{profile?.full_name || profile?.username || tr("Account")}</div><div className="mt-1 font-mono text-xs text-muted-foreground">ID {profile?.public_id ?? "—"}</div></div>
+          {user ? (desktopMenuOpen ? <div className="desktop-profile desktop-profile-card relative mb-5 is-expanded">
+            <div className="absolute right-2 top-2"><AccountLevelButton compact /></div>
+            <Link to="/profile" title={tr("Account")} className="flex flex-col items-center text-center">
+              <Avatar path={profile?.avatar_url ?? null} name={profile?.full_name ?? ""} className="h-16 w-16 ring-2 ring-primary/40" />
+              <div className="mt-2 max-w-full truncate text-sm font-bold">{profile?.username || profile?.full_name || tr("Account")}</div>
+              <div className="font-mono text-[11px] text-muted-foreground">ID {profile?.public_id ?? "—"}</div>
             </Link>
-            <div className={desktopMenuOpen ? "mt-2 px-2" : "mt-2 flex justify-center"}><AccountLevelButton compact={!desktopMenuOpen} /></div>
-            <div className={`desktop-profile-wallet ${desktopMenuOpen ? "" : "is-collapsed"}`}><Button asChild variant="secondary" className="h-7 rounded-full px-3 text-xs"><Link to="/balance" title={`${t("header.balance")}: ${money(profile?.balance ?? 0)}`}><Wallet className={desktopMenuOpen ? "sr-only" : "h-4 w-4"} /><span className={desktopMenuOpen ? "font-bold text-primary" : "sr-only"}>{money(profile?.balance ?? 0)}</span></Link></Button>{desktopMenuOpen && <Button asChild size="icon" className="h-6 w-6 rounded-full"><Link to="/add-funds" aria-label={t("menu.add_funds", "Add Funds")} title={t("menu.add_funds", "Add Funds")}><PlusCircle className="h-4 w-4" /></Link></Button>}</div>
-          </div> : <div className={`desktop-profile mb-5 ${desktopMenuOpen ? "is-expanded" : ""}`}>
+            <div className="mt-2 flex items-center justify-center gap-1.5"><Link to="/balance" className="rounded-full bg-primary px-3 py-1 text-xs font-bold text-primary-foreground">{money(profile?.balance ?? 0)}</Link><Button asChild size="icon" className="h-6 w-6 rounded-full"><Link to="/add-funds" aria-label={t("menu.add_funds", "Add Funds")} title={t("menu.add_funds", "Add Funds")}><PlusCircle className="h-4 w-4" /></Link></Button></div>
+          </div> : <div className="desktop-profile mb-5">
+            <Link to="/profile" title={tr("Account")} className="flex justify-center"><Avatar path={profile?.avatar_url ?? null} name={profile?.full_name ?? ""} className="h-11 w-11 shrink-0" /></Link>
+            <div className="mt-2 flex justify-center"><AccountLevelButton compact /></div>
+            <div className="desktop-profile-wallet is-collapsed"><Button asChild variant="secondary" className="h-7 rounded-full px-3 text-xs"><Link to="/balance" title={`${t("header.balance")}: ${money(profile?.balance ?? 0)}`}><Wallet className="h-4 w-4" /></Link></Button></div>
+          </div>) : <div className={`desktop-profile mb-5 ${desktopMenuOpen ? "is-expanded" : ""}`}>
             {desktopMenuOpen && <p className="mb-3 px-2 text-sm font-semibold">{tr("Welcome, Guest")}</p>}
             <Button asChild className={`w-full ${desktopMenuOpen ? "" : "px-0"}`}><Link to="/sign-in" title={tr("Sign In")}><LogIn className="shrink-0" /><span className={desktopMenuOpen ? "" : "sr-only"}>{tr("Sign In")}</span></Link></Button>
             {desktopMenuOpen && <Button asChild variant="secondary" className="mt-2 w-full"><Link to="/sign-up">{tr("Sign Up")}</Link></Button>}

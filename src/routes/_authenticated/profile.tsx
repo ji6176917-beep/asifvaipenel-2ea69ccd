@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AvatarEditor } from "@/components/AvatarEditor";
 import { InstallAppCard } from "@/components/InstallAppCard";
+import { FeatureBanners } from "@/components/FeatureBanners";
 import { useTr } from "@/lib/i18n";
 import { updateMyProfile } from "@/lib/profile-edit.functions";
 import bannerArt from "@/assets/welcome-social.png";
@@ -104,6 +105,7 @@ function Profile() {
           </div>
           <Card className="flex items-center gap-3"><ShieldCheck className="h-8 w-8 shrink-0 text-primary" /><div><b>{tr("Account security")}</b><p className="text-sm text-muted-foreground">{tr("Never share your password. Use “Logout from all devices” if you suspect anything.")}</p></div></Card>
           <InstallAppCard />
+          <FeatureBanners items={["tracking", "qna"]} cols={1} />
         </div>
       </div>
       <Dialog open={open} onOpenChange={setOpen}>

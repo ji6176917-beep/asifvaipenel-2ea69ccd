@@ -1,3 +1,4 @@
+import { FeatureBanners } from "@/components/FeatureBanners";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
@@ -97,6 +98,7 @@ function Orders() {
       {query.isError && <ErrorState />}
       {query.isLoading && <Skeleton className="h-40 rounded-3xl" />}
       {query.isSuccess && list.length === 0 && <Empty text={tr("No orders found.")} />}
+      {query.isSuccess && list.length > 0 && <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">{[["Total", list.length], ["In progress", list.filter((o) => o.status === "pending" || o.status === "processing").length], ["Completed", list.filter((o) => o.status === "completed").length], ["Canceled/Rejected", list.filter((o) => o.status === "canceled" || o.status === "rejected").length]].map(([l, v]) => <div key={l as string} className="desktop-stat !min-h-0 !p-4"><span className="desktop-stat-label">{tr(l as string)}</span><strong>{v}</strong></div>)}</div>}
       <div className="grid gap-3">
         {list.map((o) => {
           const step = FLOW.indexOf(o.status);
@@ -116,6 +118,7 @@ function Orders() {
       </div>
       {query.hasNextPage && <Button variant="ghost" onClick={() => query.fetchNextPage()} disabled={query.isFetchingNextPage} className="btn-ghost-glow w-full">{tr("Load more")}</Button>}
       <div className="action-duo"><Link to="/order" className="action-duo-btn action-duo-btn--primary"><ShoppingCart className="h-5 w-5" />{tr("Buy Service")}</Link><Link to="/add-funds" className="action-duo-btn"><Wallet className="h-5 w-5" />{tr("Add Funds")}</Link></div>
+      <FeatureBanners items={["tracking", "giveaway"]} />
     </div>
   );
 }

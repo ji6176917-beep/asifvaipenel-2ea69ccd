@@ -1,3 +1,6 @@
+import boxArt from "@/assets/orders-box.png";
+import growthArt from "@/assets/social-growth.webp";
+import { Trash2 } from "lucide-react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -69,6 +72,7 @@ function ApiPage() {
   const [show, setShow] = useState(false);
   const [confirm, setConfirm] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [del, setDel] = useState(false);
   const [origin, setOrigin] = useState("");
   useEffect(() => setOrigin(window.location.origin), []);
   const url = settings?.api_url || `${origin}/api/public/v2`;
@@ -76,9 +80,9 @@ function ApiPage() {
   const { data: key, error, isLoading } = useQuery({
     queryKey: ["my-api-key"],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("ensure_my_api_key", { _regenerate: false });
+      const { data, error } = await supabase.rpc("get_my_api_key");
       if (error) throw new Error(Object.keys(ERRS).find((k) => error.message.includes(k)) ?? "FAIL");
-      return data as string;
+      return (data as string | null) ?? null;
     },
     retry: false,
   });
@@ -93,12 +97,29 @@ function ApiPage() {
     toast.success("New API key created — the old one no longer works");
   };
 
+  const generate = async () => {
+    setBusy(true);
+    const { data, error } = await supabase.rpc("ensure_my_api_key", { _regenerate: false });
+    setBusy(false);
+    if (error) { toast.error(tr(ERRS[Object.keys(ERRS).find((x) => error.message.includes(x)) ?? ""] ?? "Could not create API key")); return; }
+    qc.setQueryData(["my-api-key"], data); setShow(true);
+    toast.success(tr("API key created"));
+  };
+  const remove = async () => {
+    setBusy(true);
+    const { error } = await supabase.rpc("delete_my_api_key");
+    setBusy(false); setDel(false);
+    if (error) { toast.error(tr("Could not delete API key")); return; }
+    qc.setQueryData(["my-api-key"], null);
+    toast.success(tr("API key deleted"));
+  };
+
   const k = "YOUR_API_KEY";
   const masked = key ? key.slice(0, 6) + "•".repeat(20) + key.slice(-4) : "";
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
-      <PageTitle sub="Sell our services on your own panel, website or bot.">Reseller API</PageTitle>
+      <section className="page-banner page-banner--multi"><div className="relative z-10"><h1>{tr("Reseller API")}</h1><p>{tr("Sell our services on your own panel, website or bot.")}</p><div className="page-banner-stats"><span>{tr("Fast API")}</span><span>{tr("Same balance")}</span><span>{tr("24/7 support")}</span></div></div><div className="banner-art-stack"><img src={boxArt} alt="" /><img src={growthArt} alt="" /></div></section>
 
       <Card className="space-y-4">
         <div>
@@ -106,12 +127,14 @@ function ApiPage() {
           {isLoading ? <div className="h-12 animate-pulse rounded-2xl bg-muted" />
             : error ? <p className="text-sm text-destructive">{ERRS[(error as Error).message] ?? "Could not load your API key. Refresh to try again."}</p>
             : (
+              !key ? <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-dashed border-primary/40 bg-accent/40 px-4 py-4"><span className="text-sm text-muted-foreground">{tr("You have no API key yet.")}</span><Button onClick={generate} disabled={busy}>{busy && <Spinner />}<KeyRound className="h-4 w-4" />{tr("Generate API key")}</Button></div> :
               <div className="flex items-center gap-2">
                 <button onClick={() => key && copy(key)} className="min-w-0 flex-1 truncate rounded-2xl border border-input bg-background/60 px-4 py-3 text-left font-mono text-sm" aria-label="Copy API key">
                   {show ? key : masked}
                 </button>
                 <button aria-label={show ? "Hide key" : "Show key"} onClick={() => setShow(!show)} className="btn-ghost-glow !px-3">{show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button>
                 <button aria-label="Copy key" onClick={() => key && copy(key)} className="btn-ghost-glow !px-3"><Copy className="h-4 w-4" /></button>
+                <button aria-label={tr("Delete API key")} title={tr("Delete API key")} onClick={() => setDel(true)} className="btn-ghost-glow !px-3 text-destructive"><Trash2 className="h-4 w-4" /></button>
               </div>
             )}
           {key && <button onClick={() => setConfirm(true)} className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-primary"><RefreshCw className="h-3.5 w-3.5" /> Regenerate key</button>}
@@ -261,6 +284,18 @@ function ApiPage() {
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={(e) => { e.preventDefault(); regenerate(); }} disabled={busy}>{busy && <Spinner />} Regenerate</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      <AlertDialog open={del} onOpenChange={setDel}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{tr("Delete API key?")}</AlertDialogTitle>
+            <AlertDialogDescription>{tr("This key stops working immediately. You can generate a new one any time.")}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{tr("Cancel")}</AlertDialogCancel>
+            <AlertDialogAction onClick={(e) => { e.preventDefault(); remove(); }} disabled={busy}>{busy && <Spinner />} {tr("Delete")}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

@@ -1554,7 +1554,9 @@ export type Database = {
         }
         Returns: Json
       }
+      delete_my_api_key: { Args: never; Returns: undefined }
       ensure_my_api_key: { Args: { _regenerate?: boolean }; Returns: string }
+      get_my_api_key: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

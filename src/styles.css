@@ -978,4 +978,12 @@
 @media (min-width: 768px) { .qna-grid { grid-template-columns: 1fr 1fr; } }
 .qna-index { font-weight: 700; color: var(--primary); }
 .header-page-title h1 { font-family: var(--font-display, inherit); font-size: 26px; font-weight: 800; color: var(--primary); white-space: nowrap; }
-.header-date-pill { display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 14px; border-radius: 999px; border: 1.5px solid color-mix(in oklab, var(--primary) 45%, transparent); color: var(--primary); font-size: 14px; font-weight: 600; white-space: nowrap; }
+.header-date-pill { display: inline-flex; align-items: center; gap: 8px; height: 32px; padding: 0 12px; border-radius: 999px; border: 1.5px solid color-mix(in oklab, var(--primary) 45%, transparent); color: var(--primary); font-size: 14px; font-weight: 600; white-space: nowrap; }
+.desktop-profile-card { padding: 18px 12px 14px; border-radius: 18px; border: 1.5px solid color-mix(in oklab, var(--primary) 35%, transparent); background: linear-gradient(160deg, color-mix(in oklab, var(--primary) 14%, var(--card)), var(--card)); }
+.desktop-profile-card .level-chip { padding: 2px; }
+.desktop-profile-card .level-badge-sm { width: 30px; height: 30px; } .desktop-profile-card .level-badge-sm svg { width: 16px; height: 16px; }
+.dash-feature { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 16px; overflow: hidden; min-height: 170px; border-radius: 22px; padding: 24px 28px; color: var(--primary-foreground); background: linear-gradient(120deg, var(--primary), color-mix(in oklab, var(--primary) 60%, var(--foreground))); }
+.dash-feature h2 { font-size: 26px; font-weight: 800; } .dash-feature p { opacity: .9; margin-top: 4px; max-width: 34ch; font-size: 14px; }
+.dash-feature img { width: 150px; height: 150px; object-fit: contain; flex-shrink: 0; filter: drop-shadow(0 10px 20px rgb(0 0 0 / .2)); }
+.dash-feature--soft { color: var(--foreground); background: linear-gradient(120deg, color-mix(in oklab, var(--primary) 16%, var(--card)), var(--card)); border: 1px solid var(--border); }
+.dash-feature .dash-cta { display: inline-flex; margin-top: 12px; padding: 6px 14px; border-radius: 999px; font-size: 13px; font-weight: 700; background: var(--background); color: var(--primary); }

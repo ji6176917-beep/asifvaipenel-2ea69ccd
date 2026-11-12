@@ -4,6 +4,7 @@ import { ArrowLeft, Wallet, PlusCircle, ShoppingCart, History, Receipt, Trending
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { money } from "@/lib/format";
+import { FeatureBanners } from "@/components/FeatureBanners";
 import { useTr } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/balance")({
@@ -109,6 +110,7 @@ function Balance() {
             <b>{tr("Instant top-up")}</b>
             <p className="text-sm text-muted-foreground">{tr("bKash, Nagad, Binance and USDT deposits are added to your balance quickly.")}</p>
           </div>
+          <FeatureBanners items={["giveaway"]} cols={1} />
         </div>
         <div className="rounded-2xl border border-border bg-card p-4">
           <div className="mb-3 flex items-center justify-between"><b>{tr("Recent Deposits")}</b><Link to="/add-funds/history" className="text-sm font-semibold text-primary">{tr("View all")}</Link></div>
@@ -130,6 +132,7 @@ function Balance() {
           ) : <p className="py-6 text-center text-sm text-muted-foreground">{tr("No deposits yet")}</p>}
         </div>
       </div>
+      <FeatureBanners items={["order", "support"]} />
     </div>
   );
 }

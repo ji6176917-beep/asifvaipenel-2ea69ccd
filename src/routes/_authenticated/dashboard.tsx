@@ -7,6 +7,7 @@ import { money } from "@/lib/format";
 import { useTr } from "@/lib/i18n";
 import welcomeArt from "@/assets/welcome-social.png";
 import growthArt from "@/assets/social-growth.webp";
+import { FeatureBanners } from "@/components/FeatureBanners";
 import boxArt from "@/assets/orders-box.png";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
@@ -64,12 +65,13 @@ function Dashboard() {
   return (
     <div className="space-y-5">
       <section className="page-banner page-banner--multi"><div className="relative z-10"><h1>{tr("Dashboard")}</h1><p>{tr("Welcome back")}{profile?.full_name ? ", " + profile.full_name : ""}. {tr("Your balance, orders and quick actions at a glance.")}</p><div className="page-banner-stats"><span>{tr("Live status")}</span><span>{tr("Auto refund")}</span><span>{tr("24/7 support")}</span></div></div><div className="banner-art-stack"><img src={boxArt} alt="" /><img src={welcomeArt} alt="" /><img src={growthArt} alt="" /></div></section>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-4 xl:grid-cols-7">
         {stats.map((s) => <div key={s.label} className="desktop-stat !min-h-0 !p-4"><span className="desktop-stat-icon"><s.icon /></span><span className="desktop-stat-label">{s.label}</span><strong>{s.value}</strong></div>)}
       </div>
-      <div className="grid grid-cols-3 gap-3 sm:grid-cols-5 lg:grid-cols-9">
+      <div className="grid grid-cols-3 gap-3 sm:grid-cols-5 xl:grid-cols-9">
         {shortcuts.map((s) => <Link key={s.to} to={s.to} className="profile-shortcut"><s.icon className="h-6 w-6 text-primary" /><span>{s.l}</span></Link>)}
       </div>
+      <FeatureBanners items={["giveaway", "tracking"]} />
     </div>
   );
 }

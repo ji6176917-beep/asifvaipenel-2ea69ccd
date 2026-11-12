@@ -35,7 +35,7 @@ function Page() {
       return data;
     },
   });
-  const items = [...(data ?? []), ...EXTRA.map((e, i) => ({ id: "extra-" + i, question: e[0], answer: e[1] }))].slice(0, Math.max(12, data?.length ?? 0));
+  const items = [...(data ?? []), ...EXTRA.map((e, i) => ({ id: "extra-" + i, question: { en: e[0] }, answer: { en: e[1] } }))].slice(0, Math.max(12, data?.length ?? 0));
   return (
     <div className="space-y-5">
       <section className="page-banner"><div className="relative z-10"><h1>{t("qna.title", "QnA")}</h1><p>{tr("Answers to the most common questions about orders and payments.")}</p><div className="page-banner-stats"><span><MessageCircleQuestion className="mr-1 inline h-3 w-3" />{items.length} {tr("questions")}</span></div></div><img src={qnaArt} alt="" width={816} height={816} /></section>
