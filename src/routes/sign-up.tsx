@@ -104,7 +104,7 @@ function SignUp() {
   );
 
   return (
-    <AuthLayout title={tr("Create Account")} sub={tr("Join in under a minute.")}>
+    <AuthLayout variant="signup" title={tr("Create Account")} sub={tr("Join in under a minute.")}>
         <form onSubmit={submit} className="space-y-4" noValidate>
           {field("name", "Full Name")}
           {field("email", "Email", "email")}
