@@ -987,3 +987,13 @@
 .dash-feature img { width: 150px; height: 150px; object-fit: contain; flex-shrink: 0; filter: drop-shadow(0 10px 20px rgb(0 0 0 / .2)); }
 .dash-feature--soft { color: var(--foreground); background: linear-gradient(120deg, color-mix(in oklab, var(--primary) 16%, var(--card)), var(--card)); border: 1px solid var(--border); }
 .dash-feature .dash-cta { display: inline-flex; margin-top: 12px; padding: 6px 14px; border-radius: 999px; font-size: 13px; font-weight: 700; background: var(--background); color: var(--primary); }
+/* Premium account level badges */
+.level-badge { position: relative; border-radius: 0; clip-path: polygon(50% 0, 93% 22%, 93% 72%, 50% 100%, 7% 72%, 7% 22%); background: linear-gradient(145deg, color-mix(in oklab, var(--lvl) 35%, var(--background)) 0%, var(--lvl) 45%, color-mix(in oklab, var(--lvl) 70%, var(--foreground)) 100%); box-shadow: none; filter: drop-shadow(0 3px 6px color-mix(in oklab, var(--lvl) 55%, transparent)); }
+.level-badge::before { content: ""; position: absolute; inset: 2px; clip-path: inherit; background: linear-gradient(160deg, color-mix(in oklab, var(--background) 45%, transparent), transparent 55%); }
+.level-badge svg { position: relative; z-index: 1; filter: drop-shadow(0 1px 1px rgb(0 0 0 / .35)); }
+.level-badge-md { width: 40px; height: 44px; }
+.desktop-profile-card .level-chip { background: transparent; border: 0; }
+.desktop-profile-card .level-badge-sm { width: 30px; height: 33px; }
+.levels-dialog > button:last-child { top: 14px; right: 14px; display: flex; height: 34px; width: 34px; align-items: center; justify-content: center; border-radius: 999px; opacity: 1; background: var(--primary-foreground); color: var(--primary); box-shadow: 0 4px 12px -4px rgb(0 0 0 / .3); }
+.levels-dialog > button:last-child:hover { transform: scale(1.08); }
+.levels-dialog > button:last-child svg { width: 18px; height: 18px; }

@@ -23,7 +23,7 @@ export function DesktopDashboard() {
   });
   const [orders, setOrders] = useState(0);
   const [selected, setSelected] = useState("");
-  useEffect(() => { setOrders(grownValue(100_000, 2000, 4000)); }, []);
+  useEffect(() => { setOrders(grownValue(1_000, 2000, 4000)); }, []);
   const name = profile?.username || profile?.full_name || tr("Guest");
   const sequence = ["youtube", "facebook", "instagram", "tiktok", "telegram", "twitter", "linkedin", "discord", "spotify", "twitch", "soundcloud", "web-traffic"];
   const sorted = [...(platforms ?? [])].sort((a, b) => {
@@ -55,8 +55,8 @@ export function DesktopDashboard() {
       {stats.map((s) => <Link key={s.label} to={s.to} className="desktop-stat"><span className="desktop-stat-icon"><s.icon /></span><span className="desktop-stat-label">{s.label}</span><strong title={s.value}>{s.value}</strong></Link>)}
     </section>
     <div className="desktop-platform-grid" aria-label={tr("All Services")}>
-      {sorted.map((p) => <Button key={p.id} variant="outline" aria-pressed={platform === p.slug} onClick={() => setSelected(p.slug)} className="desktop-platform"><PlatformIcon slug={p.slug} logo={p.logo_url} name={p.name} className="h-5 w-5 shrink-0" /><span>{p.name}</span></Button>)}
+      {sorted.map((p) => <Button key={p.id} variant="outline" aria-pressed={platform === p.slug} onClick={() => { setSelected(p.slug); setTimeout(() => document.getElementById("dash-order-form")?.scrollIntoView({ behavior: "smooth", block: "start" }), 60); }} className="desktop-platform"><PlatformIcon slug={p.slug} logo={p.logo_url} name={p.name} className="h-5 w-5 shrink-0" /><span>{p.name}</span></Button>)}
     </div>
-    {platform && <OrderForm key={platform} platform={platform} desktop />}
+    <div id="dash-order-form" className="scroll-mt-20">{platform && <OrderForm key={platform} platform={platform} desktop />}</div>
   </div>;
 }

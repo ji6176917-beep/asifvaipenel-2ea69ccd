@@ -118,7 +118,7 @@ function ApiPage() {
   const masked = key ? key.slice(0, 6) + "•".repeat(20) + key.slice(-4) : "";
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
+    <div className="space-y-6">
       <section className="page-banner page-banner--multi"><div className="relative z-10"><h1>{tr("Reseller API")}</h1><p>{tr("Sell our services on your own panel, website or bot.")}</p><div className="page-banner-stats"><span>{tr("Fast API")}</span><span>{tr("Same balance")}</span><span>{tr("24/7 support")}</span></div></div><div className="banner-art-stack"><img src={boxArt} alt="" /><img src={growthArt} alt="" /></div></section>
 
       <Card className="space-y-4">
