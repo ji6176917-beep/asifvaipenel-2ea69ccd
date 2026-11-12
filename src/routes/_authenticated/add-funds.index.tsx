@@ -8,9 +8,9 @@ import { SiBinance, SiTether } from "react-icons/si";
 import { Button } from "@/components/ui/button";
 import fundsHeader from "@/assets/funds-header.jpg";
 import fundsSocialBanner from "@/assets/funds-social-banner.jpg";
-import cryptoPayArt from "@/assets/crypto-pay-art.png";
-import p2pWalletArt from "@/assets/p2p-wallet-art.jpg";
-import cryptoWalletSide from "@/assets/crypto-wallet-side.jpg";
+import cryptoPayArt from "@/assets/crypto-pay-art.webp";
+import p2pWalletArt from "@/assets/p2p-wallet-art.webp";
+import cryptoWalletSide from "@/assets/crypto-wallet-side.webp";
 import { History, ShoppingCart, Headphones } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -238,9 +238,17 @@ function AddFunds() {
               <h2>{group === "binance" ? tr("Binance Pay") : group === "usdt" ? "USDT" : tr("BDT P2P")}</h2>
               <p>{group === "p2p" ? tr("Pay securely with bKash, Nagad or Rocket — balance is added automatically.") : tr("Send the payment, then enter the Transaction ID — balance is added automatically.")}</p>
             </div>
-            <img src={cryptoPayArt} alt="" width={816} height={816} className="funds-pay-banner-art" />
+            {group === "p2p" ? <div className="funds-pay-banner-logos">{p2p.slice(0, 3).map((x) => <span key={x.id}><DepositMethodLogo name={x.name} kind="p2p" logo={x.logo_url} className="h-9 w-14" /></span>)}</div> : <img src={cryptoPayArt} alt="" width={520} height={520} className="funds-pay-banner-art" />}
           </div>
-          <div className="funds-pay-layout"><div className="funds-pay-main">
+          {(() => { const steps = (<div className="funds-steps-card">
+            <h3>{tr("How it works")}</h3>
+            <ol>
+              {(group === "p2p"
+                ? [tr("Enter the amount you want to add"), tr("Tap Pay Now and pay with bKash, Nagad or Rocket"), tr("Balance is added to your wallet automatically")]
+                : [tr("Copy the ID or address above and send the payment"), tr("Paste the Transaction ID and tap Add Funds"), tr("Balance is added to your wallet automatically")]
+              ).map((t, i) => <li key={i}><span>{i + 1}</span>{t}</li>)}
+            </ol>
+          </div>); return (<div className="funds-pay-layout"><div className="funds-pay-main">
           {group !== "p2p" && (methods?.filter((x) => x.kind === group).length ?? 0) > 1 && (
             <div className="mb-5 grid grid-cols-3 gap-2">
               {methods?.filter((x) => x.kind === group).map((x) => (
@@ -295,25 +303,18 @@ function AddFunds() {
               )}
             </form>
           )}
-          <div className="funds-steps-card">
-            <h3>{tr("How it works")}</h3>
-            <ol>
-              {(group === "p2p"
-                ? [tr("Enter the amount you want to add"), tr("Tap Pay Now and pay with bKash, Nagad or Rocket"), tr("Balance is added to your wallet automatically")]
-                : [tr("Copy the ID or address above and send the payment"), tr("Paste the Transaction ID and tap Add Funds"), tr("Balance is added to your wallet automatically")]
-              ).map((t, i) => <li key={i}><span>{i + 1}</span>{t}</li>)}
-            </ol>
-          </div>
+          {group === "p2p" && steps}
           </div>
           <aside className="funds-pay-side">
-            <img src={group === "p2p" ? p2pWalletArt : cryptoWalletSide} alt="" width={816} height={816} loading="lazy" className="funds-side-art" />
+            <img src={group === "p2p" ? p2pWalletArt : cryptoWalletSide} alt="" width={520} height={520} loading="lazy" decoding="async" className="funds-side-art" />
             <div className="funds-side-links">
               <Link to="/add-funds/history"><History aria-hidden />{tr("Add Funds History")}</Link>
               <Link to="/order"><ShoppingCart aria-hidden />{tr("New order")}</Link>
               <Link to="/tickets"><Headphones aria-hidden />{tr("My Tickets")}</Link>
             </div>
+            {group !== "p2p" && steps}
           </aside>
-          </div>
+          </div>); })()}
         </section>
       )}
 
