@@ -1,5 +1,7 @@
 {
   "bn": {
+    "Settings": "সেটিংস",
+    "Close menu": "মেনু বন্ধ করুন",
     "Verify code": "কোড যাচাই করুন",
     "Unable to send the verification code. Please try again later.": "কোড পাঠানো যায়নি। কিছুক্ষণ পরে আবার চেষ্টা করুন।",
     "Unable to verify the code. Please try again.": "কোড যাচাই করা যায়নি। আবার চেষ্টা করুন।",
