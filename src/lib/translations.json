@@ -338,7 +338,20 @@
     "Total": "মোট",
     "Canceled/Rejected": "বাতিল/প্রত্যাখ্যাত",
     "Get instant notifications": "তাৎক্ষণিক নোটিফিকেশন পান",
-    "Order updates, fund approvals and offers right on your screen.": "অর্ডার আপডেট, ফান্ড অনুমোদন ও অফার সরাসরি আপনার স্ক্রিনে।"
+    "Order updates, fund approvals and offers right on your screen.": "অর্ডার আপডেট, ফান্ড অনুমোদন ও অফার সরাসরি আপনার স্ক্রিনে।",
+    "Refill": "রিফিল",
+    "Refill request sent to provider": "রিফিলের অনুরোধ সরবরাহকারীর কাছে পাঠানো হয়েছে",
+    "Refill failed": "রিফিল করা যায়নি",
+    "Failed": "ব্যর্থ",
+    "Canceled": "বাতিল",
+    "Processing": "প্রক্রিয়াধীন",
+    "Order not found": "অর্ডার পাওয়া যায়নি",
+    "Refill is not available for this order": "এই অর্ডারে রিফিল পাওয়া যাবে না",
+    "This service has no refill guarantee": "এই সার্ভিসে রিফিল গ্যারান্টি নেই",
+    "A refill is already in progress": "একটি রিফিল ইতিমধ্যে চলছে",
+    "You can request a refill once every 24 hours": "প্রতি ২৪ ঘণ্টায় একবার রিফিল চাওয়া যাবে",
+    "Provider did not respond, please try again later": "সরবরাহকারী সাড়া দেয়নি, পরে আবার চেষ্টা করুন",
+    "Refill rejected by provider": "সরবরাহকারী রিফিল প্রত্যাখ্যান করেছে"
   },
   "hi": {
     "API Policy": "API पॉलिसी",

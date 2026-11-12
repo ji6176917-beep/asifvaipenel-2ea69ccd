@@ -1,0 +1,1 @@
+ALTER TABLE public.orders ADD COLUMN IF NOT EXISTS refill_id text, ADD COLUMN IF NOT EXISTS refill_status text, ADD COLUMN IF NOT EXISTS refill_requested_at timestamptz, ADD COLUMN IF NOT EXISTS refill_error text;

@@ -13,6 +13,7 @@ export const Route = createFileRoute('/api/public/order-status-sync')({
       try { results[p.id] = (await refreshProviderOrders(p.id, { statusOnly: true })).updated }
       catch (e) { results[p.id] = 'failed'; console.error('order status sync failed', p.id, e instanceof Error ? e.message : e) }
     }
+    try { await (await import('@/lib/providers.server')).refreshProviderRefills(null) } catch (e) { console.error('refill sync failed', e instanceof Error ? e.message : e) }
     return Response.json({ results })
   } } },
 })

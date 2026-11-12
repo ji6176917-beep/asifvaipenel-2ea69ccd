@@ -36,3 +36,4 @@
 - Notification worker registration goes through src/lib/notification-worker.ts with scope /notifications/; system notifications use that registration, never a script-URL getRegistration lookup. Why: the notification worker must not replace the root-scoped offline worker.
 - Binance/USDT deposits: verify on submit, then deposit-auto-verify schedule re-checks pending ones each minute. Why: Binance lists payments late.
 
+- Customer refills call the provider `refill` action via src/lib/refill.functions.ts (ownership, guarantee, 24h and single-active claim checks server-side); live status refreshes on the orders page and in order-status-sync. Why: refills reach the provider without exposing upstream keys.

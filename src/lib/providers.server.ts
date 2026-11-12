@@ -181,3 +181,55 @@ export async function cancelProviderOrder(orderId: string) {
   }
   return { result: 'canceling' as const, refund: 0 }
 }
+const REFILL_ACTIVE = ['pending', 'in progress', 'processing']
+export const normalizeRefillStatus = (s: unknown) => String(s ?? '').trim().toLowerCase().replace(/_/g, ' ') || 'pending'
+
+/** Customer refill: sends the provider's `refill` action for a completed provider order the caller owns. */
+export async function requestProviderRefill(orderId: string, userId: string) {
+  const { supabaseAdmin: db } = await import('@/integrations/supabase/client.server')
+  const { data: order } = await db.from('orders').select('id,status,provider_id,provider_order_id,service_id,refill_status,refill_requested_at').eq('id', orderId).eq('user_id', userId).is('deleted_at', null).maybeSingle()
+  if (!order) throw new Error('Order not found')
+  if (!['completed', 'partial'].includes(order.status) || !order.provider_id || !order.provider_order_id) throw new Error('Refill is not available for this order')
+  const { data: svc } = await db.from('services').select('refill_info').eq('id', order.service_id).maybeSingle()
+  if (!svc?.refill_info?.trim()) throw new Error('This service has no refill guarantee')
+  if (order.refill_status && REFILL_ACTIVE.includes(order.refill_status)) throw new Error('A refill is already in progress')
+  if (order.refill_requested_at && Date.now() - new Date(order.refill_requested_at).getTime() < 24 * 3600 * 1000) throw new Error('You can request a refill once every 24 hours')
+  const { data: provider } = await db.from('service_providers').select('*').eq('id', order.provider_id).single()
+  if (!provider) throw new Error('Refill is not available for this order')
+  // Claim first so double taps cannot send two refills.
+  const { data: claimed } = await db.from('orders').update({ refill_requested_at: new Date().toISOString(), refill_status: 'sending', refill_error: null }).eq('id', order.id).or('refill_status.is.null,refill_status.not.in.(pending,in progress,processing,sending)').select('id').maybeSingle()
+  if (!claimed) throw new Error('A refill is already in progress')
+  let result: unknown
+  try { result = await providerRequest(provider, { action: 'refill', order: order.provider_order_id }) } catch (e) {
+    await db.from('orders').update({ refill_status: 'failed', refill_error: (e as Error).message.slice(0, 200), refill_requested_at: null }).eq('id', order.id)
+    throw new Error('Provider did not respond, please try again later')
+  }
+  const r = result as Record<string, unknown> | null
+  const id = r && typeof r === 'object' ? (r['refill'] ?? r['id']) : undefined
+  if (!id || typeof id === 'object') {
+    const reason = String(r?.['error'] ?? 'Refill rejected by provider').slice(0, 200)
+    await db.from('orders').update({ refill_status: 'rejected', refill_error: reason }).eq('id', order.id)
+    throw new Error(reason)
+  }
+  await db.from('orders').update({ refill_id: String(id).slice(0, 100), refill_status: 'pending' }).eq('id', order.id)
+  return { refillId: String(id), status: 'pending' }
+}
+
+/** Refreshes live refill status for the caller's active refills (or every active refill when userId is null). */
+export async function refreshProviderRefills(userId: string | null) {
+  const { supabaseAdmin: db } = await import('@/integrations/supabase/client.server')
+  let q = db.from('orders').select('id,provider_id,refill_id').not('refill_id', 'is', null).in('refill_status', REFILL_ACTIVE).limit(50)
+  if (userId) q = q.eq('user_id', userId)
+  const { data: rows } = await q
+  const providers = new Map<string, { api_url: string; api_key: string } | null>()
+  for (const o of rows ?? []) {
+    if (!o.provider_id || !o.refill_id) continue
+    if (!providers.has(o.provider_id)) { const { data } = await db.from('service_providers').select('api_url,api_key').eq('id', o.provider_id).maybeSingle(); providers.set(o.provider_id, data) }
+    const p = providers.get(o.provider_id)
+    if (!p) continue
+    try {
+      const r = await providerRequest(p, { action: 'refill_status', refill: o.refill_id }) as Record<string, unknown> | null
+      if (r && typeof r === 'object' && 'status' in r) await db.from('orders').update({ refill_status: normalizeRefillStatus(r['status']).slice(0, 40) }).eq('id', o.id)
+    } catch { /* keep last known status */ }
+  }
+}

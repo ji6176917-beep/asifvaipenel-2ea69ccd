@@ -1,4 +1,6 @@
-import { ListOrdered, Loader, CheckCircle2, XCircle } from "lucide-react";
+import { ListOrdered, Loader, CheckCircle2, XCircle, RefreshCw } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { requestRefill, refreshMyRefills } from "@/lib/refill.functions";
 import { FeatureBanners } from "@/components/FeatureBanners";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
@@ -88,6 +90,24 @@ function Orders() {
   };
 
   const list = query.data?.pages.flat() ?? [];
+  const refillFn = useServerFn(requestRefill);
+  const refreshRefillsFn = useServerFn(refreshMyRefills);
+  const [refilling, setRefilling] = useState<string | null>(null);
+  const activeRefills = list.some((o) => o.refill_id && ["pending", "in progress", "processing"].includes(o.refill_status ?? ""));
+  useEffect(() => {
+    if (!user || !activeRefills) return;
+    const run = () => { void refreshRefillsFn().then(() => qc.invalidateQueries({ queryKey: ["orders"] })).catch(() => {}); };
+    run(); const t = setInterval(run, 60000); return () => clearInterval(t);
+  }, [user, activeRefills, refreshRefillsFn, qc]);
+  const refill = async (id: string) => {
+    setRefilling(id);
+    try {
+      const r = await refillFn({ data: { orderId: id } });
+      if (r.ok) toast.success(tr("Refill request sent to provider")); else toast.error(tr(r.error));
+    } catch { toast.error(tr("Refill failed")); }
+    setRefilling(null);
+    qc.invalidateQueries({ queryKey: ["orders"] });
+  };
 
   return (
     <div className="space-y-4">
@@ -112,6 +132,8 @@ function Orders() {
               </div>
               <a href={o.link} target="_blank" rel="noreferrer" className="history-link">{o.link}</a>
               {step >= 0 && <div className="flex items-center gap-1 pt-1">{FLOW.map((f, i) => <div key={f} className={`h-1 flex-1 rounded-full ${i <= step ? "bg-primary" : "bg-muted"}`} title={tr(f)} />)}</div>}
+              {o.refill_status && o.refill_status !== "sending" && <div className="history-chips"><span className={`notification-chip ${o.refill_status === "completed" ? "text-emerald-600" : o.refill_status === "rejected" || o.refill_status === "failed" || o.refill_status === "canceled" ? "text-destructive" : "text-amber-600"}`}><RefreshCw />{tr("Refill")}: {tr(o.refill_status.replace(/^./, (c) => c.toUpperCase()))}{o.refill_id ? ` #${o.refill_id}` : ""}</span>{o.refill_error && <span className="notification-chip text-destructive">{tr(o.refill_error)}</span>}</div>}
+              {["completed", "partial"].includes(o.status) && o.provider_order_id && !["pending", "in progress", "processing", "sending"].includes(o.refill_status ?? "") && <Button variant="outline" size="sm" disabled={refilling === o.id} onClick={() => void refill(o.id)} className="h-8 w-fit gap-1.5 text-xs"><RefreshCw className={`h-3.5 w-3.5 ${refilling === o.id ? "animate-spin" : ""}`} />{tr("Refill")}</Button>}
               {o.status === "pending" && !o.provider_id && <Button variant="ghost" size="sm" onClick={() => void cancel(o.id)} className="h-7 px-0 text-xs text-destructive">{tr("Cancel order")}</Button>}
             </HistoryCard>
           );

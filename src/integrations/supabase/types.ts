@@ -485,6 +485,10 @@ export type Database = {
           provider_order_id: string | null
           provider_service_id: string | null
           quantity: number
+          refill_error: string | null
+          refill_id: string | null
+          refill_requested_at: string | null
+          refill_status: string | null
           refunded: number
           service_id: string
           service_name: string
@@ -512,6 +516,10 @@ export type Database = {
           provider_order_id?: string | null
           provider_service_id?: string | null
           quantity: number
+          refill_error?: string | null
+          refill_id?: string | null
+          refill_requested_at?: string | null
+          refill_status?: string | null
           refunded?: number
           service_id: string
           service_name: string
@@ -539,6 +547,10 @@ export type Database = {
           provider_order_id?: string | null
           provider_service_id?: string | null
           quantity?: number
+          refill_error?: string | null
+          refill_id?: string | null
+          refill_requested_at?: string | null
+          refill_status?: string | null
           refunded?: number
           service_id?: string
           service_name?: string
