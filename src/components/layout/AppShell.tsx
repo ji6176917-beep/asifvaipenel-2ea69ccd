@@ -250,7 +250,7 @@ function Shell({ children }: { children: ReactNode }) {
 
       <header className={`glass sticky top-0 z-40 rounded-none border-x-0 border-t-0 ${path === "/" ? "home-header" : ""}`}>
         <div className="home-header-inner mx-auto grid max-w-5xl grid-cols-[minmax(0,1fr)_auto] items-center gap-2 px-4 py-2 lg:flex">
-          <Link to="/" className="flex min-w-0 items-center gap-2">
+          <Link to="/" className={`flex min-w-0 items-center gap-2 ${desktopSidebar ? "lg:hidden" : ""}`}>
             <img src={siteLogo.url} alt={`${siteName} - Global Social Media Growth Logo`} width={36} height={36} className="h-9 w-auto shrink-0 object-contain" />
             <span className="home-brand-copy min-w-0"><span className="home-brand-name block truncate font-display text-base font-bold sm:text-lg">{headerName}</span>{path === "/" && <span className="home-brand-tagline">{tr("Social Media Growth Partner")}</span>}</span>
           </Link>

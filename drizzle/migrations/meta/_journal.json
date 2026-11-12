@@ -316,6 +316,13 @@
       "when": 1794467207207,
       "tag": "0044_community_giveaways_tickets",
       "breakpoints": true
+    },
+    {
+      "idx": 45,
+      "version": "7",
+      "when": 1794470577702,
+      "tag": "0045_giveaway_full_rules",
+      "breakpoints": true
     }
   ]
 }
