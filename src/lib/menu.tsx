@@ -1,14 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import {
   Home, User, Wallet, ShoppingCart, History, PlusCircle, ReceiptText, ShieldCheck, HelpCircle, Info, LogOut,
-  Code2, LayoutDashboard, Languages, Music, Mail, Star, Gift, Link as LinkIcon, MessageCircle, Phone, Rocket, Heart, type LucideIcon,
+  Code2, LayoutDashboard, Languages, Music, Mail, Star, Gift, Link as LinkIcon, MessageCircle, Phone, Rocket, Heart, HandCoins, type LucideIcon,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useStorageUrl } from "@/lib/storage-url";
 import { TelegramIcon, WhatsAppIcon } from "@/lib/brand";
 
 export const MENU_ICONS: Record<string, LucideIcon | typeof TelegramIcon> = {
-  home: Home, user: User, wallet: Wallet, cart: ShoppingCart, history: History, plus: PlusCircle, receipt: ReceiptText,
+  home: Home, user: User, wallet: Wallet, cart: ShoppingCart, history: History, plus: HandCoins, plus_circle: PlusCircle, receipt: ReceiptText,
   shield: ShieldCheck, help: HelpCircle, info: Info, logout: LogOut, code: Code2, dashboard: LayoutDashboard,
   languages: Languages, music: Music, mail: Mail, star: Star, gift: Gift, link: LinkIcon, chat: MessageCircle,
   phone: Phone, rocket: Rocket, heart: Heart, telegram: TelegramIcon, whatsapp: WhatsAppIcon,

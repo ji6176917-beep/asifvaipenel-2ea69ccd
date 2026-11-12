@@ -418,22 +418,26 @@ function Shell({ children }: { children: ReactNode }) {
         <SheetContent side={isMobile ? "bottom" : "right"} className={isMobile ? "max-h-[85vh] overflow-y-auto rounded-t-3xl" : "w-80 overflow-y-auto"}>
           <SheetHeader><SheetTitle className="text-gradient font-display">{siteName}</SheetTitle></SheetHeader>
           {user && profile && (
-            <Link to="/profile" className="glass mx-4 flex items-center gap-3 rounded-2xl p-3">
-              <Avatar path={profile.avatar_url} name={profile.full_name} className="h-12 w-12" />
-              <div className="min-w-0">
-                <div className="label-premium truncate">{profile.full_name || profile.username}</div>
-                <div className="font-mono text-xs text-muted-foreground">ID {profile.public_id}</div>
-                <div className="text-sm font-bold text-primary">{money(profile.balance)}</div>
-              </div>
-            </Link>
+            <div className="relative mx-4 rounded-2xl border border-primary/20 bg-primary/5 p-3 shadow-sm">
+              <div className="absolute right-2 top-2"><AccountLevelButton compact /></div>
+              <Link to="/profile" className="flex items-center gap-3 pr-16">
+                <Avatar path={profile.avatar_url} name={profile.full_name} className="h-12 w-12 ring-2 ring-primary/40" />
+                <div className="min-w-0">
+                  <div className="label-premium truncate">{profile.username || profile.full_name}</div>
+                  <div className="font-mono text-xs text-muted-foreground">ID {profile.public_id}</div>
+                  <div className="text-sm font-bold text-primary">{money(profile.balance)}</div>
+                </div>
+              </Link>
+            </div>
           )}
-          <div className="mt-2 flex flex-col gap-1 px-2">
-            {menu.filter(visible).map((m) => (
+          <div className="mx-4 mt-3"><DesktopMusicPlayer /></div>
+          <div className="mt-3 grid grid-cols-2 gap-2 px-4 pb-4">
+            {menu.filter(visible).filter((m) => m.system_key !== "music" && m.target_value !== "music").map((m) => (
               <NavItem key={m.id} m={m} settings={settings} onAction={onAction}
-                iconClass={`h-5 w-5 ${m.system_key === "logout" ? "" : "text-primary"}`}
-                className={`label-premium flex items-center gap-3 rounded-xl px-3 py-2.5 hover:bg-accent ${m.system_key === "logout" ? "text-destructive" : ""}`} />
+                iconClass={`h-9 w-9 shrink-0 rounded-xl p-2 ${m.system_key === "logout" ? "bg-destructive/10 text-destructive" : "bg-primary/10 text-primary"}`}
+                className={`flex min-h-14 items-center gap-2.5 rounded-2xl border bg-card px-3 py-2.5 text-sm font-semibold shadow-sm transition active:scale-[0.98] hover:border-primary/40 ${m.system_key === "logout" ? "border-destructive/30 text-destructive" : "border-border text-foreground"}`} />
             ))}
-            <InstallMenuButton iconClass="h-5 w-5 text-primary" className="label-premium flex items-center gap-3 rounded-xl px-3 py-2.5 text-left hover:bg-accent" />
+            <InstallMenuButton iconClass="h-9 w-9 shrink-0 rounded-xl bg-primary/10 p-2 text-primary" className="flex min-h-14 items-center gap-2.5 rounded-2xl border border-border bg-card px-3 py-2.5 text-left text-sm font-semibold shadow-sm hover:border-primary/40" />
           </div>
         </SheetContent>
       </Sheet>
