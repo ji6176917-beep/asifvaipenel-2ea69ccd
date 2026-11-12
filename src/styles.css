@@ -956,3 +956,24 @@
 .tracking-empty img { width: 120px; height: 120px; object-fit: contain; }
 .tracking-tips { display: grid; gap: 8px; width: 100%; max-width: 360px; text-align: left; margin-top: 6px; }
 .tracking-tips div { display: flex; gap: 8px; align-items: flex-start; font-size: 12px; padding: 8px 10px; border-radius: 8px; background: var(--secondary); }
+
+/* Page polish: tabs, action buttons, shortcuts, art cards, QnA grid */
+.tab-pills { display: flex; gap: 6px; overflow-x: auto; padding: 6px; border-radius: 16px; background: var(--card); border: 1px solid var(--border); box-shadow: 0 6px 18px -14px color-mix(in oklab, var(--foreground) 40%, transparent); }
+.tab-pill { flex-shrink: 0; height: 38px; border-radius: 12px; padding: 0 16px; font-size: 14px; font-weight: 600; color: var(--muted-foreground); }
+.tab-pill[aria-pressed="true"] { background: linear-gradient(120deg, var(--primary), color-mix(in oklab, var(--primary) 70%, var(--foreground))); color: var(--primary-foreground); box-shadow: 0 8px 18px -10px var(--primary); }
+.action-duo { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.action-duo-btn { display: flex; align-items: center; justify-content: center; gap: 10px; height: 54px; border-radius: 16px; font-weight: 700; border: 1.5px solid color-mix(in oklab, var(--primary) 35%, transparent); background: var(--card); color: var(--primary); transition: transform .15s, box-shadow .15s; }
+.action-duo-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 24px -14px var(--primary); }
+.action-duo-btn--primary { border-color: transparent; color: var(--primary-foreground); background: linear-gradient(120deg, var(--primary), color-mix(in oklab, var(--primary) 70%, var(--foreground))); }
+.profile-shortcut { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-height: 92px; padding: 12px; border-radius: 16px; background: var(--card); border: 1px solid var(--border); text-align: center; font-size: 13px; font-weight: 600; transition: transform .15s, border-color .15s; }
+.profile-shortcut:hover { transform: translateY(-2px); border-color: var(--primary); }
+.profile-art-card { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 16px; border-radius: 18px; text-align: center; background: linear-gradient(160deg, color-mix(in oklab, var(--primary) 10%, var(--card)), var(--card)); border: 1px solid var(--border); }
+.profile-art-card img { width: 84px; height: 84px; object-fit: contain; border-radius: 14px; }
+.profile-art-card span { font-size: 13px; color: var(--muted-foreground); }
+.banner-art-stack { position: relative; z-index: 1; display: flex; align-items: flex-end; flex-shrink: 0; }
+.page-banner .banner-art-stack img { position: static; width: 110px; height: 110px; object-fit: cover; border-radius: 18px; border: 3px solid color-mix(in oklab, var(--primary-foreground) 70%, transparent); margin-left: -26px; box-shadow: 0 10px 22px -12px var(--foreground); }
+.page-banner .banner-art-stack img:nth-child(2) { width: 132px; height: 132px; transform: translateY(-8px) rotate(-3deg); }
+@media (max-width: 640px) { .page-banner .banner-art-stack img { width: 64px; height: 64px; margin-left: -18px; } .page-banner .banner-art-stack img:nth-child(2) { width: 76px; height: 76px; } }
+.qna-grid { display: grid; gap: 12px; align-items: start; }
+@media (min-width: 768px) { .qna-grid { grid-template-columns: 1fr 1fr; } }
+.qna-index { font-weight: 700; color: var(--primary); }

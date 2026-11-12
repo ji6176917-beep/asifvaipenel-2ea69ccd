@@ -1,11 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Wallet, ShoppingCart, Clock, CheckCircle2, PlusCircle, Code2 } from "lucide-react";
+import { Wallet, ShoppingCart, Clock, CheckCircle2, PlusCircle, Code2, XCircle, PiggyBank, History, Ticket, Gift, MessageCircleQuestion, UserRound, Receipt } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { money } from "@/lib/format";
-import { Card, PageTitle } from "@/components/ui-kit";
 import { useTr } from "@/lib/i18n";
+import welcomeArt from "@/assets/welcome-social.png";
+import growthArt from "@/assets/social-growth.webp";
+import boxArt from "@/assets/orders-box.png";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -28,39 +30,45 @@ function Dashboard() {
     queryKey: ["my-dashboard", user?.id],
     enabled: !!user,
     queryFn: async () => {
-      const { data } = await supabase.from("orders").select("status,charge");
-      const rows = data ?? [];
+      const [{ data: o }, { data: d }] = await Promise.all([
+        supabase.from("orders").select("status,charge").eq("user_id", user!.id),
+        supabase.from("deposits").select("status,amount").eq("user_id", user!.id),
+      ]);
+      const rows = o ?? [];
       return {
         total: rows.length,
         active: rows.filter((r) => r.status === "pending" || r.status === "processing").length,
         done: rows.filter((r) => r.status === "completed").length,
+        canceled: rows.filter((r) => r.status === "canceled" || r.status === "rejected").length,
         spent: rows.filter((r) => r.status !== "canceled" && r.status !== "rejected").reduce((a, r) => a + Number(r.charge), 0),
+        deposited: (d ?? []).filter((r) => r.status === "approved").reduce((a, r) => a + Number(r.amount), 0),
       };
     },
   });
   const stats = [
     { label: tr("Balance"), value: money(profile?.balance ?? 0), icon: Wallet },
+    { label: tr("Total deposited"), value: money(data?.deposited ?? 0), icon: PiggyBank },
+    { label: tr("Total spent"), value: money(data?.spent ?? 0), icon: Receipt },
     { label: tr("Total orders"), value: data?.total ?? "—", icon: ShoppingCart },
     { label: tr("In progress"), value: data?.active ?? "—", icon: Clock },
     { label: tr("Completed"), value: data?.done ?? "—", icon: CheckCircle2 },
+    { label: tr("Canceled/Rejected"), value: data?.canceled ?? "—", icon: XCircle },
   ];
+  const shortcuts = [
+    { to: "/order", icon: ShoppingCart, l: tr("New Order") }, { to: "/add-funds", icon: PlusCircle, l: tr("Add Funds") },
+    { to: "/orders", icon: History, l: tr("Order History") }, { to: "/add-funds/history", icon: Wallet, l: tr("Add Funds History") },
+    { to: "/tickets", icon: Ticket, l: tr("My Tickets") }, { to: "/giveaway", icon: Gift, l: tr("Giveaway") },
+    { to: "/reseller-api", icon: Code2, l: tr("Reseller API") }, { to: "/qna", icon: MessageCircleQuestion, l: tr("QnA") },
+    { to: "/profile", icon: UserRound, l: tr("My Account") },
+  ] as const;
   return (
-    <div className="mx-auto max-w-3xl space-y-4">
-      <PageTitle sub={<>{tr("Welcome back")}{profile?.full_name ? ", " + profile.full_name : ""}.</>}>{tr("Dashboard")}</PageTitle>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        {stats.map((s) => (
-          <Card key={s.label} className="!p-4">
-            <s.icon className="h-5 w-5 text-primary" />
-            <div className="mt-2 text-xl font-bold">{s.value}</div>
-            <div className="text-xs text-muted-foreground">{s.label}</div>
-          </Card>
-        ))}
+    <div className="space-y-5">
+      <section className="page-banner page-banner--multi"><div className="relative z-10"><h1>{tr("Dashboard")}</h1><p>{tr("Welcome back")}{profile?.full_name ? ", " + profile.full_name : ""}. {tr("Your balance, orders and quick actions at a glance.")}</p><div className="page-banner-stats"><span>{tr("Live status")}</span><span>{tr("Auto refund")}</span><span>{tr("24/7 support")}</span></div></div><div className="banner-art-stack"><img src={boxArt} alt="" /><img src={welcomeArt} alt="" /><img src={growthArt} alt="" /></div></section>
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7">
+        {stats.map((s) => <div key={s.label} className="desktop-stat !min-h-0 !p-4"><span className="desktop-stat-icon"><s.icon /></span><span className="desktop-stat-label">{s.label}</span><strong>{s.value}</strong></div>)}
       </div>
-      <p className="text-sm text-muted-foreground">{tr("Total spent")}: <b>{money(data?.spent ?? 0)}</b></p>
-      <div className="grid gap-3 sm:grid-cols-3">
-        <Link to="/order" className="btn-glow"><ShoppingCart className="h-4 w-4" /> {tr("New Order")}</Link>
-        <Link to="/add-funds" className="btn-ghost-glow"><PlusCircle className="h-4 w-4" /> {tr("Add Funds")}</Link>
-        <Link to="/reseller-api" className="btn-ghost-glow"><Code2 className="h-4 w-4" /> {tr("Reseller API")}</Link>
+      <div className="grid grid-cols-3 gap-3 sm:grid-cols-5 lg:grid-cols-9">
+        {shortcuts.map((s) => <Link key={s.to} to={s.to} className="profile-shortcut"><s.icon className="h-6 w-6 text-primary" /><span>{s.l}</span></Link>)}
       </div>
     </div>
   );

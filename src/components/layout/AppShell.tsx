@@ -283,7 +283,7 @@ function Shell({ children }: { children: ReactNode }) {
         </div>
       )}
 
-      <main className={"flex-1 w-full " + (path === "/" ? "home-main" : path === "/order" ? "order-main" : `mx-auto px-4 pt-6 ${path.startsWith("/admin") ? "max-w-7xl" : "max-w-5xl"}`)}>
+      <main className={"flex-1 w-full " + (path === "/" ? "home-main" : path === "/order" ? "order-main" : `mx-auto px-4 pt-6 ${path.startsWith("/admin") ? "max-w-7xl" : "max-w-5xl"} ${desktopSidebar ? "lg:max-w-none lg:px-8" : ""}`)}>
         {settings?.maintenance_on && !path.startsWith("/admin") ? (
           <div className="glass mx-auto mt-10 max-w-lg rounded-3xl p-8 text-center">
             <Sparkles className="mx-auto h-10 w-10 text-primary" />

@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
-import { Search, Users } from "lucide-react";
+import { Search, Users, ShoppingCart, Wallet } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
@@ -91,8 +91,8 @@ function Orders() {
     <div className="space-y-4">
       <section className="page-banner"><div className="relative z-10"><h1>{tr("Order History")}</h1><p>{tr("Track every order and its delivery status in real time.")}</p><div className="page-banner-stats"><span>{tr("Live status")}</span><span>{tr("Auto refund")}</span><span>{tr("24/7 support")}</span></div></div><img src={ordersArt} alt="" width={816} height={816} /></section>
       <div className="relative"><Search className="absolute left-4 top-3.5 h-5 w-5 text-muted-foreground" /><input className={`${inputCls} pl-12`} aria-label={tr("Search by Order ID, service or link")} placeholder={tr("Search by Order ID, service or link")} value={q} onChange={(e) => setQ(e.target.value)} /></div>
-      <div className="flex gap-2 overflow-x-auto pb-1">
-        {TABS.map((t) => <Button variant="ghost" key={t.k} onClick={() => setTab(t.k)} className={`shrink-0 rounded-full border px-4 py-1.5 text-sm font-semibold ${tab === t.k ? "border-primary bg-primary text-primary-foreground" : "border-border"}`}>{tr(t.l)}</Button>)}
+      <div className="tab-pills">
+        {TABS.map((t) => <Button variant="ghost" key={t.k} onClick={() => setTab(t.k)} aria-pressed={tab === t.k} className="tab-pill">{tr(t.l)}</Button>)}
       </div>
       {query.isError && <ErrorState />}
       {query.isLoading && <Skeleton className="h-40 rounded-3xl" />}
@@ -115,7 +115,7 @@ function Orders() {
         })}
       </div>
       {query.hasNextPage && <Button variant="ghost" onClick={() => query.fetchNextPage()} disabled={query.isFetchingNextPage} className="btn-ghost-glow w-full">{tr("Load more")}</Button>}
-      <div className="grid grid-cols-2 gap-3"><Link to="/add-funds" className="btn-glow">{tr("Add Funds")}</Link><Link to="/order" className="btn-ghost-glow">{tr("Buy Service")}</Link></div>
+      <div className="action-duo"><Link to="/order" className="action-duo-btn action-duo-btn--primary"><ShoppingCart className="h-5 w-5" />{tr("Buy Service")}</Link><Link to="/add-funds" className="action-duo-btn"><Wallet className="h-5 w-5" />{tr("Add Funds")}</Link></div>
     </div>
   );
 }

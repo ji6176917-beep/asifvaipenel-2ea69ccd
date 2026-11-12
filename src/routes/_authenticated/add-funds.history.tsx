@@ -5,12 +5,14 @@ import { Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { useTr } from "@/lib/i18n";
-import { Wallet } from "lucide-react";
+import { Wallet, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { HistoryCard, HistoryPaymentLogo } from "@/components/HistoryCard";
 import { money } from "@/lib/format";
-import { Card, Copyable, Empty, ErrorState, PageTitle, inputCls } from "@/components/ui-kit";
+import { Card, Copyable, Empty, ErrorState, inputCls } from "@/components/ui-kit";
 import { Skeleton } from "@/components/ui/skeleton";
+import fundsArt from "@/assets/funds-social-banner.jpg";
+import growthArt from "@/assets/social-growth.webp";
 
 export const Route = createFileRoute("/_authenticated/add-funds/history")({
   head: () => ({
@@ -68,13 +70,13 @@ function History() {
 
   return (
     <div className="space-y-4">
-      <PageTitle>{tr("Add Funds History")}</PageTitle>
+      <section className="page-banner page-banner--multi"><div className="relative z-10"><h1>{tr("Add Funds History")}</h1><p>{tr("Track all your Add Funds requests and their status.")}</p><div className="page-banner-stats"><span>{tr("Instant top-up")}</span><span>bKash · Nagad · USDT</span><span>{tr("24/7 support")}</span></div></div><div className="banner-art-stack"><img src={fundsArt} alt="" /><img src={growthArt} alt="" /></div></section>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
         {stats.map((s) => <Card key={s.l} className="!p-4 text-center"><div className="text-xs text-muted-foreground">{s.l}</div><div className="font-display text-xl font-bold">{s.v}</div></Card>)}
       </div>
       <div className="relative"><Search className="absolute left-4 top-3.5 h-5 w-5 text-muted-foreground" /><input className={`${inputCls} pl-12`} aria-label={tr("Search by Add Fund ID or transaction ID")} placeholder={tr("Search by Add Fund ID or transaction ID")} value={q} onChange={(e) => setQ(e.target.value)} /></div>
-      <div className="flex gap-2 overflow-x-auto pb-1">
-        {TABS.map((t) => <Button variant="ghost" key={t} onClick={() => setTab(t)} className={`shrink-0 rounded-full border px-4 py-1.5 text-sm font-semibold ${tab === t ? "border-primary bg-primary text-primary-foreground" : "border-border"}`}>{tr(t === "all" ? "All" : t.charAt(0).toUpperCase() + t.slice(1))}</Button>)}
+      <div className="tab-pills">
+        {TABS.map((t) => <Button variant="ghost" key={t} onClick={() => setTab(t)} aria-pressed={tab === t} className="tab-pill">{tr(t === "all" ? "All" : t.charAt(0).toUpperCase() + t.slice(1))}</Button>)}
       </div>
       {isError && <ErrorState />}
       {isLoading && <Skeleton className="h-32 rounded-3xl" />}
@@ -90,7 +92,7 @@ function History() {
           </HistoryCard>
         ))}
       </div>
-      <div className="grid grid-cols-2 gap-3"><Link to="/add-funds" className="btn-glow">{tr("Add Funds")}</Link><Link to="/order" className="btn-ghost-glow">{tr("Buy Service")}</Link></div>
+      <div className="action-duo"><Link to="/add-funds" className="action-duo-btn action-duo-btn--primary"><Wallet className="h-5 w-5" />{tr("Add Funds")}</Link><Link to="/order" className="action-duo-btn"><ShoppingCart className="h-5 w-5" />{tr("Buy Service")}</Link></div>
     </div>
   );
 }
