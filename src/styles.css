@@ -1078,3 +1078,11 @@
 .funds-side-links svg { width: 30px; height: 30px; padding: 6px; border-radius: 10px; background: var(--funds-mint-surface); color: var(--funds-green); }
 @media (max-width: 900px) { .funds-pay-layout { grid-template-columns: 1fr; } }
 @media (max-width: 760px) { .funds-pay-banner { min-height: 130px; padding: 16px; } .funds-pay-banner h2 { font-size: 20px; } .funds-pay-banner p { font-size: 11px; } .funds-pay-banner-art { width: 100px; height: 100px; margin: -10px -6px; } .funds-pay-banner-logo { width: 44px; height: 44px; } }
+
+.funds-pay-main { display: flex; flex-direction: column; gap: 16px; }
+.funds-steps-card { border-radius: 16px; border: 1px solid var(--border); background: linear-gradient(135deg, var(--funds-mint-surface), var(--card)); padding: 18px; box-shadow: var(--funds-shadow); }
+.funds-steps-card h3 { font-weight: 800; font-size: 16px; margin-bottom: 12px; }
+.funds-steps-card ol { display: grid; gap: 10px; }
+.funds-steps-card li { display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 600; }
+.funds-steps-card li span { display: grid; place-items: center; width: 28px; height: 28px; flex-shrink: 0; border-radius: 999px; background: var(--funds-green); color: var(--funds-white); font-weight: 800; font-size: 13px; }
+.funds-side-art { aspect-ratio: 1; object-fit: cover; }

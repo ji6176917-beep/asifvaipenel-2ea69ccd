@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button";
 import fundsHeader from "@/assets/funds-header.jpg";
 import fundsSocialBanner from "@/assets/funds-social-banner.jpg";
 import cryptoPayArt from "@/assets/crypto-pay-art.png";
-import socialGrowth from "@/assets/social-growth.webp";
+import p2pWalletArt from "@/assets/p2p-wallet-art.jpg";
+import cryptoWalletSide from "@/assets/crypto-wallet-side.jpg";
 import { History, ShoppingCart, Headphones } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -294,15 +295,23 @@ function AddFunds() {
               )}
             </form>
           )}
+          <div className="funds-steps-card">
+            <h3>{tr("How it works")}</h3>
+            <ol>
+              {(group === "p2p"
+                ? [tr("Enter the amount you want to add"), tr("Tap Pay Now and pay with bKash, Nagad or Rocket"), tr("Balance is added to your wallet automatically")]
+                : [tr("Copy the ID or address above and send the payment"), tr("Paste the Transaction ID and tap Add Funds"), tr("Balance is added to your wallet automatically")]
+              ).map((t, i) => <li key={i}><span>{i + 1}</span>{t}</li>)}
+            </ol>
+          </div>
           </div>
           <aside className="funds-pay-side">
-            <img src={socialGrowth} alt={tr("Social media growth services")} width={640} height={640} loading="lazy" className="funds-side-art" />
+            <img src={group === "p2p" ? p2pWalletArt : cryptoWalletSide} alt="" width={816} height={816} loading="lazy" className="funds-side-art" />
             <div className="funds-side-links">
               <Link to="/add-funds/history"><History aria-hidden />{tr("Add Funds History")}</Link>
               <Link to="/order"><ShoppingCart aria-hidden />{tr("New order")}</Link>
               <Link to="/tickets"><Headphones aria-hidden />{tr("My Tickets")}</Link>
             </div>
-            <img src={fundsSocialBanner} alt="" width={1920} height={640} loading="lazy" className="funds-side-banner" />
           </aside>
           </div>
         </section>
