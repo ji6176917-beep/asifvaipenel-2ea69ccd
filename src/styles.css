@@ -1021,3 +1021,10 @@
 .levels-dialog > button:last-child svg { width: 18px; height: 18px; }
 
 @media (max-width: 1023px) { .desktop-dashboard .dd-order-desktop-only { display: none !important; } }
+
+.desktop-music { display: grid; grid-template-columns: 42px minmax(0,1fr); gap: 10px; border: 1px solid var(--border); background: var(--secondary); padding: 10px; border-radius: 8px; }
+.desktop-music-cover { height: 42px; width: 42px; border-radius: 50%; display: grid; place-items: center; color: var(--primary); background: var(--popover); overflow: hidden; }
+.desktop-music-cover img { width: 100%; height: 100%; object-fit: cover; }
+.desktop-music-controls { min-width: 0; }
+.desktop-music-title { font-size: 10px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.desktop-music-controls input { min-width: 0; width: 100%; accent-color: var(--primary); }
