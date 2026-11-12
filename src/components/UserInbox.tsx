@@ -151,7 +151,7 @@ export function UserInbox() {
       </Button>
       {/* Portal to <body>: the header's backdrop-filter and compact header-button rules would otherwise clip and shrink this card. */}
       {askPush && typeof document !== "undefined" && createPortal(
-        <div role="dialog" aria-label={tr("Allow notifications")} className="push-ask-card fixed inset-x-3 z-[70] mx-auto w-auto max-w-sm rounded-2xl border border-border bg-card p-4 shadow-xl sm:left-auto sm:right-4 sm:w-96" style={{ top: "calc(env(safe-area-inset-top, 0px) + 64px)" }}>
+        <div role="dialog" aria-label={tr("Allow notifications")} className="push-ask-card fixed inset-x-3 z-[70] mx-auto w-auto max-w-sm rounded-2xl border border-border bg-card p-4 shadow-xl sm:left-auto sm:right-4 sm:w-96" style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 84px)" }}>
           <button type="button" aria-label={tr("Close")} onClick={dismissPush} className="absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:bg-muted"><X className="h-4 w-4" /></button>
           <div className="flex items-start gap-3 pr-8">
             <img src={LOGO} alt="" className="h-10 w-10 shrink-0 rounded-xl" />

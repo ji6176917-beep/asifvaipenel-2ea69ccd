@@ -65,7 +65,7 @@ function Dashboard() {
   return (
     <div className="space-y-5">
       <section className="page-banner page-banner--multi"><div className="relative z-10"><h1>{tr("Dashboard")}</h1><p>{tr("Welcome back")}{profile?.full_name ? ", " + profile.full_name : ""}. {tr("Your balance, orders and quick actions at a glance.")}</p><div className="page-banner-stats"><span>{tr("Live status")}</span><span>{tr("Auto refund")}</span><span>{tr("24/7 support")}</span></div></div><div className="banner-art-stack"><img src={boxArt} alt="" /><img src={welcomeArt} alt="" /><img src={growthArt} alt="" /></div></section>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-4 xl:grid-cols-7">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-4 xl:grid-cols-7 [&>*:last-child:nth-child(odd)]:col-span-2 sm:[&>*:last-child:nth-child(odd)]:col-span-1">
         {stats.map((s) => <div key={s.label} className="desktop-stat !min-h-0 !p-4"><span className="desktop-stat-icon"><s.icon /></span><span className="desktop-stat-label">{s.label}</span><strong>{s.value}</strong></div>)}
       </div>
       <div className="grid grid-cols-3 gap-3 sm:grid-cols-5 xl:grid-cols-9">

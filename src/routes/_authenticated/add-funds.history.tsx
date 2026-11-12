@@ -71,7 +71,7 @@ function History() {
   return (
     <div className="space-y-4">
       <section className="page-banner page-banner--multi"><div className="relative z-10"><h1>{tr("Add Funds History")}</h1><p>{tr("Track all your Add Funds requests and their status.")}</p><div className="page-banner-stats"><span>{tr("Instant top-up")}</span><span>bKash · Nagad · USDT</span><span>{tr("24/7 support")}</span></div></div><div className="banner-art-stack"><img src={fundsArt} alt="" /><img src={growthArt} alt="" /></div></section>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-5 [&>*:last-child:nth-child(odd)]:col-span-2 sm:[&>*:last-child:nth-child(odd)]:col-span-1">
         {stats.map((s) => <Card key={s.l} className="!p-4 text-center"><div className="text-xs text-muted-foreground">{s.l}</div><div className="font-display text-xl font-bold">{s.v}</div></Card>)}
       </div>
       <div className="relative"><Search className="absolute left-4 top-3.5 h-5 w-5 text-muted-foreground" /><input className={`${inputCls} pl-12`} aria-label={tr("Search by Add Fund ID or transaction ID")} placeholder={tr("Search by Add Fund ID or transaction ID")} value={q} onChange={(e) => setQ(e.target.value)} /></div>

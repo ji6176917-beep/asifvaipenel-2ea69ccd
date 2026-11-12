@@ -1,3 +1,4 @@
+import { ListOrdered, Loader, CheckCircle2, XCircle } from "lucide-react";
 import { FeatureBanners } from "@/components/FeatureBanners";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
@@ -98,7 +99,7 @@ function Orders() {
       {query.isError && <ErrorState />}
       {query.isLoading && <Skeleton className="h-40 rounded-3xl" />}
       {query.isSuccess && list.length === 0 && <Empty text={tr("No orders found.")} />}
-      {query.isSuccess && list.length > 0 && <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">{[["Total", list.length], ["In progress", list.filter((o) => o.status === "pending" || o.status === "processing").length], ["Completed", list.filter((o) => o.status === "completed").length], ["Canceled/Rejected", list.filter((o) => o.status === "canceled" || o.status === "rejected").length]].map(([l, v]) => <div key={l as string} className="flex min-w-0 flex-col gap-1 rounded-2xl border border-border bg-card p-4 shadow-sm"><span className="text-xs font-semibold uppercase leading-tight tracking-wide text-muted-foreground">{tr(l as string)}</span><strong className="font-display text-2xl font-extrabold leading-none text-foreground">{v}</strong></div>)}</div>}
+      {query.isSuccess && list.length > 0 && <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">{([["Total", list.length, ListOrdered, "text-primary bg-primary/10"], ["In progress", list.filter((o) => o.status === "pending" || o.status === "processing").length, Loader, "text-amber-600 bg-amber-500/10"], ["Completed", list.filter((o) => o.status === "completed").length, CheckCircle2, "text-emerald-600 bg-emerald-500/10"], ["Canceled/Rejected", list.filter((o) => o.status === "canceled" || o.status === "rejected").length, XCircle, "text-destructive bg-destructive/10"]] as const).map(([l, v, Icon, c]) => <div key={l} className="flex min-w-0 items-center gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm"><span className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl ${c}`}><Icon className="h-5 w-5" /></span><div className="flex min-w-0 flex-col gap-1"><span className="truncate text-xs font-semibold leading-tight text-muted-foreground">{tr(l)}</span><strong className="font-display text-2xl font-extrabold leading-none text-foreground">{v}</strong></div></div>)}</div>}
       <div className="grid gap-3">
         {list.map((o) => {
           const step = FLOW.indexOf(o.status);
