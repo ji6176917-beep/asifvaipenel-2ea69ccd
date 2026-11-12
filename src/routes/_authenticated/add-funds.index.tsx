@@ -228,10 +228,18 @@ function AddFunds() {
         <section className="funds-form-section">
           <Button variant="ghost" onClick={() => { setGroup(null); setM(null); window.scrollTo({ top: 0, behavior: "instant" }); }} className="mb-4 gap-1 text-sm text-muted-foreground"><ArrowLeft className="h-4 w-4" /> {tr("Change method")}</Button>
 
+          <div className={`funds-pay-banner funds-pay-banner--${group}`}>
+            <span className="funds-pay-banner-logo">{group === "binance" ? <SiBinance aria-hidden /> : group === "usdt" ? <SiTether aria-hidden /> : <span aria-hidden>৳</span>}</span>
+            <div className="min-w-0 flex-1">
+              <h2>{group === "binance" ? tr("Binance Pay") : group === "usdt" ? "USDT" : tr("BDT P2P")}</h2>
+              <p>{group === "p2p" ? tr("Pay securely with bKash, Nagad or Rocket — balance is added automatically.") : tr("Send the payment, then enter the Transaction ID — balance is added automatically.")}</p>
+              <div className="funds-pay-badges"><span><Zap aria-hidden />{tr("Instant")}</span><span><ShieldCheck aria-hidden />{tr("Secure")}</span><span><CheckCircle2 aria-hidden />{tr("Auto verify")}</span></div>
+            </div>
+          </div>
           {group !== "p2p" && (methods?.filter((x) => x.kind === group).length ?? 0) > 1 && (
             <div className="mb-5 grid grid-cols-3 gap-2">
               {methods?.filter((x) => x.kind === group).map((x) => (
-                <Button variant="outline" key={x.id} onClick={() => setM(x)} aria-pressed={m?.id === x.id} className={`h-auto flex-col gap-1.5 rounded-lg border p-3 transition ${m?.id === x.id ? "border-primary bg-primary/10 shadow-glow" : "border-border"}`}>
+                <Button variant="outline" key={x.id} onClick={() => setM(x)} aria-pressed={m?.id === x.id} className={`funds-net-card h-auto flex-col gap-1.5 p-3 ${m?.id === x.id ? "is-active" : ""}`}>
                   <DepositMethodLogo name={x.name} kind={x.kind} logo={x.logo_url} className="h-10 w-12" />
                   <span className="text-xs font-semibold">{x.name}</span>
                 </Button>
@@ -242,7 +250,7 @@ function AddFunds() {
           {m && (
             <form onSubmit={m.kind === "p2p" ? (e) => { e.preventDefault(); payAuto(); } : submit} className="space-y-4">
               {m.kind !== "p2p" && <>
-              <div className="flex items-center gap-3 rounded-2xl bg-muted/60 p-4">
+              <div className={`funds-account-card funds-account-card--${m.kind} flex items-center gap-3 p-4`}>
                 <DepositMethodLogo name={m.name} kind={m.kind} logo={m.logo_url} className="h-12 w-12" />
                 <div className="min-w-0">
                   <div className="label-premium">{m.name}{m.network ? ` • ${m.network}` : ""}</div>
@@ -250,15 +258,16 @@ function AddFunds() {
                   <Copyable value={m.account} className={m.kind === "usdt" ? "text-xs" : "text-base font-bold"} />
                 </div>
               </div>
-              {m.instructions && <p className="whitespace-pre-line rounded-2xl bg-muted/40 p-3 text-sm text-muted-foreground">{m.instructions}</p>}
+              {m.instructions && <p className="funds-note-card whitespace-pre-line p-3 text-sm">{m.instructions}</p>}
               </>}
-              <div>
+              <div className="funds-amount-card">
                 <label className={labelCls} htmlFor="amt">{tr("Amount (USD)")}</label>
                 <input id="amt" inputMode="decimal" className={inputCls} value={amount} onChange={(e) => setAmount(e.target.value.replace(/[^\d.]/g, ""))} />
+                <div className="funds-quick-amounts">{[5, 10, 25, 50, 100].map((v) => <button type="button" key={v} onClick={() => setAmount(String(v))} aria-pressed={amt === v}>${v}</button>)}</div>
                 <p className="mt-1 text-xs text-muted-foreground">{tr("Min")} {money(minA)} — {tr("Max")} {money(maxA)}</p>
               </div>
               {m.kind === "p2p" && (
-                <div className="rounded-2xl border border-primary/40 bg-primary/5 p-4 text-center">
+                <div className="funds-convert-card p-4 text-center">
                   <div className="text-xs text-muted-foreground">{tr("You will pay (rate")} ৳{rate}/USD)</div>
                   <div className="text-gradient font-display text-4xl font-extrabold">৳{(Math.round(amt * rate * 100) / 100).toFixed(2)}</div>
                                   </div>
@@ -272,7 +281,7 @@ function AddFunds() {
                 </>
               ) : (
                 <>
-                  <div>
+                  <div className="funds-amount-card">
                     <label className={labelCls} htmlFor="txn">{tr("Transaction ID")}</label>
                     <input id="txn" className={inputCls} value={txn} onChange={(e) => setTxn(e.target.value)} />
                   </div>

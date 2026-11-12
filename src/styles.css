@@ -1028,3 +1028,36 @@
 .desktop-music-controls { min-width: 0; }
 .desktop-music-title { font-size: 10px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .desktop-music-controls input { min-width: 0; width: 100%; accent-color: var(--primary); }
+
+/* Desktop sidebar card buttons */
+.desktop-nav-card { border: 1px solid var(--border); background: var(--card); box-shadow: 0 1px 3px oklch(0.4 0.07 175 / .08); border-radius: 12px; }
+.desktop-nav-card:hover { border-color: color-mix(in oklch, var(--primary) 45%, transparent); transform: translateY(-1px); }
+.desktop-nav-card.is-active { border-color: var(--primary); background: color-mix(in oklch, var(--primary) 10%, var(--card)); color: var(--primary); }
+.desktop-nav-card > svg { padding: 3px; box-sizing: content-box; border-radius: 8px; background: color-mix(in oklch, var(--primary) 12%, transparent); }
+
+/* Add Funds payment views */
+.funds-pay-banner { position: relative; overflow: hidden; display: flex; align-items: center; gap: 16px; padding: 20px; margin-bottom: 18px; border-radius: 16px; color: var(--funds-white); background: linear-gradient(135deg, var(--funds-green), oklch(0.45 0.13 170)); box-shadow: var(--funds-shadow); }
+.funds-pay-banner::after { content: ''; position: absolute; width: 180px; height: 180px; right: -50px; top: -60px; border-radius: 50%; background: oklch(1 0 0 / .12); }
+.funds-pay-banner--binance { background: linear-gradient(135deg, var(--funds-crypto-dark), oklch(0.32 0.06 85)); }
+.funds-pay-banner--usdt { background: linear-gradient(135deg, oklch(0.55 0.13 170), var(--funds-blue)); }
+.funds-pay-banner--p2p { background: linear-gradient(135deg, var(--funds-pink), oklch(0.55 0.18 20)); }
+.funds-pay-banner h2 { font-size: 22px; font-weight: 850; }
+.funds-pay-banner p { font-size: 13px; opacity: .9; margin-top: 4px; }
+.funds-pay-banner-logo { display: grid; place-items: center; width: 60px; height: 60px; flex-shrink: 0; border-radius: 50%; background: oklch(1 0 0 / .18); font-size: 30px; font-weight: 850; }
+.funds-pay-banner--binance .funds-pay-banner-logo { color: var(--funds-crypto-gold); }
+.funds-pay-banner-logo > svg { width: 34px; height: 34px; }
+.funds-pay-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.funds-pay-badges span { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 999px; background: oklch(1 0 0 / .2); font-size: 11px; font-weight: 700; }
+.funds-pay-badges svg { width: 13px; height: 13px; }
+.funds-net-card { border: 2px solid var(--border) !important; border-radius: 14px !important; background: linear-gradient(135deg, var(--funds-white), var(--funds-blue-surface)) !important; }
+.funds-net-card.is-active { border-color: var(--funds-green) !important; background: linear-gradient(135deg, var(--funds-mint-surface), var(--funds-white)) !important; box-shadow: var(--shadow-glow, var(--funds-shadow)); }
+.funds-account-card { border-radius: 16px !important; border: 2px solid color-mix(in oklch, var(--funds-green) 40%, transparent); background: linear-gradient(135deg, var(--funds-mint-surface), var(--funds-white)); box-shadow: var(--funds-shadow); }
+.funds-account-card--binance { border-color: color-mix(in oklch, var(--funds-crypto-gold) 70%, transparent); background: linear-gradient(135deg, oklch(0.97 0.05 90), var(--funds-white)); }
+.funds-account-card--usdt { border-color: color-mix(in oklch, var(--funds-blue) 55%, transparent); background: linear-gradient(135deg, var(--funds-blue-surface), var(--funds-white)); }
+.funds-note-card { border-radius: 14px !important; border-left: 4px solid var(--funds-green); background: var(--funds-mint-surface); color: var(--funds-ink); }
+.funds-amount-card { padding: 16px; border-radius: 16px !important; border: 2px solid color-mix(in oklch, var(--funds-green) 30%, transparent); background: linear-gradient(135deg, var(--funds-white), var(--funds-mint-surface)); box-shadow: var(--funds-shadow); }
+.funds-quick-amounts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.funds-quick-amounts button { padding: 6px 14px; border-radius: 999px; border: 1px solid color-mix(in oklch, var(--funds-green) 40%, transparent); background: var(--funds-white); font-size: 13px; font-weight: 750; color: var(--funds-green); }
+.funds-quick-amounts button[aria-pressed=true], .funds-quick-amounts button:hover { background: var(--funds-green); color: var(--funds-white); }
+.funds-convert-card { border-radius: 16px !important; border: 2px solid var(--funds-green); background: linear-gradient(135deg, var(--funds-mint-surface), var(--funds-pink-surface)); box-shadow: var(--funds-shadow); }
+@media (max-width: 760px) { .funds-pay-banner { padding: 14px; gap: 12px; } .funds-pay-banner h2 { font-size: 18px; } .funds-pay-banner p { font-size: 11px; } .funds-pay-banner-logo { width: 44px; height: 44px; font-size: 22px; } .funds-pay-banner-logo > svg { width: 24px; height: 24px; } }
