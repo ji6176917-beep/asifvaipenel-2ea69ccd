@@ -3,7 +3,7 @@ import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Home, User, Wallet, ShoppingCart, History, PlusCircle, ReceiptText, ShieldCheck, HelpCircle, Info,
-  LogOut, Bell, X, Mail, Sparkles, Code2, LayoutDashboard, Languages, Music, Check, Settings2, ChevronDown,
+  LogOut, Bell, X, Mail, Sparkles, Code2, LayoutDashboard, Languages, Music, Check, Settings2, ChevronDown, PanelLeftClose, PanelLeftOpen,
 
 } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -28,7 +28,7 @@ import { FONTS, homeConfig, themeConfig, themeIsCustom, type HomeConfig, type Th
 import siteLogo from "@/assets/apex-header-logo.png.asset.json";
 import { Button } from "@/components/ui/button";
 import { RouteTransition } from "@/components/layout/RouteTransition";
-import { DESKTOP_MENU_BREAKPOINT, desktopMenuDestination, isSettingsItem } from "@/components/layout/desktop-menu";
+import { DESKTOP_MENU_BREAKPOINT, desktopMenuDestination, isSettingsItem, showDesktopMenu } from "@/components/layout/desktop-menu";
 
 // Light mode only: the dark-mode system was removed; no `.dark` class is ever applied.
 
@@ -101,8 +101,8 @@ function itemHref(m: MenuItem, s?: Settings | null): { kind: "route" | "external
   }
 }
 
-function NavItem({ m, className, iconClass = "h-5 w-5 text-primary", onAction, settings, children, showIcon = true, desktopSignedIn }: {
-  m: MenuItem; className: string; iconClass?: string; onAction: (a: string) => void; settings?: Settings | null | undefined; children?: ReactNode; showIcon?: boolean; desktopSignedIn?: boolean;
+function NavItem({ m, className, iconClass = "h-5 w-5 text-primary", onAction, settings, children, showIcon = true, desktopSignedIn, active }: {
+  m: MenuItem; className: string; iconClass?: string; onAction: (a: string) => void; settings?: Settings | null | undefined; children?: ReactNode; showIcon?: boolean; desktopSignedIn?: boolean; active?: boolean;
 }) {
   const { lang } = useI18n();
   const tap = useSupportTap();
@@ -116,7 +116,7 @@ function NavItem({ m, className, iconClass = "h-5 w-5 text-primary", onAction, s
   if (h.kind === "route") {
     const destination = desktopSignedIn === undefined ? { to: h.to, search: undefined } : desktopMenuDestination(m, desktopSignedIn);
     if (destination.search) return <Link to="/sign-in" search={destination.search} className={className}>{inner}</Link>;
-    return <Link to={destination.to as never} className={className}>{inner}</Link>;
+    return <Link to={destination.to as never} title={label} aria-current={active ? "page" : undefined} className={className}>{inner}</Link>;
   }
   if (h.kind === "external") return <a href={h.to} target={h.to.startsWith("mailto:") ? undefined : "_blank"} rel="noreferrer" className={className}>{inner}</a>;
   return <Button variant="ghost" type="button" onClick={() => (h.to === "support" ? tap() : onAction(h.to))} className={`${className} h-auto justify-start whitespace-normal text-left`}>{inner}</Button>;
@@ -175,6 +175,7 @@ function Shell({ children }: { children: ReactNode }) {
   const [desktopMenuOpen, setDesktopMenuOpen] = useState(true);
   const [isDesktop, setIsDesktop] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const desktopSidebar = showDesktopMenu(!!user, isDesktop ? DESKTOP_MENU_BREAKPOINT : 0);
   useEffect(() => {
     const media = window.matchMedia(`(min-width: ${DESKTOP_MENU_BREAKPOINT}px)`);
     const update = () => { setIsDesktop(media.matches); setMenuOpen(false); };
@@ -232,7 +233,7 @@ function Shell({ children }: { children: ReactNode }) {
   };
 
   return (
-    <div className={`relative flex min-h-screen flex-col pb-[calc(4rem+env(safe-area-inset-bottom,0px))] ${desktopMenuOpen ? "lg:pr-80" : ""} ${path === "/" ? "home-reference-shell" : path === "/order" ? "order-reference-shell" : ""}`}>
+    <div className={`relative flex min-h-screen flex-col pb-[calc(4rem+env(safe-area-inset-bottom,0px))] lg:pb-0 ${user ? desktopMenuOpen ? "lg:pl-64" : "lg:pl-16" : ""} ${path === "/" ? "home-reference-shell" : path === "/order" ? "order-reference-shell" : ""}`}>
       <ThemeApplier t={theme} />
       {path !== "/" && path !== "/order" && <FloatingBackground cfg={home.bg} glowOn={theme.bg3d} />}
       <WelcomePopup s={settings as Settings | null | undefined} />
@@ -254,6 +255,7 @@ function Shell({ children }: { children: ReactNode }) {
             <span className="home-brand-copy min-w-0"><span className="home-brand-name block truncate font-display text-base font-bold sm:text-lg">{headerName}</span>{path === "/" && <span className="home-brand-tagline">{tr("Social Media Growth Partner")}</span>}</span>
           </Link>
           <div className="home-header-tools ml-auto flex shrink-0 items-center gap-1.5">
+            {desktopSidebar && <Button variant="ghost" size="icon" aria-label={desktopMenuOpen ? tr("Close menu") : t("header.open_menu")} title={desktopMenuOpen ? tr("Close menu") : t("header.open_menu")} aria-expanded={desktopMenuOpen} onClick={() => setDesktopMenuOpen((open) => !open)}>{desktopMenuOpen ? <PanelLeftClose /> : <PanelLeftOpen />}</Button>}
             {user ? (<>
               <Link to="/balance" className="home-wallet btn-ghost-glow !px-3 !py-1.5 text-sm">
                 <Wallet className="h-4 w-4 text-primary" /> {money(profile?.balance ?? 0)}
@@ -263,9 +265,9 @@ function Shell({ children }: { children: ReactNode }) {
               <Link to="/sign-in" className="inline-flex h-8 items-center rounded-full border border-primary/40 px-3 text-xs font-semibold text-primary transition-colors hover:bg-primary/10 sm:h-9 sm:px-4 sm:text-sm">{tr("Sign In")}</Link>
               <Link to="/sign-up" className="inline-flex h-8 items-center rounded-full bg-primary px-3 text-xs font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 sm:h-9 sm:px-4 sm:text-sm">{tr("Sign Up")}</Link>
             </>)}
-            {!(isDesktop && desktopMenuOpen) && <Button variant="ghost" size="icon" aria-label={t("header.open_menu")} aria-expanded={isDesktop ? desktopMenuOpen : menuOpen} onClick={() => isDesktop ? setDesktopMenuOpen(true) : setMenuOpen(true)} className={`${path === "/" ? "home-menu-button" : "menu-btn"} ${menuOpen ? "is-open" : ""}`}>
+            <div className="lg:hidden"><Button variant="ghost" size="icon" aria-label={t("header.open_menu")} aria-expanded={menuOpen} onClick={() => setMenuOpen(true)} className={`${path === "/" ? "home-menu-button" : "menu-btn"} ${menuOpen ? "is-open" : ""}`}>
               <span className="menu-dots" aria-hidden><i /><i /><i /></span>{path === "/" && <span className="home-menu-label">{tr("Menu")}</span>}
-            </Button>}
+            </Button></div>
           </div>
         </div>
 
@@ -318,7 +320,7 @@ function Shell({ children }: { children: ReactNode }) {
             ))}
           </div>
         </div>;
-        return <footer className="mt-16 border-t border-border bg-card sm:mt-20 -mb-[calc(4rem+env(safe-area-inset-bottom,0px))] pb-[calc(4rem+env(safe-area-inset-bottom,0px))]">
+        return <footer className="mt-16 border-t border-border bg-card sm:mt-20 -mb-[calc(4rem+env(safe-area-inset-bottom,0px))] pb-[calc(4rem+env(safe-area-inset-bottom,0px))] lg:mb-0 lg:pb-0">
           {full ? <div className="mx-auto max-w-5xl px-4 pt-8 pb-1 sm:pt-10 sm:pb-3">
             <div className="grid grid-cols-2 gap-x-6 gap-y-6 sm:gap-y-8 sm:grid-cols-[1.4fr_1fr_1.2fr]">
               <div className="col-span-2 space-y-3 sm:col-span-1">{brand}<p className="max-w-xs text-sm text-muted-foreground">{tr("Fast, reliable social media growth services trusted worldwide.")}</p>
@@ -345,13 +347,13 @@ function Shell({ children }: { children: ReactNode }) {
       {/* Floating WhatsApp support button: fixed to the bottom-right corner on every page. */}
       {wa && settings?.whatsapp_float !== false && (
         <a href={wa} target="_blank" rel="noreferrer" aria-label={tr("Chat on WhatsApp")} title={tr("Chat on WhatsApp")}
-          className={`animate-pulse-ring home-whatsapp-float fixed bottom-24 right-4 z-50 flex h-14 w-14 items-center justify-center overflow-visible rounded-full bg-success text-primary-foreground shadow-glow ${desktopMenuOpen ? "lg:right-84" : ""}`}>
+          className="animate-pulse-ring home-whatsapp-float fixed bottom-24 right-4 z-50 flex h-14 w-14 items-center justify-center overflow-visible rounded-full bg-success text-primary-foreground shadow-glow lg:bottom-6">
           <ContactIcon k="contact.whatsapp" className="h-7 w-7" fallback={<WhatsAppIcon className="h-7 w-7" />} />
         </a>
       )}
 
 
-      <nav className={`home-bottom-nav glass fixed inset-x-0 bottom-0 z-40 rounded-none border-x-0 border-b-0 ${desktopMenuOpen ? "lg:right-80" : ""}`} aria-label="Shortcuts">
+      <nav className="home-bottom-nav glass fixed inset-x-0 bottom-0 z-40 rounded-none border-x-0 border-b-0 lg:hidden" aria-label="Shortcuts">
         <div className="mx-auto grid max-w-lg" style={{ gridTemplateColumns: `repeat(${Math.max(1, (path === "/" ? bottom : bottom.filter(visible)).length)}, minmax(0, 1fr))` }}>
           {(path === "/" ? bottom : bottom.filter(visible)).map((b) => {
             const to = b.target_type === "internal_route" ? b.target_value : "";
@@ -365,30 +367,27 @@ function Shell({ children }: { children: ReactNode }) {
         </div>
       </nav>
 
-      {desktopMenuOpen && <aside aria-label={tr("Menu")} className="fixed inset-y-0 right-0 z-40 hidden w-80 flex-col border-l border-sidebar-border bg-sidebar text-sidebar-foreground lg:flex">
-        <div className="flex h-[60px] shrink-0 items-center justify-between gap-2 border-b border-sidebar-border px-5">
-          <div className="flex min-w-0 items-center gap-2"><img src={siteLogo.url} alt="" width={28} height={28} className="h-7 w-7 object-contain" /><span className="truncate font-display text-sm font-bold">{siteName}</span></div>
-          <Button variant="ghost" size="icon" aria-label={tr("Close menu")} title={tr("Close menu")} onClick={() => setDesktopMenuOpen(false)}><X /></Button>
+      {user && <aside aria-label={tr("Menu")} className={`fixed inset-y-0 left-0 z-40 hidden flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground lg:flex ${desktopMenuOpen ? "w-64" : "w-16"}`}>
+        <div className={`flex h-[60px] shrink-0 items-center gap-2 border-b border-sidebar-border ${desktopMenuOpen ? "px-5" : "justify-center px-2"}`}>
+          <Link to="/" title={siteName} className="flex min-w-0 items-center gap-2"><img src={siteLogo.url} alt={siteName} width={28} height={28} className="h-7 w-7 shrink-0 object-contain" /><span className={desktopMenuOpen ? "truncate font-display text-sm font-bold" : "sr-only"}>{siteName}</span></Link>
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-5">
-          {user ? <div className="mb-5 border-b border-sidebar-border pb-5">
-            <Link to="/profile" className="flex min-w-0 items-center gap-3">
+        <div className={`min-h-0 flex-1 overflow-y-auto overscroll-contain py-5 ${desktopMenuOpen ? "px-3" : "px-2"}`}>
+          <div className="mb-5 border-b border-sidebar-border pb-5">
+            <Link to="/profile" title={tr("Account")} className={`flex min-w-0 items-center gap-3 ${desktopMenuOpen ? "px-2" : "justify-center"}`}>
               <Avatar path={profile?.avatar_url ?? null} name={profile?.full_name ?? ""} className="h-11 w-11 shrink-0" />
-              <div className="min-w-0"><div className="truncate text-sm font-semibold">{profile?.full_name || profile?.username || tr("Account")}</div><div className="mt-1 font-mono text-xs text-muted-foreground">ID {profile?.public_id ?? "—"}</div></div>
+              <div className={desktopMenuOpen ? "min-w-0" : "sr-only"}><div className="truncate text-sm font-semibold">{profile?.full_name || profile?.username || tr("Account")}</div><div className="mt-1 font-mono text-xs text-muted-foreground">ID {profile?.public_id ?? "—"}</div></div>
             </Link>
-            <Button asChild variant="secondary" className="mt-4 h-auto w-full justify-between py-3"><Link to="/balance"><span className="flex items-center gap-2"><Wallet />{t("header.balance")}</span><span className="font-bold text-primary">{money(profile?.balance ?? 0)}</span></Link></Button>
-          </div> : <div className="mb-5 grid grid-cols-2 gap-2 border-b border-sidebar-border pb-5">
-            <Button asChild variant="outline"><Link to="/sign-in">{tr("Sign In")}</Link></Button>
-            <Button asChild><Link to="/sign-up">{tr("Sign Up")}</Link></Button>
-          </div>}
+            <Button asChild variant="secondary" className={`mt-4 h-auto w-full py-3 ${desktopMenuOpen ? "justify-between" : "justify-center px-0"}`}><Link to="/balance" title={`${t("header.balance")}: ${money(profile?.balance ?? 0)}`}><span className="flex items-center gap-2"><Wallet className="shrink-0" /><span className={desktopMenuOpen ? "" : "sr-only"}>{t("header.balance")}</span></span><span className={desktopMenuOpen ? "font-bold text-primary" : "sr-only"}>{money(profile?.balance ?? 0)}</span></Link></Button>
+            {desktopMenuOpen && <Button asChild className="mt-2 w-full"><Link to="/add-funds"><PlusCircle />{t("menu.add_funds", "Add Funds")}</Link></Button>}
+          </div>
           <nav className="flex flex-col gap-1" aria-label={tr("Menu")}>
-            {menu.filter((m) => !isSettingsItem(m)).map((m) => {
+            {menu.filter(visible).filter((m) => !isSettingsItem(m)).map((m) => {
               const active = m.target_type === "internal_route" && (m.target_value === "/" ? path === "/" : path === m.target_value || path.startsWith(`${m.target_value}/`));
-              return <NavItem key={m.id} m={m} desktopSignedIn={!!user} settings={settings} onAction={onAction} iconClass="h-4.5 w-4.5 shrink-0 text-primary" className={`flex min-h-10 items-center gap-3 rounded-md px-3 py-2 text-sm font-semibold transition-colors hover:bg-sidebar-accent ${active ? "bg-sidebar-accent text-sidebar-primary" : "text-sidebar-foreground"}`}><span className="min-w-0 break-words">{pickLang(m.label, lang, m.system_key ?? "")}</span></NavItem>;
+              return <NavItem key={m.id} m={m} active={active} desktopSignedIn={true} settings={settings} onAction={onAction} iconClass="h-4.5 w-4.5 shrink-0 text-primary" className={`flex min-h-11 items-center gap-3 rounded-md py-2 text-sm font-semibold transition-colors hover:bg-sidebar-accent ${desktopMenuOpen ? "px-3" : "justify-center px-0"} ${active ? "bg-sidebar-accent text-sidebar-primary" : "text-sidebar-foreground"}`}><span className={desktopMenuOpen ? "min-w-0 break-words" : "sr-only"}>{pickLang(m.label, lang, m.system_key ?? "")}</span></NavItem>;
             })}
           </nav>
           {menu.filter(visible).some(isSettingsItem) && <div className="mt-5 border-t border-sidebar-border pt-3">
-            <Button variant="ghost" className="w-full justify-start" aria-expanded={settingsOpen} aria-controls="desktop-menu-settings" onClick={() => setSettingsOpen((open) => !open)}><Settings2 className="text-primary" /><span>{tr("Settings")}</span><ChevronDown className={`ml-auto transition-transform motion-reduce:transition-none ${settingsOpen ? "rotate-180" : ""}`} /></Button>
+            <Button variant="ghost" title={tr("Settings")} className={`w-full ${desktopMenuOpen ? "justify-start" : "justify-center px-0"}`} aria-expanded={settingsOpen} aria-controls="desktop-menu-settings" onClick={() => { setDesktopMenuOpen(true); setSettingsOpen((open) => !open); }}><Settings2 className="shrink-0 text-primary" /><span className={desktopMenuOpen ? "" : "sr-only"}>{tr("Settings")}</span>{desktopMenuOpen && <ChevronDown className={`ml-auto transition-transform motion-reduce:transition-none ${settingsOpen ? "rotate-180" : ""}`} />}</Button>
             {settingsOpen && <div id="desktop-menu-settings" className="mt-2 flex flex-col gap-1">
               {menu.filter(visible).filter(isSettingsItem).map((m) => <NavItem key={m.id} m={m} settings={settings} onAction={onAction} iconClass={`h-4 w-4 shrink-0 ${m.target_value === "logout" ? "text-destructive" : "text-primary"}`} className={`flex items-center gap-3 rounded-md px-3 py-2.5 text-sm ${m.target_value === "logout" ? "text-destructive" : "text-sidebar-foreground"}`} />)}
             </div>}

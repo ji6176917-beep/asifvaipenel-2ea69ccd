@@ -2,6 +2,10 @@ import type { MenuItem } from "@/lib/menu";
 
 export const DESKTOP_MENU_BREAKPOINT = 1024;
 
+export function showDesktopMenu(signedIn: boolean, viewportWidth: number) {
+  return signedIn && viewportWidth >= DESKTOP_MENU_BREAKPOINT;
+}
+
 export function desktopMenuDestination(item: MenuItem, signedIn: boolean) {
   const to = item.target_value || "/";
   return !signedIn && item.requires_login

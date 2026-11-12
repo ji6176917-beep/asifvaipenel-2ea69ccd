@@ -1,4 +1,5 @@
 # Roadmap
+- [x] Replace the desktop right menu with a signed-in-only 256px left sidebar and 64px icon mode; guest homepage remains full-width and mobile keeps its Sheet/bottom bar. Seven tests pass; real customer Balance → Add Funds, active links, collapse/reopen, Settings/logout and 1146px/390px layouts verified without runtime errors or money writes. Publication not performed.
 - [x] Desktop-only persistent right menu, close/reopen controls, guest sign-in/sign-up, existing settings actions grouped; seven tests pass, guest Profile redirect and signed-in Balance/Settings/logout verified, mobile Sheet and 1146px no-overflow verified.
 - [x] Implement email → verified code → new password recovery; four regression tests pass, public browser gating works without runtime errors, build OK; recovery preview includes sample code.
 - [ ] Activate branded recovery email delivery and verify a real emailed code/password reset end-to-end; no workspace email domain configured despite legacy setup-complete status. Requires sender-domain setup by owner; no real user password changed.
