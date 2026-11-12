@@ -8,6 +8,9 @@ import { SiBinance, SiTether } from "react-icons/si";
 import { Button } from "@/components/ui/button";
 import fundsHeader from "@/assets/funds-header.jpg";
 import fundsSocialBanner from "@/assets/funds-social-banner.jpg";
+import cryptoPayArt from "@/assets/crypto-pay-art.png";
+import socialGrowth from "@/assets/social-growth.webp";
+import { History, ShoppingCart, Headphones } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
@@ -136,7 +139,7 @@ function AddFunds() {
   const pickGroup = (g: "binance" | "usdt" | "p2p") => {
     setGroup(g);
     const list = methods?.filter((x) => x.kind === g) ?? [];
-    setM(g === "p2p" || list.length === 1 ? list[0] ?? null : null);
+    setM(list[0] ?? null);
     window.scrollTo({ top: 0, behavior: "instant" });
   };
 
@@ -233,13 +236,14 @@ function AddFunds() {
             <div className="min-w-0 flex-1">
               <h2>{group === "binance" ? tr("Binance Pay") : group === "usdt" ? "USDT" : tr("BDT P2P")}</h2>
               <p>{group === "p2p" ? tr("Pay securely with bKash, Nagad or Rocket — balance is added automatically.") : tr("Send the payment, then enter the Transaction ID — balance is added automatically.")}</p>
-              <div className="funds-pay-badges"><span><Zap aria-hidden />{tr("Instant")}</span><span><ShieldCheck aria-hidden />{tr("Secure")}</span><span><CheckCircle2 aria-hidden />{tr("Auto verify")}</span></div>
             </div>
+            <img src={cryptoPayArt} alt="" width={816} height={816} className="funds-pay-banner-art" />
           </div>
+          <div className="funds-pay-layout"><div className="funds-pay-main">
           {group !== "p2p" && (methods?.filter((x) => x.kind === group).length ?? 0) > 1 && (
             <div className="mb-5 grid grid-cols-3 gap-2">
               {methods?.filter((x) => x.kind === group).map((x) => (
-                <Button variant="outline" key={x.id} onClick={() => setM(x)} aria-pressed={m?.id === x.id} className={`funds-net-card h-auto flex-col gap-1.5 p-3 ${m?.id === x.id ? "is-active" : ""}`}>
+                <Button variant="outline" key={x.id} onClick={() => { setM(x); requestAnimationFrame(() => document.getElementById("amt")?.scrollIntoView({ behavior: "smooth", block: "center" })); }} aria-pressed={m?.id === x.id} className={`funds-net-card h-auto flex-col gap-1.5 p-3 ${m?.id === x.id ? "is-active" : ""}`}>
                   <DepositMethodLogo name={x.name} kind={x.kind} logo={x.logo_url} className="h-10 w-12" />
                   <span className="text-xs font-semibold">{x.name}</span>
                 </Button>
@@ -290,6 +294,17 @@ function AddFunds() {
               )}
             </form>
           )}
+          </div>
+          <aside className="funds-pay-side">
+            <img src={socialGrowth} alt={tr("Social media growth services")} width={640} height={640} loading="lazy" className="funds-side-art" />
+            <div className="funds-side-links">
+              <Link to="/add-funds/history"><History aria-hidden />{tr("Add Funds History")}</Link>
+              <Link to="/order"><ShoppingCart aria-hidden />{tr("New order")}</Link>
+              <Link to="/tickets"><Headphones aria-hidden />{tr("My Tickets")}</Link>
+            </div>
+            <img src={fundsSocialBanner} alt="" width={1920} height={640} loading="lazy" className="funds-side-banner" />
+          </aside>
+          </div>
         </section>
       )}
 

@@ -1061,3 +1061,20 @@
 .funds-quick-amounts button[aria-pressed=true], .funds-quick-amounts button:hover { background: var(--funds-green); color: var(--funds-white); }
 .funds-convert-card { border-radius: 16px !important; border: 2px solid var(--funds-green); background: linear-gradient(135deg, var(--funds-mint-surface), var(--funds-pink-surface)); box-shadow: var(--funds-shadow); }
 @media (max-width: 760px) { .funds-pay-banner { padding: 14px; gap: 12px; } .funds-pay-banner h2 { font-size: 18px; } .funds-pay-banner p { font-size: 11px; } .funds-pay-banner-logo { width: 44px; height: 44px; font-size: 22px; } .funds-pay-banner-logo > svg { width: 24px; height: 24px; } }
+
+.funds-form-section { max-width: none !important; border-top: 0 !important; padding-top: 0 !important; margin-top: 0 !important; }
+.funds-pay-banner { min-height: 190px; padding: 28px 32px; }
+.funds-pay-banner h2 { font-size: 30px; }
+.funds-pay-banner p { font-size: 15px; max-width: 520px; }
+.funds-pay-banner-logo { width: 76px; height: 76px; }
+.funds-pay-banner-art { position: relative; z-index: 1; width: 190px; height: 190px; margin: -20px 0; object-fit: contain; flex-shrink: 0; }
+.funds-pay-layout { display: grid; grid-template-columns: minmax(0,1fr) 320px; gap: 22px; align-items: start; }
+.funds-pay-side { display: grid; gap: 14px; }
+.funds-side-art { width: 100%; height: auto; border-radius: 16px; box-shadow: var(--funds-shadow); }
+.funds-side-banner { width: 100%; height: 120px; object-fit: cover; border-radius: 16px; }
+.funds-side-links { display: grid; gap: 8px; }
+.funds-side-links a { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 14px; border: 1px solid var(--border); background: var(--card); font-weight: 700; font-size: 14px; box-shadow: var(--funds-shadow); }
+.funds-side-links a:hover { border-color: var(--funds-green); color: var(--funds-green); }
+.funds-side-links svg { width: 30px; height: 30px; padding: 6px; border-radius: 10px; background: var(--funds-mint-surface); color: var(--funds-green); }
+@media (max-width: 900px) { .funds-pay-layout { grid-template-columns: 1fr; } }
+@media (max-width: 760px) { .funds-pay-banner { min-height: 130px; padding: 16px; } .funds-pay-banner h2 { font-size: 20px; } .funds-pay-banner p { font-size: 11px; } .funds-pay-banner-art { width: 100px; height: 100px; margin: -10px -6px; } .funds-pay-banner-logo { width: 44px; height: 44px; } }
