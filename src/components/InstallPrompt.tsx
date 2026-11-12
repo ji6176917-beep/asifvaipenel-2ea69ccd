@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { Download, Share, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -53,7 +54,7 @@ export function InstallMenuButton({ className, iconClass, showLabel = true }: { 
   if (installed) return null;
   return (
     <>
-      <button type="button" title={tr("Install App")} className={className} onClick={() => { if (available) void installApp(); else if (ios) setHelp(true); }}>
+      <button type="button" title={tr("Install App")} className={className} onClick={() => { if (available) void installApp(); else if (ios) setHelp(true); else toast(tr("Install is getting ready — please try again in a few seconds. You can also use the install icon in the address bar.")); }}>
         <Download className={iconClass ?? "h-4.5 w-4.5 shrink-0 text-primary"} />
         <span className={showLabel ? "" : "sr-only"}>{tr("Install App")}</span>
       </button>

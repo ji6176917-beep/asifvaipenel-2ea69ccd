@@ -23,6 +23,8 @@ function emit() {
 /** Start listening for the browser's install prompt (call once, client-side). */
 export function watchInstallPrompt(): void {
   if (typeof window === "undefined") return;
+  const early = (window as Window & { __apexInstallPrompt?: InstallPromptEvent }).__apexInstallPrompt;
+  if (early && !deferredPrompt) { deferredPrompt = early; emit(); }
   window.addEventListener("beforeinstallprompt", (event) => {
     event.preventDefault();
     deferredPrompt = event as InstallPromptEvent;

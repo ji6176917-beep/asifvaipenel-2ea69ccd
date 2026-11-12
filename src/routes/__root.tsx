@@ -115,6 +115,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@500;600;700;800&display=swap" },
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" },
     ],
+    // Capture the browser's install signal before the app loads so the Install button never misses it.
+    scripts: [{ children: "window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();window.__apexInstallPrompt=e;});" }],
   }),
   // Load admin-saved settings/texts before first paint so built-in defaults never flash.
   loader: async ({ context }) => {
