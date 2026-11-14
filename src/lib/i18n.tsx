@@ -161,8 +161,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     const row = data?.labels.get(key);
     const tr = row?.translations ?? {};
     if (tr[lang]) return tr[lang];
-    if (tr["en"]) return tr["en"];
-    const base = row?.default_text || fallback || DEFAULT_LABELS[key]?.[1] || key;
+    const base = tr["en"] || row?.default_text || fallback || DEFAULT_LABELS[key]?.[1] || key;
     return trFor(lang, base);
   }, [data, lang]);
   const trx = useCallback((text: string) => trFor(lang, text), [lang]);
