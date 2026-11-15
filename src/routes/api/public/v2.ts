@@ -86,7 +86,7 @@ async function handle(request: Request) {
         service: s.service_no, name: s.name, type: s.provider_id ? s.provider_type : "Default",
         category: `${s.categories.platforms.name} - ${s.categories.name}`,
         rate: Number(s.rate).toString(), min: String(s.min_qty), max: String(s.max_qty),
-        refill: !!s.refill_info, cancel: false,
+        refill: !!s.refill_info, cancel: !!s.provider_id,
       })));
     }
     case "add": {
@@ -130,10 +130,60 @@ async function handle(request: Request) {
       ids.forEach((id) => { const o = data?.find((x) => x.order_code === id); map[id] = o ? fmt(o) : { error: "Incorrect order ID" }; });
       return json(map);
     }
-    case "refill":
-    case "refill_status":
-    case "cancel":
-      return json({ error: "Not supported" });
+    case "refill": {
+      const code = String(p["order"] ?? "").trim();
+      if (!code) return json({ error: "Missing parameter: order" });
+      const { data: o } = await db.from("orders").select("id").eq("user_id", prof.id).eq("order_code", code).is("deleted_at", null).maybeSingle();
+      if (!o) return json({ error: "Incorrect order ID" });
+      try {
+        const { requestProviderRefill } = await import("@/lib/providers.server");
+        await requestProviderRefill(o.id, prof.id);
+        return json({ refill: code });
+      } catch (e) { return json({ error: (e as Error).message }); }
+    }
+    case "refill_status": {
+      const ids = String(p["refills"] ?? p["refill"] ?? "").split(",").map((x) => x.trim()).filter(Boolean).slice(0, 100);
+      if (!ids.length) return json({ error: "Missing parameter: refill" });
+      try { const { refreshProviderRefills } = await import("@/lib/providers.server"); await refreshProviderRefills(prof.id); } catch { /* last known */ }
+      const { data } = await db.from("orders").select("order_code,refill_status").eq("user_id", prof.id).in("order_code", ids);
+      const RS = (s: string | null) => { const v = String(s ?? ""); return v === "completed" ? "Completed" : v === "rejected" || v === "failed" ? "Rejected" : v === "in progress" || v === "processing" ? "In progress" : "Pending"; };
+      if (ids.length === 1 && !p["refills"]) {
+        const o = data?.find((x) => x.order_code === ids[0]);
+        return o?.refill_status ? json({ status: RS(o.refill_status) }) : json({ error: "Refill not found" });
+      }
+      return json(ids.map((id) => { const o = data?.find((x) => x.order_code === id); return o?.refill_status ? { refill: id, status: RS(o.refill_status) } : { refill: id, status: { error: "Refill not found" } }; }));
+    }
+    case "cancel": {
+      const ids = String(p["orders"] ?? p["order"] ?? "").split(",").map((x) => x.trim()).filter(Boolean).slice(0, 100);
+      if (!ids.length) return json({ error: "Missing parameter: orders" });
+      const { data } = await db.from("orders").select("id,order_code").eq("user_id", prof.id).in("order_code", ids).is("deleted_at", null);
+      const { cancelProviderOrder } = await import("@/lib/providers.server");
+      const out = [];
+      for (const id of ids) {
+        const o = data?.find((x) => x.order_code === id);
+        if (!o) { out.push({ order: id, cancel: { error: "Incorrect order ID" } }); continue; }
+        try { const r = await cancelProviderOrder(o.id); out.push({ order: id, cancel: r.result === "canceled" || r.result === "canceling" ? 1 : { error: `Order is ${r.result}` } }); }
+        catch (e) { out.push({ order: id, cancel: { error: (e as Error).message } }); }
+      }
+      return json(out);
+    }
+    case "support":
+    case "ticket": {
+      const subject = z.string().trim().min(3).max(120).safeParse(p["subject"] ?? "API support");
+      const message = z.string().trim().min(5).max(3000).safeParse(p["message"]);
+      if (!subject.success || !message.success) return json({ error: "Missing parameter: message (5-3000 characters)" });
+      const codes = String(p["orders"] ?? p["order"] ?? "").split(",").map((x) => x.trim()).filter(Boolean).slice(0, 20);
+      if (codes.length) {
+        const { count: own } = await db.from("orders").select("id", { count: "exact", head: true }).eq("user_id", prof.id).in("order_code", codes);
+        if ((own ?? 0) !== codes.length) return json({ error: "Incorrect order ID" });
+      }
+      const { data: t, error } = await db.from("support_tickets").insert({
+        user_id: prof.id, subject: subject.data, subcategory: "API", order_codes: codes, idempotency_key: crypto.randomUUID(),
+        messages: [{ author: "customer", body: message.data, attachments: [], created_at: new Date().toISOString() }],
+      }).select("ticket_no").single();
+      if (error || !t) return json({ error: "Unable to create ticket" });
+      return json({ ticket: Number(t.ticket_no) });
+    }
     default:
       return json({ error: "Incorrect request" });
   }
