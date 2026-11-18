@@ -33,7 +33,8 @@ const startOfToday = () => { const d = new Date(); d.setHours(0, 0, 0, 0); retur
 export const adminUserStats = createServerFn({ method: "GET" }).handler(async () => {
   const { db } = await ctx();
   const { data } = await db.from("profiles").select("created_at,last_seen_at,banned,balance").is("deleted_at", null);
-  const rows = data ?? [];
+  const sim = await import("./growth-sim.server");
+  const rows = [...sim.simUsers().map((u) => ({ created_at: u.created_at, last_seen_at: null as string | null, banned: false, balance: 0 })), ...(data ?? [])];
   const today = startOfToday();
   const now = Date.now();
   const [{ count: pendingDeposits }, { count: pendingOrders }] = await Promise.all([
@@ -74,7 +75,8 @@ export const adminListUsers = createServerFn({ method: "POST" })
     const auth = await allAuthUsers(db);
     const q = data.q.trim().toLowerCase();
     const today = startOfToday();
-    let rows: AdminUserRow[] = (profiles ?? []).map((p) => {
+    const sim = await import("./growth-sim.server");
+    let rows: AdminUserRow[] = [...sim.simUsers(), ...(profiles ?? []).map((p) => {
       const u = auth.get(p.id);
       return {
         id: p.id, full_name: p.full_name, email: p.email ?? u?.email ?? null, phone: p.phone, public_id: p.public_id,
@@ -82,7 +84,7 @@ export const adminListUsers = createServerFn({ method: "POST" })
         last_sign_in_at: p.last_sign_in_at ?? u?.last_sign_in_at ?? null, last_seen_at: p.last_seen_at ?? null, method: methodOf(u, p.sign_in_method),
         verified: !!u?.email_confirmed_at, banned: p.banned,
       };
-    });
+    })];
     if (q) {
       rows = rows.filter((r) =>
         r.public_id === q || r.public_id.includes(q) || (r.email ?? "").toLowerCase().includes(q) ||
@@ -118,6 +120,18 @@ export const adminGetUser = createServerFn({ method: "POST" })
   .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data }) => {
     const { db } = await ctx();
+    const sim = await import("./growth-sim.server");
+    if (sim.isSimId(data.id)) {
+      const r = sim.simUsers().find((x) => x.id === data.id);
+      if (!r) throw new Error("NOT_FOUND");
+      return {
+        profile: { id: r.id, public_id: r.public_id, username: r.username, full_name: r.full_name, email: r.email, phone: r.phone, balance: 0, banned: false,
+          accepted_terms_at: r.created_at, created_at: r.created_at, deleted_at: null, avatar_url: null, last_sign_in_at: r.last_sign_in_at, last_seen_at: r.last_seen_at,
+          sign_in_method: r.method.toLowerCase(), language: "en", ban_reason: null, password_changed_at: null, sessions_revoked_at: null, api_enabled: false, api_key_created_at: null, api_key: null },
+        apiKey: { exists: false, enabled: false, created_at: null }, email: r.email, verified: r.verified, method: r.method, last_sign_in_at: r.last_sign_in_at,
+        totalAdded: 0, totalSpent: 0, deposits: [], orders: [], ledger: [], signIns: [], notifications: [],
+      };
+    }
     const { data: p } = await db.from("profiles").select("*").eq("id", data.id).maybeSingle();
     if (!p) throw new Error("NOT_FOUND");
     const { data: au } = await db.auth.admin.getUserById(data.id);

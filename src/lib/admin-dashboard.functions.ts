@@ -30,7 +30,10 @@ export const adminDashboardStats = createServerFn({ method: "GET" }).handler(asy
     db.from("site_visits").select("visitor_id", { count: "exact", head: true }).eq("day", today),
     db.from("site_visits").select("visitor_id", { count: "exact", head: true }),
   ]);
-  const P = profiles.data ?? [];
+  const sim = await import("./growth-sim.server");
+  const P = [...sim.simUsers().map((u) => ({ created_at: u.created_at, last_seen_at: null as string | null, balance: 0 })), ...(profiles.data ?? [])];
+  const simVisitsToday = sim.visitorsOnDay(startToday);
+  const simVisitsTotal = sim.visitorsAt();
   const O = orders.data ?? [];
   const t = (x: string) => new Date(x).getTime();
   const net = (o: (typeof O)[number]) => (o.status === "canceled" || o.status === "rejected" ? 0 : Number(o.charge) - Number(o.refunded));
@@ -46,8 +49,8 @@ export const adminDashboardStats = createServerFn({ method: "GET" }).handler(asy
 
   return {
     online: P.filter((p) => p.last_seen_at && Date.now() - t(p.last_seen_at) < 5 * 60_000).length,
-    visitorsToday: visitsToday.count ?? 0,
-    visitorsTotal: visitsTotal.count ?? 0,
+    visitorsToday: (visitsToday.count ?? 0) + simVisitsToday,
+    visitorsTotal: (visitsTotal.count ?? 0) + simVisitsTotal,
     totalUsers: P.length,
     newToday: P.filter((p) => t(p.created_at) >= startToday).length,
     totalOrders: O.length,

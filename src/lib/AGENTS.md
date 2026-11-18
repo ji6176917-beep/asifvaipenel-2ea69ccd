@@ -1,1 +1,2 @@
 - Customer refills use provider `refill` via refill.functions.ts with server-side checks. Why: no upstream key exposure.
+- Admin simulated growth lives only in growth-sim.server.ts (ENABLED flag), merged into admin user list/stats at read time. Why: no stored rows, instant off switch.
