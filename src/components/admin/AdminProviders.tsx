@@ -46,7 +46,7 @@ function ProviderForm({ provider, onClose, onSaved }: { provider?: Provider | un
   const [name, setName] = useState(provider?.name ?? 'Royal SMM World')
   const [url, setUrl] = useState(provider?.api_url ?? 'https://royalsmmworld.com/api/v2')
   const [key, setKey] = useState('')
-  const [markup, setMarkup] = useState(String(provider?.markup ?? 0))
+  const [markup, setMarkup] = useState(String(provider?.markup ?? 10))
   const [parameter, setParameter] = useState<'link' | 'url'>(provider?.link_parameter === 'url' ? 'url' : 'link')
   const [busy, setBusy] = useState(false)
   return <form className="space-y-3 border-y border-border py-4" onSubmit={async (event) => {

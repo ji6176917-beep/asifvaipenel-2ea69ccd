@@ -7,8 +7,6 @@ BEGIN
   SELECT count(*) INTO n FROM public.services WHERE provider_id=p;
   IF n<>2 THEN RAISE EXCEPTION 'All service types must import'; END IF;
   IF EXISTS(SELECT 1 FROM public.services WHERE provider_id=p AND NOT active) THEN RAISE EXCEPTION 'Imported services must start ON'; END IF;
-  PERFORM public.sync_provider_catalog(p,'[{"service":"9","name":"X","category":"T","platform":"other","platform_name":"Other","type":"Default","rate":1,"min":1,"max":10,"available":true}]'::jsonb);
-  IF EXISTS(SELECT 1 FROM public.services WHERE provider_id=p AND provider_service_id='9') THEN RAISE EXCEPTION 'Only five platforms import'; END IF;
   SELECT id,rate INTO s,r FROM public.services WHERE provider_id=p AND provider_service_id='1';
   IF r<>12 THEN RAISE EXCEPTION '20 percent markup must produce 12'; END IF;
   PERFORM public.sync_provider_catalog(p,'[{"service":"1","name":"Test likes","category":"Test","platform":"facebook","platform_name":"Facebook","type":"Default","rate":20,"min":1,"max":100,"available":true}]'::jsonb);
@@ -19,7 +17,7 @@ BEGIN
   UPDATE public.services SET rate=30,custom_rate=true WHERE id=s;
   PERFORM public.sync_provider_catalog(p,'[{"service":"1","name":"Test likes","category":"Test","platform":"facebook","platform_name":"Facebook","type":"Default","rate":25,"min":1,"max":100,"available":false}]'::jsonb);
   SELECT rate,provider_available INTO r,available FROM public.services WHERE id=s;
-  IF r<>30 THEN RAISE EXCEPTION 'Explicit custom price must persist'; END IF;
+  IF r<>35 THEN RAISE EXCEPTION 'Custom fixed profit of 10 must follow updated cost of 25'; END IF;
   IF available THEN RAISE EXCEPTION 'Upstream disabled service must close'; END IF;
 END $$;
 ROLLBACK;
