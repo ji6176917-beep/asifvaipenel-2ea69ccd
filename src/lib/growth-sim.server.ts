@@ -3,8 +3,8 @@ export const ENABLED = true;
 const START = Date.UTC(2026, 10, 18, 8, 0, 0);
 const DAYS = 25;
 const DAY = 86_400_000;
-export const TARGET_USERS = 10_000;
-export const TARGET_VISITORS = 17_560;
+export const TARGET_USERS = 22_223;
+export const TARGET_VISITORS = 33_734;
 const SPAN = DAYS * DAY;
 const ID_PREFIX = "5e1a0000-";
 
