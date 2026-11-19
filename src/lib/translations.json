@@ -555,7 +555,10 @@
     "cURL": "cURL",
     "in progress": "চলমান",
     "orders": "অর্ডার",
-    "Frequently Asked Questions": "সচরাচর জিজ্ঞাস্য প্রশ্নাবলী"
+    "Frequently Asked Questions": "সচরাচর জিজ্ঞাস্য প্রশ্নাবলী",
+    "Tap the browser menu": "ব্রাউজারের মেনুতে চাপ দিন",
+    "Choose Install app or Add to Home screen": "Install app বা Add to Home screen বেছে নিন",
+    "Tap Install to confirm": "নিশ্চিত করতে Install চাপুন"
   },
   "hi": {
     "API Policy": "API पॉलिसी",
@@ -1113,7 +1116,10 @@
     "Your payment was verified automatically and the balance has been added to your account.": "आपका भुगतान अपने आप सत्यापित हो गया है और आपके खाते में बैलेंस जोड़ दिया गया है।",
     "Your reset session has expired. Please request a new code.": "आपके रीसेट सत्र की समय-सीमा समाप्त हो गई है। कृपया नए कोड का अनुरोध करें।",
     "Your tickets and order progress will appear here.": "आपके टिकट और ऑर्डर की प्रगति यहाँ दिखाई देगी।",
-    "Frequently Asked Questions": "अक्सर पूछे जाने वाले सवाल"
+    "Frequently Asked Questions": "अक्सर पूछे जाने वाले सवाल",
+    "Tap the browser menu": "ब्राउज़र मेनू पर टैप करें",
+    "Choose Install app or Add to Home screen": "इंस्टॉल ऐप या होम स्क्रीन पर जोड़ें चुनें",
+    "Tap Install to confirm": "पुष्टि के लिए इंस्टॉल पर टैप करें"
   },
   "pt-BR": {
     "API Policy": "Política de API",
@@ -1671,7 +1677,10 @@
     "Your level grows with total deposits. Tap your badge to see all levels.": "Seu nível aumenta conforme o total depositado. Toque no seu emblema para ver todos os níveis.",
     "Your order is complete!": "Seu pedido foi concluído!",
     "Your payment is being verified — balance will be added automatically within a few minutes.": "Seu pagamento está sendo verificado — o saldo será adicionado automaticamente em alguns minutos.",
-    "Frequently Asked Questions": "Perguntas frequentes"
+    "Frequently Asked Questions": "Perguntas frequentes",
+    "Tap the browser menu": "Toque no menu do navegador",
+    "Choose Install app or Add to Home screen": "Escolha Instalar app ou Adicionar à tela inicial",
+    "Tap Install to confirm": "Toque em Instalar para confirmar"
   },
   "id": {
     "API Policy": "Kebijakan API",
@@ -2229,7 +2238,10 @@
     "Your level grows with total deposits. Tap your badge to see all levels.": "Level Anda meningkat seiring total setoran. Ketuk lencana Anda untuk melihat semua level.",
     "Your order is complete!": "Pesanan Anda selesai!",
     "Your payment is being verified — balance will be added automatically within a few minutes.": "Pembayaran Anda sedang diverifikasi — saldo akan ditambahkan otomatis dalam beberapa menit.",
-    "Frequently Asked Questions": "Pertanyaan yang sering diajukan"
+    "Frequently Asked Questions": "Pertanyaan yang sering diajukan",
+    "Tap the browser menu": "Ketuk menu browser",
+    "Choose Install app or Add to Home screen": "Pilih Instal aplikasi atau Tambahkan ke layar utama",
+    "Tap Install to confirm": "Ketuk Instal untuk konfirmasi"
   },
   "tr": {
     "API Policy": "API Politikası",
@@ -2787,7 +2799,10 @@
     "Your level grows with total deposits. Tap your badge to see all levels.": "Seviyeniz, toplam yatırdığınız tutarla yükselir. Tüm seviyeleri görmek için rozetinize dokunun.",
     "Your order is complete!": "Siparişiniz tamamlandı!",
     "Your payment is being verified — balance will be added automatically within a few minutes.": "Ödemeniz doğrulanıyor — bakiye birkaç dakika içinde otomatik olarak eklenecek.",
-    "Frequently Asked Questions": "Sıkça sorulan sorular"
+    "Frequently Asked Questions": "Sıkça sorulan sorular",
+    "Tap the browser menu": "Tarayıcı menüsüne dokunun",
+    "Choose Install app or Add to Home screen": "Uygulamayı yükle veya Ana ekrana ekle'yi seçin",
+    "Tap Install to confirm": "Onaylamak için Yükle'ye dokunun"
   },
   "ar": {
     "API Policy": "سياسة API",
@@ -3345,7 +3360,10 @@
     "Your level grows with total deposits. Tap your badge to see all levels.": "يرتفع مستواك مع إجمالي إيداعاتك. اضغط على شارتك لعرض جميع المستويات.",
     "Your order is complete!": "اكتمل طلبك!",
     "Your payment is being verified — balance will be added automatically within a few minutes.": "جارٍ التحقق من دفعتك — سيُضاف الرصيد تلقائيًا خلال بضع دقائق.",
-    "Frequently Asked Questions": "الأسئلة الشائعة"
+    "Frequently Asked Questions": "الأسئلة الشائعة",
+    "Tap the browser menu": "اضغط على قائمة المتصفح",
+    "Choose Install app or Add to Home screen": "اختر تثبيت التطبيق أو الإضافة إلى الشاشة الرئيسية",
+    "Tap Install to confirm": "اضغط تثبيت للتأكيد"
   },
   "fa": {
     "API Policy": "سیاست API",
@@ -3903,6 +3921,9 @@
     "You will pay (rate": "پرداخت خواهید کرد (نرخ",
     "Your balance, orders and quick actions at a glance.": "موجودی، سفارش‌ها و اقدامات سریع شما در یک نگاه.",
     "Your level grows with total deposits. Tap your badge to see all levels.": "سطح شما با مجموع واریزی‌ها افزایش می‌یابد. برای مشاهده همه سطح‌ها، روی نشان خود بزنید.",
-    "Frequently Asked Questions": "سوالات متداول"
+    "Frequently Asked Questions": "سوالات متداول",
+    "Tap the browser menu": "روی منوی مرورگر بزنید",
+    "Choose Install app or Add to Home screen": "نصب برنامه یا افزودن به صفحه اصلی را انتخاب کنید",
+    "Tap Install to confirm": "برای تأیید روی نصب بزنید"
   }
 }

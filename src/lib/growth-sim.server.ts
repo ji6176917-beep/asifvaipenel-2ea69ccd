@@ -9,13 +9,43 @@ const SPAN = DAYS * DAY;
 const ID_PREFIX = "5e1a0000-";
 
 function rnd(n: number) { const x = Math.sin(n * 12.9898 + 78.233) * 43758.5453; return x - Math.floor(x); }
-// Ramp-up curve: slow start, accelerating (0..1).
-const curve = (f: number) => Math.min(1, Math.max(0, f)) ** 1.35;
+// Uneven daily growth: overall ramp-up, but each day gets its own random size
+// (some days almost flat, some days a burst) so the pattern is not uniform.
+function dailyCdf(seed: number) {
+  const w: number[] = [];
+  for (let d = 0; d < DAYS; d++) {
+    const ramp = 0.35 + (d / DAYS) * 1.3;
+    const r = rnd(seed + d * 7.31);
+    const mood = d < 2 ? 1.1 : r < 0.12 ? 0.08 + r : r > 0.85 ? 1.7 + r : 0.55 + r * 0.9;
+    w.push(ramp * mood);
+  }
+  const total = w.reduce((a, b) => a + b, 0);
+  const cdf = [0];
+  for (const x of w) cdf.push(cdf[cdf.length - 1]! + x / total);
+  cdf[DAYS] = 1;
+  return cdf;
+}
+const USER_CDF = dailyCdf(101);
+const VISIT_CDF = dailyCdf(907);
+/** Fraction (0..1) reached at elapsed time t (ms since START). */
+function fracAt(cdf: number[], t: number) {
+  if (t <= 0) return 0;
+  if (t >= SPAN) return 1;
+  const d = Math.floor(t / DAY), p = (t - d * DAY) / DAY;
+  return cdf[d]! + (cdf[d + 1]! - cdf[d]!) * p;
+}
+/** Inverse of fracAt. */
+function timeAt(cdf: number[], f: number) {
+  let d = 0;
+  while (d < DAYS - 1 && cdf[d + 1]! <= f) d++;
+  const span = cdf[d + 1]! - cdf[d]!;
+  return (d + (span > 0 ? (f - cdf[d]!) / span : 0)) * DAY;
+}
 
 /** Offset (ms from START) at which the i-th simulated account was created. */
 function createdOffset(i: number) {
   const f = (i + rnd(i) * 0.9) / TARGET_USERS;
-  return Math.min(SPAN - 1, Math.round(f ** (1 / 1.35) * SPAN));
+  return Math.min(SPAN - 1, Math.round(timeAt(USER_CDF, f)));
 }
 export function userCountAt(now = Date.now()) {
   if (!ENABLED || now <= START) return 0;
@@ -25,7 +55,7 @@ export function userCountAt(now = Date.now()) {
 }
 export function visitorsAt(now = Date.now()) {
   if (!ENABLED || now <= START) return 0;
-  return Math.round(curve((now - START) / SPAN) * TARGET_VISITORS);
+  return Math.round(fracAt(VISIT_CDF, now - START) * TARGET_VISITORS);
 }
 export function visitorsOnDay(dayStartMs: number) { return Math.max(0, visitorsAt(dayStartMs + DAY) - visitorsAt(dayStartMs)); }
 

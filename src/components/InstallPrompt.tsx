@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
-import { Download, Share, X } from "lucide-react";
+import { Download, MoreVertical, Share, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useTr } from "@/lib/i18n";
@@ -54,17 +53,23 @@ export function InstallMenuButton({ className, iconClass, showLabel = true }: { 
   if (installed) return null;
   return (
     <>
-      <button type="button" title={tr("Install App")} className={className} onClick={() => { if (available) void installApp(); else if (ios) setHelp(true); else toast(tr("Install is getting ready — please try again in a few seconds. You can also use the install icon in the address bar.")); }}>
+      <button type="button" title={tr("Install App")} className={className} onClick={() => { if (available) void installApp(); else setHelp(true); }}>
         <Download className={iconClass ?? "h-4.5 w-4.5 shrink-0 text-primary"} />
         <span className={showLabel ? "" : "sr-only"}>{tr("Install App")}</span>
       </button>
-      {ios && (
+      {(
         <Dialog open={help} onOpenChange={setHelp}>
           <DialogContent className="max-w-sm">
             <DialogHeader><DialogTitle>{tr("Install App")}</DialogTitle></DialogHeader>
             <ol className="space-y-2 text-sm">
+              {ios ? <>
               <li className="flex items-center gap-2">1. {tr("Tap the Share button")} <Share className="h-4 w-4 text-primary" /></li>
               <li>2. {tr("Choose Add to Home Screen")}</li>
+              </> : <>
+              <li className="flex items-center gap-2">1. {tr("Tap the browser menu")} <MoreVertical className="h-4 w-4 text-primary" /></li>
+              <li>2. {tr("Choose Install app or Add to Home screen")}</li>
+              <li>3. {tr("Tap Install to confirm")}</li>
+              </>}
             </ol>
           </DialogContent>
         </Dialog>

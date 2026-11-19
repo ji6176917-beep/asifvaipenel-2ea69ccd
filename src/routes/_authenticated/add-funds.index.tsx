@@ -252,9 +252,9 @@ function AddFunds() {
           {group !== "p2p" && (methods?.filter((x) => x.kind === group).length ?? 0) > 1 && (
             <div className="mb-5 grid grid-cols-3 gap-2">
               {methods?.filter((x) => x.kind === group).map((x) => (
-                <Button variant="outline" key={x.id} onClick={() => { setM(x); requestAnimationFrame(() => document.getElementById("amt")?.scrollIntoView({ behavior: "smooth", block: "center" })); }} aria-pressed={m?.id === x.id} className={`funds-net-card h-auto flex-col gap-1.5 p-3 ${m?.id === x.id ? "is-active" : ""}`}>
+                <Button variant="outline" key={x.id} onClick={() => { setM(x); requestAnimationFrame(() => document.getElementById("amt")?.scrollIntoView({ behavior: "smooth", block: "center" })); }} aria-pressed={m?.id === x.id} className={`funds-net-card h-auto min-w-0 flex-col gap-1.5 overflow-hidden whitespace-normal p-2 sm:p-3 ${m?.id === x.id ? "is-active" : ""}`}>
                   <DepositMethodLogo name={x.name} kind={x.kind} logo={x.logo_url} className="h-10 w-12" />
-                  <span className="text-xs font-semibold">{x.name}</span>
+                  <span className="block w-full min-w-0 break-words text-center text-[10.5px] font-semibold leading-tight sm:text-xs">{x.name.replace(/^Crypto\s+/i, "")}</span>
                 </Button>
               ))}
             </div>
