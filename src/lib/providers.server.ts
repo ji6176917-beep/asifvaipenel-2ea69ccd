@@ -226,6 +226,8 @@ export async function requestProviderRefill(orderId: string, userId: string) {
 /** Refreshes live refill status for the caller's active refills (or every active refill when userId is null). */
 export async function refreshProviderRefills(userId: string | null) {
   const { supabaseAdmin: db } = await import('@/integrations/supabase/client.server')
+  // Release refill requests that never got a provider refill ID so the customer can try again.
+  await db.from('orders').update({ refill_status: 'failed', refill_error: 'Provider did not confirm the refill', refill_requested_at: null }).eq('refill_status', 'sending').is('refill_id', null).lt('refill_requested_at', new Date(Date.now() - 10 * 60 * 1000).toISOString())
   let q = db.from('orders').select('id,provider_id,refill_id').not('refill_id', 'is', null).in('refill_status', REFILL_ACTIVE).limit(50)
   if (userId) q = q.eq('user_id', userId)
   const { data: rows } = await q
