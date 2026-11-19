@@ -103,19 +103,27 @@ export async function dispatchProviderOrder(code: string, userId: string, option
   }
 }
 
+/** Refunds pending orders that never got a provider confirmation within `minutes`. */
+export async function sweepStuckDispatches(providerId: string | null, minutes: number) {
+  const { supabaseAdmin: db } = await import('@/integrations/supabase/client.server')
+  const cutoff = new Date(Date.now() - minutes * 60 * 1000).toISOString()
+  let q = db.from('orders').select('id').not('provider_id', 'is', null).eq('status', 'pending').in('dispatch_state', ['queued', 'sending', 'review']).is('provider_order_id', null).lt('created_at', cutoff).limit(50)
+  if (providerId) q = q.eq('provider_id', providerId)
+  const { data: stuck } = await q
+  let closed = 0
+  for (const s of stuck ?? []) {
+    const { data: claimed } = await db.from('orders').update({ dispatch_state: 'failed', provider_error: 'Auto-closed: provider did not confirm' }).eq('id', s.id).in('dispatch_state', ['queued', 'sending', 'review']).select('id').maybeSingle()
+    if (claimed) { await db.rpc('admin_update_order_status', { _order_id: s.id, _status: 'rejected', _delivered: 0, _note: 'Service temporarily unavailable. Full amount refunded.' }); closed++ }
+  }
+  return closed
+}
+
 export async function refreshProviderOrders(providerId: string, options: { statusOnly?: boolean } = {}) {
   const { supabaseAdmin: db } = await import('@/integrations/supabase/client.server')
   const { data: provider } = await db.from('service_providers').select('*').eq('id', providerId).is('deleted_at', null).single()
   if (!provider) throw new Error('প্রোভাইডার পাওয়া যায়নি')
   // Sweep: orders left in queued/sending/review for over 3 minutes are refunded so nothing stays stuck.
-  if (!options.statusOnly) {
-  const cutoff = new Date(Date.now() - 3 * 60 * 1000).toISOString()
-  const { data: stuck } = await db.from('orders').select('id').eq('provider_id', providerId).eq('status', 'pending').in('dispatch_state', ['queued', 'sending', 'review']).is('provider_order_id', null).lt('created_at', cutoff).limit(50)
-  for (const s of stuck ?? []) {
-    const { data: claimed } = await db.from('orders').update({ dispatch_state: 'failed', provider_error: 'Auto-closed: provider did not confirm' }).eq('id', s.id).in('dispatch_state', ['queued', 'sending', 'review']).select('id').maybeSingle()
-    if (claimed) await db.rpc('admin_update_order_status', { _order_id: s.id, _status: 'rejected', _delivered: 0, _note: 'Service temporarily unavailable. Full amount refunded.' })
-  }
-  }
+  if (!options.statusOnly) await sweepStuckDispatches(providerId, 3)
   const { data: orders, error } = await db.from('orders').select('id,order_code,user_id,provider_order_id,status,quantity').eq('provider_id', providerId).in('dispatch_state', ['sent', 'canceling']).in('status', ['pending', 'processing']).is('deleted_at', null).order('updated_at', { ascending: true }).limit(100)
   if (error) throw new Error('অর্ডার তালিকা পাওয়া যায়নি')
   let updated = 0
