@@ -264,9 +264,9 @@ function AddFunds() {
             <form onSubmit={m.kind === "p2p" ? (e) => { e.preventDefault(); payAuto(); } : submit} className="space-y-4">
               {m.kind !== "p2p" && <>
               <div className={`funds-account-card funds-account-card--${m.kind} flex items-center gap-3 p-4`}>
-                <DepositMethodLogo name={m.name} kind={m.kind} logo={m.logo_url} className="h-12 w-12" />
-                <div className="min-w-0">
-                  <div className="label-premium">{m.name}{m.network ? ` • ${m.network}` : ""}</div>
+                <DepositMethodLogo name={m.name} kind={m.kind} logo={m.logo_url} className="h-12 w-12 shrink-0" />
+                <div className="min-w-0 flex-1 overflow-hidden">
+                  <div className="label-premium break-words text-sm sm:text-base">{m.name}{m.network ? ` • ${m.network}` : ""}</div>
                   <div className="text-xs text-muted-foreground">{m.kind === "binance" ? tr("Binance ID") : m.kind === "usdt" ? tr("Wallet address") : `${tr("Number")} (${m.account_type ?? tr("Personal")})`}</div>
                   <Copyable value={m.account} className={m.kind === "usdt" ? "text-xs" : "text-base font-bold"} />
                 </div>

@@ -1133,3 +1133,8 @@
   .desktop-welcome-copy .rating-gold-pill { position: relative; z-index: 1; font-size: 12px; padding: 5px 11px; }
   .desktop-welcome-copy .rating-gold-pill svg { width: 13px; height: 13px; }
 }
+@media (max-width: 640px) {
+  .qna-item .font-semibold { font-size: 13.5px; line-height: 1.35; }
+  .qna-item > button { padding: 12px 13px; }
+  .qna-item .md-content { font-size: 12.5px; }
+}
